@@ -5,6 +5,7 @@
 class App
 {
 	GLuint vertexbuffer; // This will identify our vertex buffer
+	GLuint programID;
 
 public:
 
