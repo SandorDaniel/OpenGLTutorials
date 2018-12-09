@@ -6,8 +6,6 @@
 #include <GLFW/glfw3.h>
 GLFWwindow* window;
 
-#include <glm/glm.hpp>
-
 #include "App.h"
 
 

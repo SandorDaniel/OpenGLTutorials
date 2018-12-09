@@ -4,6 +4,8 @@
 
 #include <common/shader.hpp>
 
+#include <glm/glm.hpp>
+
 
 void App::Init()
 {
@@ -15,10 +17,10 @@ void App::Init()
 	glBindVertexArray(VertexArrayID);
 
 	// An array of 3 vectors which represents 3 vertices
-	static const GLfloat g_vertex_buffer_data[] = {
-	   -1.0f, -1.0f, 0.0f,
-	   1.0f, -1.0f, 0.0f,
-	   0.0f,  1.0f, 0.0f,
+	static const glm::vec3 g_vertex_buffer_data[] = {
+	   glm::vec3(-1.0f, -1.0f, 0.0f),
+	   glm::vec3(1.0f, -1.0f, 0.0f),
+	   glm::vec3(0.0f,  1.0f, 0.0f),
 	};
 
 	// Generate 1 buffer, put the resulting identifier in vertexbuffer
