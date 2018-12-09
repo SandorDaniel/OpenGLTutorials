@@ -7,8 +7,9 @@
 GLFWwindow* window;
 
 #include <glm/glm.hpp>
-using namespace glm;
+
 #include "App.h"
+
 
 int main( void )
 {
