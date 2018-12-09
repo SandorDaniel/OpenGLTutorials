@@ -57,7 +57,7 @@ int main( void )
 	do{
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		// Draw nothing, see you in tutorial 2 !
+		app.Render();
 
 		// Swap buffers
 		glfwSwapBuffers(window);

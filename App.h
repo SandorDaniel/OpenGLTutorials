@@ -9,4 +9,5 @@ class App
 public:
 
 	void Init();
+	void Render();
 };
