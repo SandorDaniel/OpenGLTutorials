@@ -39,6 +39,7 @@ int main( void )
 	glfwMakeContextCurrent(window);
 
 	// Initialize GLEW
+	glewExperimental = true; // Needed for core profile
 	if (glewInit() != GLEW_OK) {
 		std::cerr << "Failed to initialize GLEW\n" << std::endl;
 		std::cin.get();
