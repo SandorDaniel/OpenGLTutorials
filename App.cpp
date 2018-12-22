@@ -40,7 +40,7 @@ void App::Init()
 }
 
 
-void App::Render()
+void App::Render() const
 {
 	vao.Enable();
 

@@ -18,5 +18,5 @@ class App
 public:
 
 	void Init();
-	void Render();
+	void Render() const;
 };
