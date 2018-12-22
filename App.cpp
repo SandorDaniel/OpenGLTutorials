@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 
 #include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp> // after <glm/glm.hpp>
+
 #include <common/shader.hpp>
 
 #include <vector>
@@ -10,9 +12,6 @@
 
 void App::Init()
 {
-	// Dark blue background
-	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-
 	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
