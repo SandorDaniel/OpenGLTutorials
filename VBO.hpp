@@ -7,6 +7,10 @@
 
 #include <vector>
 
+#include <typeinfo>
+
+#include <exception>
+
 
 template<
 	template<typename, glm::precision> class TVec,
@@ -15,8 +19,10 @@ template<
 	const int COORD_COUNT>
 class VBO final
 {
+
 	GLuint m_id = 0;
 	GLsizei m_element_count_of_vertexbuffer = 0;
+	bool isLoaded = false;
 
 public:
 
@@ -35,6 +41,20 @@ public:
 	void UnLoad();
 
 	GLsizei GetElementCount() const{ return m_element_count_of_vertexbuffer; }
+
+	GLenum GetCoordGLType() const
+	{
+		if(typeid(CoordType) == typeid(float))
+		{
+			return GL_FLOAT;
+		}
+		else
+		{
+			// TODO: ...
+		}
+	}
+
+	bool IsLoaded() const { return isLoaded; }
 };
 
 
@@ -72,6 +92,8 @@ void VBO<TVec, CoordType, precision, COORD_COUNT>::Load(const std::vector<TVec<C
 	glGenBuffers(1, &m_id);
 	glBindBuffer(GL_ARRAY_BUFFER, m_id);
 	glBufferData(GL_ARRAY_BUFFER, m_element_count_of_vertexbuffer * sizeof(glm::vec3), &g_vertex_buffer_data[0], GL_STATIC_DRAW);
+	
+	isLoaded = true;
 }
 
 template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
@@ -79,4 +101,6 @@ void VBO<TVec, CoordType, precision, COORD_COUNT>::UnLoad()
 {
 	glDeleteBuffers(1, &m_id);
 	m_element_count_of_vertexbuffer = 0;
+
+	isLoaded = false;
 }
