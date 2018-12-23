@@ -51,6 +51,7 @@ int main( void )
 	App app;
 
 	app.Init();
+	glCullFace(GL_BACK);
 
 	do{
 
