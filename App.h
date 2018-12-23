@@ -11,11 +11,11 @@
 
 class App
 {
-	VBO<glm::tvec4, float, glm::highp, 4> vbo;
-	VAO vao;
-	GLuint programID;
-	glm::mat4 MVP;
-	GLuint MVPID;
+	VBO<glm::tvec4, float, glm::highp, 4> m_vbo;
+	VAO m_vao;
+	GLuint m_programID;
+	glm::mat4 m_MVP;
+	GLuint m_MVPID;
 
 public:
 

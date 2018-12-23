@@ -42,34 +42,34 @@ void App::Init()
 	
 	// MVP
 
-	MVP = P * V * M;
+	m_MVP = P * V * M;
 
-	vbo.Load(g_vertex_buffer_data);
+	m_vbo.Load(g_vertex_buffer_data);
 
 	// Create and compile our GLSL program from the shaders
-	programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
+	m_programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
 
 	// Get a handle for our "MVP" uniform
 	// Only during the initialisation
-	MVPID = glGetUniformLocation(programID, "MVP");
+	m_MVPID = glGetUniformLocation(m_programID, "MVP");
 
-	vao.Bind(vbo);
+	m_vao.Bind(m_vbo);
 }
 
 
 void App::Render() const
 {
-	vao.Enable();
+	m_vao.Enable();
 
 	// Use our shader
-	glUseProgram(programID);
+	glUseProgram(m_programID);
 
 	// Send our transformation to the currently bound shader, in the "MVP" uniform
 	// This is done in the main loop since each model will have a different MVP matrix (At least for the M part)
-	glUniformMatrix4fv(MVPID, 1, GL_FALSE, &MVP[0][0]);
+	glUniformMatrix4fv(m_MVPID, 1, GL_FALSE, &m_MVP[0][0]);
 
 	// Draw the triangle !
-	glDrawArrays(GL_TRIANGLES, 0, vbo.GetElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
+	glDrawArrays(GL_TRIANGLES, 0, m_vbo.GetElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
 
-	vao.Disable();
+	m_vao.Disable();
 }
