@@ -14,6 +14,8 @@ class App
 	VBO<glm::tvec4, float, glm::highp, 4> vbo;
 	VAO vao;
 	GLuint programID;
+	glm::mat4 MVP;
+	GLuint MVPID;
 
 public:
 

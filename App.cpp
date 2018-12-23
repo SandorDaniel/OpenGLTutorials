@@ -42,17 +42,16 @@ void App::Init()
 	
 	// MVP
 
-	glm::mat4 MVP = P * V * M;
-
-	for (auto& v : g_vertex_buffer_data)
-	{
-		v = MVP * v;
-	}
+	MVP = P * V * M;
 
 	vbo.Load(g_vertex_buffer_data);
 
 	// Create and compile our GLSL program from the shaders
 	programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
+
+	// Get a handle for our "MVP" uniform
+	// Only during the initialisation
+	MVPID = glGetUniformLocation(programID, "MVP");
 
 	vao.Bind(vbo);
 }
@@ -64,6 +63,10 @@ void App::Render() const
 
 	// Use our shader
 	glUseProgram(programID);
+
+	// Send our transformation to the currently bound shader, in the "MVP" uniform
+	// This is done in the main loop since each model will have a different MVP matrix (At least for the M part)
+	glUniformMatrix4fv(MVPID, 1, GL_FALSE, &MVP[0][0]);
 
 	// Draw the triangle !
 	glDrawArrays(GL_TRIANGLES, 0, vbo.GetElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
