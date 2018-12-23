@@ -11,7 +11,7 @@
 
 class App
 {
-	VBO<glm::tvec3, float, glm::highp, 3> vbo;
+	VBO<glm::tvec4, float, glm::highp, 4> vbo;
 	VAO vao;
 	GLuint programID;
 

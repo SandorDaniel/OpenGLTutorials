@@ -17,18 +17,36 @@ void App::Init()
 	glBindVertexArray(VertexArrayID);
 
 	// An array of 3 vectors which represents 3 vertices
-	std::vector<glm::vec3> g_vertex_buffer_data{
-	   glm::vec3(0.0f, 0.0f, -1.0f),
-	   glm::vec3(1.0f, 0.0f, -1.0f),
-	   glm::vec3(0.5f,  1.0f, -1.0f),
-	   glm::vec3(0.0f, 0.0f, -1.0f),
-	   glm::vec3(1.0f, 0.0f, -1.0f),
-	   glm::vec3(0.5f,  1.0f, -1.0f),
+	std::vector<glm::vec4> g_vertex_buffer_data{
+	   glm::vec4(0.0f, 0.0f, -10.0f, 1.0f),
+	   glm::vec4(1.0f, 0.0f, -10.0f, 1.0f),
+	   glm::vec4(0.5f, 1.0f, -10.0f, 1.0f)
 	};
 
-	for (int i = 0; i < 3; ++i)
+	// Model transformations
+
+	glm::mat4 S = glm::scale(glm::mat4(), glm::vec3(2.0f, 1.0f, 1.0f));
+	glm::mat4 R = glm::rotate(glm::mat4(), glm::radians<float>(45), glm::vec3(0.0f, 0.0f, 1.0f));
+	glm::mat4 T = glm::translate(glm::mat4(), glm::vec3(2.0f, 2.0f, 0.0f));
+
+	glm::mat4 M = T * R * S;
+
+	// View transformation
+
+	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	// Projection transformation
+
+	glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, 1024.0f / 768.0f, 5.0f, 100.0f);
+	//glm::mat4 P = glm::ortho(-3.0f, 3.0f, -3.0f, 3.0f, 5.0f, 100.0f);
+	
+	// MVP
+
+	glm::mat4 MVP = P * V * M;
+
+	for (auto& v : g_vertex_buffer_data)
 	{
-		g_vertex_buffer_data[i] = glm::vec3(glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 0.0f)) * glm::vec4(g_vertex_buffer_data[i], 1.0f));
+		v = MVP * v;
 	}
 
 	vbo.Load(g_vertex_buffer_data);
