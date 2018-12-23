@@ -21,8 +21,23 @@ void App::Init()
 	   glm::vec4(0.0f, 0.0f, -10.0f, 1.0f),
 	   glm::vec4(1.0f, 0.0f, -10.0f, 1.0f),
 	   glm::vec4(0.5f, 1.0f, -10.0f, 1.0f)
-	};
+	}; 
 
+	m_vbo.Load(g_vertex_buffer_data);
+
+	// Create and compile our GLSL program from the shaders
+	m_programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
+
+	// Get a handle for our "MVP" uniform
+	// Only during the initialisation
+	m_MVPID = glGetUniformLocation(m_programID, "MVP");
+
+	m_vao.Bind(m_vbo);
+}
+
+
+void App::Update()
+{
 	// Model transformations
 
 	glm::mat4 S = glm::scale(glm::mat4(), glm::vec3(2.0f, 1.0f, 1.0f));
@@ -39,21 +54,10 @@ void App::Init()
 
 	glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, 1024.0f / 768.0f, 5.0f, 100.0f);
 	//glm::mat4 P = glm::ortho(-3.0f, 3.0f, -3.0f, 3.0f, 5.0f, 100.0f);
-	
+
 	// MVP
 
 	m_MVP = P * V * M;
-
-	m_vbo.Load(g_vertex_buffer_data);
-
-	// Create and compile our GLSL program from the shaders
-	m_programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
-
-	// Get a handle for our "MVP" uniform
-	// Only during the initialisation
-	m_MVPID = glGetUniformLocation(m_programID, "MVP");
-
-	m_vao.Bind(m_vbo);
 }
 
 
