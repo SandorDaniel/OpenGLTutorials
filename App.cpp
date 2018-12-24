@@ -16,12 +16,46 @@ void App::Init()
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 
-	// An array of 3 vectors which represents 3 vertices
-	std::vector<glm::vec4> g_vertex_buffer_data{
-	   glm::vec4(0.0f, 0.0f, -10.0f, 1.0f),
-	   glm::vec4(1.0f, 0.0f, -10.0f, 1.0f),
-	   glm::vec4(0.5f, 1.0f, -10.0f, 1.0f)
-	}; 
+	// Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
+// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
+	const std::vector<glm::vec4> g_vertex_buffer_data = {
+		glm::vec4(-1.0f,-1.0f,-1.0f, 1.0f), // triangle 1 : begin
+		glm::vec4(-1.0f,-1.0f, 1.0f, 1.0f),
+		glm::vec4(-1.0f, 1.0f, 1.0f, 1.0f), // triangle 1 : end
+		glm::vec4(1.0f, 1.0f,-1.0f, 1.0f), // triangle 2 : begin
+		glm::vec4(-1.0f,-1.0f,-1.0f, 1.0f),
+		glm::vec4(-1.0f, 1.0f,-1.0f, 1.0f), // triangle 2 : end
+		glm::vec4(1.0f,-1.0f, 1.0f, 1.0f),
+		glm::vec4(-1.0f,-1.0f,-1.0f, 1.0f),
+		glm::vec4(1.0f,-1.0f,-1.0f, 1.0f),
+		glm::vec4(1.0f, 1.0f,-1.0f, 1.0f),
+		glm::vec4(1.0f,-1.0f,-1.0f, 1.0f),
+		glm::vec4(-1.0f,-1.0f,-1.0f, 1.0f),
+		glm::vec4(-1.0f,-1.0f,-1.0f, 1.0f),
+		glm::vec4(-1.0f, 1.0f, 1.0f, 1.0f),
+		glm::vec4(-1.0f, 1.0f,-1.0f, 1.0f),
+		glm::vec4(1.0f,-1.0f, 1.0f, 1.0f),
+		glm::vec4(-1.0f,-1.0f, 1.0f, 1.0f),
+		glm::vec4(-1.0f,-1.0f,-1.0f, 1.0f),
+		glm::vec4(-1.0f, 1.0f, 1.0f, 1.0f),
+		glm::vec4(-1.0f,-1.0f, 1.0f, 1.0f),
+		glm::vec4(1.0f,-1.0f, 1.0f, 1.0f),
+		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+		glm::vec4(1.0f,-1.0f,-1.0f, 1.0f),
+		glm::vec4(1.0f, 1.0f,-1.0f, 1.0f),
+		glm::vec4(1.0f,-1.0f,-1.0f, 1.0f),
+		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+		glm::vec4(1.0f,-1.0f, 1.0f, 1.0f),
+		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+		glm::vec4(1.0f, 1.0f,-1.0f, 1.0f),
+		glm::vec4(-1.0f, 1.0f,-1.0f, 1.0f),
+		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+		glm::vec4(-1.0f, 1.0f,-1.0f, 1.0f),
+		glm::vec4(-1.0f, 1.0f, 1.0f, 1.0f),
+		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+		glm::vec4(-1.0f, 1.0f, 1.0f, 1.0f),
+		glm::vec4(1.0f,-1.0f, 1.0f, 1.0f)
+	};
 
 	m_vbo.Load(g_vertex_buffer_data);
 
@@ -40,15 +74,17 @@ void App::Update()
 {
 	// Model transformations
 
-	glm::mat4 S = glm::scale(glm::mat4(), glm::vec3(2.0f, 1.0f, 1.0f));
-	glm::mat4 R = glm::rotate(glm::mat4(), glm::radians<float>(45), glm::vec3(0.0f, 0.0f, 1.0f));
-	glm::mat4 T = glm::translate(glm::mat4(), glm::vec3(2.0f, 2.0f, 0.0f));
+	//glm::mat4 S = glm::scale(glm::mat4(), glm::vec3(2.0f, 1.0f, 1.0f));
+	//glm::mat4 R = glm::rotate(glm::mat4(), glm::radians<float>(45), glm::vec3(0.0f, 0.0f, 1.0f));
+	//glm::mat4 T = glm::translate(glm::mat4(), glm::vec3(2.0f, 2.0f, 0.0f));
 
-	glm::mat4 M = T * R * S;
+	//glm::mat4 M = T * R * S;
+
+	glm::mat4 M;
 
 	// View transformation
 
-	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 V = glm::lookAt(glm::vec3(10.0f, 10.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	// Projection transformation
 
