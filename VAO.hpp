@@ -13,8 +13,10 @@
 class VAO final
 {
 
+	GLuint m_vertexArrayID = 0; // TODO: ellenõrizni, hogy a OpenGL-ben a 0 valóban azt jelenti e, hogy a vertex array object még nem jött létre.
+
 	static unsigned int ind;
-	unsigned int m_ind;
+	unsigned int m_ind = 0;
 
 public:
 
@@ -22,6 +24,17 @@ public:
 	{
 		const char* what() const noexcept { return "You should have loaded the VBO object befor binding it to the VAO object."; }
 	};
+
+	VAO() { glGenVertexArrays(1, &m_vertexArrayID); } // Generate a name for a new array.
+	~VAO() { Clear(); }
+
+	VAO(const VAO&) = delete;
+	VAO& operator=(const VAO&) = delete;
+
+	VAO(VAO&& vao);
+	VAO& operator=(VAO&& vao);
+
+	void Clear();
 
 	template<
 		template<typename, glm::precision> class TVec,
@@ -49,12 +62,14 @@ void VAO::Bind(const VBO<TVec, CoordType, precision, COORD_COUNT>& VBO)
 		throw VBOIsNotLoaded();
 	}
 
-	// 1st attribute buffer : vertices
+	glBindVertexArray(m_vertexArrayID); // Make the new array active, creating it if necessary.
+
 	glEnableVertexAttribArray(ind);
+
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glVertexAttribPointer(
 		ind,							// attribute 0. No particular reason for 0, but must match the layout in the shader.
-		COORD_COUNT,								// size
+		COORD_COUNT,					// size
 		VBO.GetCoordGLType(),           // type
 		GL_FALSE,						// normalized?
 		0,								// stride
