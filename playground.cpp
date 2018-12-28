@@ -52,6 +52,8 @@ int main( void )
 
 	app.Init();
 	 
+	glEnable(GL_DEPTH_TEST); // Enable depth test
+	glDepthFunc(GL_LESS); // Accept fragment if it closer to the camera than the former one
 	glCullFace(GL_BACK);
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f); // Dark blue background
 
@@ -59,7 +61,7 @@ int main( void )
 
 		app.Update();
 
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		app.Render();
 
