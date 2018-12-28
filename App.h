@@ -11,8 +11,9 @@
 
 class App
 {
-	VBO<glm::tvec4, float, glm::highp, 4> m_vbo;
 	VAO m_vao;
+	VBO<glm::tvec4, float, glm::highp, 4> m_vbo_pos;
+	VBO<glm::tvec4, float, glm::highp, 4> m_vbo_col;
 	GLuint m_programID;
 	glm::mat4 m_MVP;
 	GLuint m_MVPID;
