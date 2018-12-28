@@ -15,8 +15,7 @@ class VAO final
 
 	GLuint m_vertexArrayID = 0; // TODO: ellenõrizni, hogy a OpenGL-ben a 0 valóban azt jelenti e, hogy a vertex array object még nem jött létre.
 
-	static unsigned int ind;
-	unsigned int m_ind = 0;
+	unsigned int m_channel_number = 0;
 
 public:
 
@@ -43,9 +42,8 @@ public:
 		const int COORD_COUNT>
 	void Bind(const VBO<TVec, CoordType, precision, COORD_COUNT>& VBO);
 
-	void Enable() const { glEnableVertexAttribArray(m_ind); }
-
-	void Disable() const { glDisableVertexAttribArray(m_ind); }
+	void Enable() const;
+	void Disable() const;
 
 };
 
@@ -64,11 +62,11 @@ void VAO::Bind(const VBO<TVec, CoordType, precision, COORD_COUNT>& VBO)
 
 	glBindVertexArray(m_vertexArrayID); // Make the new array active, creating it if necessary.
 
-	glEnableVertexAttribArray(ind);
+	glEnableVertexAttribArray(m_channel_number);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glVertexAttribPointer(
-		ind,							// attribute 0. No particular reason for 0, but must match the layout in the shader.
+		m_channel_number,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
 		COORD_COUNT,					// size
 		VBO.GetCoordGLType(),           // type
 		GL_FALSE,						// normalized?
@@ -76,8 +74,7 @@ void VAO::Bind(const VBO<TVec, CoordType, precision, COORD_COUNT>& VBO)
 		(void*)0						// array buffer offset
 	);
 
-	glDisableVertexAttribArray(ind);
+	glDisableVertexAttribArray(m_channel_number);
 
-	m_ind = ind;
-	++ind;
+	++m_channel_number;
 }
