@@ -13,8 +13,8 @@
 void App::Init()
 {
 	// Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
-// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
-	const std::vector<glm::vec4> g_vertex_buffer_data = {
+	// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
+	const std::vector<glm::vec4> g_position_buffer_data = {
 		glm::vec4(-1.0f,-1.0f,-1.0f, 1.0f), // triangle 1 : begin
 		glm::vec4(-1.0f,-1.0f, 1.0f, 1.0f),
 		glm::vec4(-1.0f, 1.0f, 1.0f, 1.0f), // triangle 1 : end
