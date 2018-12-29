@@ -9,6 +9,8 @@
 
 #include <vector>
 
+#include <common/texture.hpp>
+
 
 void App::Init()
 {
@@ -106,6 +108,61 @@ void App::Init()
 	m_vao.Bind(m_vbo_pos);
 
 	m_vao.Bind(m_vbo_col);
+
+	// Load the texture using any two methods
+	//GLuint Texture = loadBMP_custom("uvtemplate.bmp");
+	Texture = loadDDS("../tutorial05_textured_cube/uvtemplate.DDS");
+
+	// Get a handle for our "myTextureSampler" uniform
+	TextureID = glGetUniformLocation(m_programID, "myTextureSampler");// Two UV coordinatesfor each vertex. They were created with Blender.
+	const std::vector<glm::vec2> g_uv_buffer_data = {
+		glm::vec2(0.000059f, 1.0f - 0.000004f),
+		glm::vec2(0.000103f, 1.0f - 0.336048f),
+		glm::vec2(0.335973f, 1.0f - 0.335903f),
+		glm::vec2(1.000023f, 1.0f - 0.000013f),
+		glm::vec2(0.667979f, 1.0f - 0.335851f),
+		glm::vec2(0.999958f, 1.0f - 0.336064f),
+		glm::vec2(0.667979f, 1.0f - 0.335851f),
+		glm::vec2(0.336024f, 1.0f - 0.671877f),
+		glm::vec2(0.667969f, 1.0f - 0.671889f),
+		glm::vec2(1.000023f, 1.0f - 0.000013f),
+		glm::vec2(0.668104f, 1.0f - 0.000013f),
+		glm::vec2(0.667979f, 1.0f - 0.335851f),
+		glm::vec2(0.000059f, 1.0f - 0.000004f),
+		glm::vec2(0.335973f, 1.0f - 0.335903f),
+		glm::vec2(0.336098f, 1.0f - 0.000071f),
+		glm::vec2(0.667979f, 1.0f - 0.335851f),
+		glm::vec2(0.335973f, 1.0f - 0.335903f),
+		glm::vec2(0.336024f, 1.0f - 0.671877f),
+		glm::vec2(1.000004f, 1.0f - 0.671847f),
+		glm::vec2(0.999958f, 1.0f - 0.336064f),
+		glm::vec2(0.667979f, 1.0f - 0.335851f),
+		glm::vec2(0.668104f, 1.0f - 0.000013f),
+		glm::vec2(0.335973f, 1.0f - 0.335903f),
+		glm::vec2(0.667979f, 1.0f - 0.335851f),
+		glm::vec2(0.335973f, 1.0f - 0.335903f),
+		glm::vec2(0.668104f, 1.0f - 0.000013f),
+		glm::vec2(0.336098f, 1.0f - 0.000071f),
+		glm::vec2(0.000103f, 1.0f - 0.336048f),
+		glm::vec2(0.000004f, 1.0f - 0.671870f),
+		glm::vec2(0.336024f, 1.0f - 0.671877f),
+		glm::vec2(0.000103f, 1.0f - 0.336048f),
+		glm::vec2(0.336024f, 1.0f - 0.671877f),
+		glm::vec2(0.335973f, 1.0f - 0.335903f),
+		glm::vec2(0.667969f, 1.0f - 0.671889f),
+		glm::vec2(1.000004f, 1.0f - 0.671847f),
+		glm::vec2(0.667979f, 1.0f - 0.335851f)
+	};
+
+	m_vbo_tex.Load(g_uv_buffer_data);
+
+	m_vao.Bind(m_vbo_tex);
+
+	// Bind our texture in Texture Unit 0
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, Texture);
+	// Set our "myTextureSampler" sampler to use Texture Unit 0
+	glUniform1i(TextureID, 0);
 }
 
 
@@ -152,7 +209,10 @@ void App::Render() const
 
 	m_vao.Disable();
 }
+
+
 void App::Clean()
 {
 	glDeleteProgram(m_programID);
+	glDeleteTextures(1, &Texture);
 }
