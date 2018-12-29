@@ -152,3 +152,7 @@ void App::Render() const
 
 	m_vao.Disable();
 }
+void App::Clean()
+{
+	glDeleteProgram(m_programID);
+}
