@@ -9,6 +9,10 @@
 #include <glm/detail/type_vec.hpp>
 #include <glm/detail/precision.hpp>
 
+#include "TEX.h"
+
+
+
 class App
 {
 	VAO m_vao;
@@ -21,8 +25,8 @@ class App
 	glm::mat4 m_MVP;
 	GLuint m_MVPID;
 
-	GLuint Texture;
-	GLuint TextureID;
+	TEX tex1;
+	TEX tex2;
 
 public:
 
