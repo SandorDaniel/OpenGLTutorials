@@ -1,3 +1,12 @@
+//Általános TODO :
+//-kódredundancia - vizsgálat ill.csökkentés(template, inheritance, class, function)
+//- helyes külsõ erõforrás kezelés
+//- mûveleti ill. memóri hatékonyság optimalizálás
+//- fordítási függõség csökkentés
+//- robosztusság(helyes hívási sorrend-, elemszámegyezés- kikényszerítés; learning path)
+//- kivételbiztosság
+//- szálbiztosság, vagy mi…
+
 #include <iostream>
 #include <cstdlib>
 

@@ -1,3 +1,5 @@
+// TODO: VAO-ban ellenõrizni, hogy minden bindolt vbo ugyanannyi elemmel bír.
+
 #pragma once
 
 #include <GL/glew.h>

@@ -9,7 +9,19 @@
 
 #include <vector>
 
-#include <common/texture.hpp>
+// TODO: debugger header
+#define sd_debugger
+#ifdef sd_debugger
+#include <GLFW/glfw3.h>
+#include <iostream>
+namespace sdd // stands for Sandor Daniels Debugger
+{
+	std::ostream& dout = std::cout;
+	double before, after;
+}
+#endif
+
+
 
 
 void App::Init()
