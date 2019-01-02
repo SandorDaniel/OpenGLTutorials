@@ -211,7 +211,7 @@ void App::Render() const
 	// This is done in the main loop since each model will have a different MVP matrix (At least for the M part)
 	glUniformMatrix4fv(m_MVPID, 1, GL_FALSE, &m_MVP[0][0]);
 
-	tex1.Uniform(m_programID, "myTextureSampler"); // Two UV coordinatesfor each vertex. They were created with Blender.
+	tex2.Uniform(m_programID, "myTextureSampler"); // Two UV coordinatesfor each vertex. They were created with Blender.
 
 	// Draw the triangle !
 	glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.GetElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
