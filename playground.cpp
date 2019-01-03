@@ -8,7 +8,7 @@
 // - szalbiztossag, vagy mi...
 // - eliminating C-style and function-like conversions
 // - eliminaiting magic numbers
-// - 
+// - nullptr instead of 0 and NULL
 
 #include <iostream>
 #include <cstdlib>
