@@ -2,6 +2,8 @@
 
 #include <GL/glew.h>
 
+#include <GLFW/glfw3.h>
+
 #include "VBO.hpp"
 #include "VAO.hpp"
 
