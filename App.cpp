@@ -191,7 +191,10 @@ void App::Update()
 
 	// Projection transformation
 
-	glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, 1024.0f / 768.0f, 5.0f, 100.0f);
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+
+	glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, static_cast<float>(width) / static_cast<float>(height), 5.0f, 100.0f);
 	//glm::mat4 P = glm::ortho(-3.0f, 3.0f, -3.0f, 3.0f, 5.0f, 100.0f);
 
 	// MVP

@@ -15,6 +15,8 @@
 
 class App
 {
+	GLFWwindow* window = nullptr;
+
 	VAO m_vao;
 	VBO<glm::tvec4, float, glm::highp, 4> m_vbo_pos;
 	VBO<glm::tvec4, float, glm::highp, 4> m_vbo_col;
@@ -30,6 +32,7 @@ class App
 
 public:
 
+	App(GLFWwindow* window) : window(window) {  }
 	void Init();
 	void Update();
 	void Render() const;
