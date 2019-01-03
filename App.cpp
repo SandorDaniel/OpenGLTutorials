@@ -11,6 +11,8 @@
 
 #include <vector>
 
+#include "controls.hpp"
+
 // TODO: debugger header
 #define sd_debugger
 #ifdef sd_debugger
@@ -177,6 +179,8 @@ void App::Init()
 
 void App::Update()
 {
+	computeMatricesFromInputs(window);
+
 	// Model transformations
 
 	//glm::mat4 S = glm::scale(glm::mat4(), glm::vec3(2.0f, 1.0f, 1.0f));
@@ -189,15 +193,17 @@ void App::Update()
 
 	// View transformation
 
-	glm::mat4 V = glm::lookAt(glm::vec3(10.0f, 10.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	//glm::mat4 V = glm::lookAt(glm::vec3(10.0f, 10.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 V = getViewMatrix();
 
 	// Projection transformation
 
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
 
-	glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, static_cast<float>(width) / static_cast<float>(height), 5.0f, 100.0f);
+	//glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, static_cast<float>(width) / static_cast<float>(height), 5.0f, 100.0f);
 	//glm::mat4 P = glm::ortho(-3.0f, 3.0f, -3.0f, 3.0f, 5.0f, 100.0f);
+	glm::mat4 P = getProjectionMatrix();
 
 	// MVP
 

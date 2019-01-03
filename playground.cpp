@@ -20,6 +20,8 @@ GLFWwindow* window;
 
 #include "App.h"
 
+#include "common/controls.hpp"
+
 
 int main( void )
 {
@@ -39,7 +41,8 @@ int main( void )
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Open a window and create its OpenGL context
-	window = glfwCreateWindow( 1024, 768, "Playground", NULL, NULL);
+	const int WIDTH = 1024, HEIGHT = 768;
+	window = glfwCreateWindow(WIDTH, HEIGHT, "Tutorial 0 - Keyboard and Mouse", NULL, NULL);
 	if( window == NULL ){
 		std::cerr << "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" << std::endl;
 		std::cin.get();
@@ -59,6 +62,16 @@ int main( void )
 
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+	// Hide the mouse and enable unlimited mouvement
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	// Set the mouse at the center of the screen
+	glfwPollEvents();
+	glfwSetCursorPos(window, WIDTH / 2, HEIGHT / 2);
+
+	// Set the mouse at the center of the screen
+	glfwPollEvents();
+	glfwSetCursorPos(window, WIDTH / 2, HEIGHT / 2);
 
 	App app(window);
 
