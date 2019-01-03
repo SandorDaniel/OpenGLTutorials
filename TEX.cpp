@@ -2,7 +2,7 @@
 
 #include <queue>
 
-#include <common/texture.hpp> // TODO: move it to cpp file after outlining
+#include <common/texture.hpp>
 
 #include "TEX.h"
 
