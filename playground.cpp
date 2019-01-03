@@ -1,11 +1,14 @@
-//Általános TODO :
-//-kódredundancia - vizsgálat ill.csökkentés(template, inheritance, class, function)
-//- helyes külsõ erõforrás kezelés
-//- mûveleti ill. memóri hatékonyság optimalizálás
-//- fordítási függõség csökkentés
-//- robosztusság(helyes hívási sorrend-, elemszámegyezés- kikényszerítés; learning path)
-//- kivételbiztosság
-//- szálbiztosság, vagy mi…
+//Altalanos TODO :
+// - kodredundancia - vizsgalat ill.csokkentes(template, inheritance, class, function)
+// - helyes kulso eroforras kezeles
+// - muveleti ill. memoria hatekonysag optimalizalas
+// - forditasi fuggoseg csokkentes
+// - robosztussag(helyes hivasi sorrend-, elemszamegyezes- kikenyszerites; learning path)
+// - kivetelbiztossag
+// - szalbiztossag, vagy mi...
+// - eliminating C-style and function-like conversions
+// - eliminaiting magic numbers
+// - 
 
 #include <iostream>
 #include <cstdlib>
