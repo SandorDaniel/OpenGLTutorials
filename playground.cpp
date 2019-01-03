@@ -9,6 +9,7 @@
 // - eliminating C-style and function-like conversions
 // - eliminaiting magic numbers
 // - nullptr instead of 0 and NULL
+// - intialization for all variables
 
 #include <iostream>
 #include <cstdlib>
