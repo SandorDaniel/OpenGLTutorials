@@ -11,6 +11,9 @@
 // - nullptr instead of 0 and NULL
 // - intialization for all variables
 
+//#define sd_debugger
+#include "Debug.h"
+
 #include <iostream>
 #include <cstdlib>
 

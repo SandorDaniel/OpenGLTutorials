@@ -1,3 +1,6 @@
+//#define sd_debugger
+#include "Debug.h"
+
 #include <GL/glew.h>
 
 #include <queue>

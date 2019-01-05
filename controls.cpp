@@ -1,3 +1,6 @@
+//#define sd_debugger
+#include "Debug.h"
+
 // Include GLFW
 #include <GLFW/glfw3.h>
 
