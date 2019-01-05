@@ -17,7 +17,6 @@
 #include <GL/glew.h>
 
 #include <GLFW/glfw3.h>
-GLFWwindow* window;
 
 #include "App.h"
 
@@ -26,6 +25,8 @@ GLFWwindow* window;
 
 int main( void )
 {
+	GLFWwindow* window;
+
 	// Initialise GLFW
 	if( !glfwInit() )
 	{
