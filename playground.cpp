@@ -20,7 +20,7 @@
 
 #include "App.h"
 
-#include "common/controls.hpp"
+#include "controls.hpp"
 
 
 int main( void )
