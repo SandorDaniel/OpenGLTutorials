@@ -35,7 +35,8 @@ float FoV = 45.0f;
 float speed = 3.0f; // 3 units / second
 float mouseSpeed = 0.005f;
 
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) // time independent method
 {
 	float newFoV = FoV - 5 * static_cast<float>(yoffset);
 	if (20 < newFoV && newFoV < 80)
@@ -45,29 +46,51 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 }
 
 
+GLFWwindow* Cursor::p_win = nullptr;
+double Cursor::xpos = 0;
+double Cursor::ypos = 0;
+
+void cursor_motion_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	Cursor::motion_callback(window, xpos, ypos);
+}
+
+
+std::map<int, KeyBoard::Key> KeyBoard::active_keys{};
+
+void key_event_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	KeyBoard::event_callback(window, key, scancode, action, mods);
+}
+
+
 
 void computeMatricesFromInputs(GLFWwindow* window){
 
-	// glfwGetTime is called only once, the first time this function is called
-	static double lastTime = glfwGetTime();
-
-	// Compute time difference between current and last frame
-	double currentTime = glfwGetTime();
-	float deltaTime = float(currentTime - lastTime);
-
-	// Get mouse position
-	double xpos, ypos;
-	glfwGetCursorPos(window, &xpos, &ypos);
-
-	// Reset mouse position for next frame
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
-	glfwSetCursorPos(window, width / 2, height / 2);
+
+	// Get mouse position static bool is_call_back_method_set_up_for_scrolling = false;
+	static bool is_call_back_method_set_up_for_mouse_motion = false;
+	if (!is_call_back_method_set_up_for_mouse_motion)
+	{
+		glfwSetCursorPosCallback(window, cursor_motion_callback);
+		is_call_back_method_set_up_for_mouse_motion = true;
+	}
+
+	// TODO: it may be skipped later 
+	static bool is_mouse_inited = false;
+	if (!is_mouse_inited)
+	{
+		Cursor::motion_callback(window, width / 2, height / 2);
+
+		is_mouse_inited = true;
+	}
 
 	// Compute new orientation
-	horizontalAngle += mouseSpeed * float(width / 2 - xpos);
-	verticalAngle += mouseSpeed * float(height / 2 - ypos);
-
+	horizontalAngle += mouseSpeed * static_cast<float>(width / 2 - Cursor::getXPos());
+	verticalAngle += mouseSpeed * static_cast<float>(height / 2 - Cursor::getYPos());
+	
 	// Direction : Spherical coordinates to Cartesian coordinates conversion
 	glm::vec3 direction(
 		cos(verticalAngle) * sin(horizontalAngle), 
@@ -85,29 +108,28 @@ void computeMatricesFromInputs(GLFWwindow* window){
 	// Up vector
 	glm::vec3 up = glm::cross( right, direction );
 
+	static bool is_call_back_method_set_up_for_keyboard_events = false;
+	if (!is_call_back_method_set_up_for_keyboard_events)
+	{
+		glfwSetKeyCallback(window, key_event_callback);
+		is_call_back_method_set_up_for_keyboard_events = true;
+	}
+
 	// Move forward
-	if (glfwGetKey( window, GLFW_KEY_UP ) == GLFW_PRESS){
-		position += direction * deltaTime * speed;
-	}
+	position += direction * static_cast<float>(KeyBoard::getKey(GLFW_KEY_UP).getTimePressed()) * speed;
 	// Move backward
-	if (glfwGetKey( window, GLFW_KEY_DOWN ) == GLFW_PRESS){
-		position -= direction * deltaTime * speed;
-	}
+	position -= direction * static_cast<float>(KeyBoard::getKey(GLFW_KEY_DOWN).getTimePressed()) * speed;
 	// Strafe right
-	if (glfwGetKey( window, GLFW_KEY_RIGHT ) == GLFW_PRESS){
-		position += right * deltaTime * speed;
-	}
+	position += right * static_cast<float>(KeyBoard::getKey(GLFW_KEY_RIGHT).getTimePressed()) * speed;
 	// Strafe left
-	if (glfwGetKey( window, GLFW_KEY_LEFT ) == GLFW_PRESS){
-		position -= right * deltaTime * speed;
-	}
+	position -= right * static_cast<float>(KeyBoard::getKey(GLFW_KEY_LEFT).getTimePressed()) * speed;
 
 	static bool is_call_back_method_set_up_for_scrolling = false;
 	if (!is_call_back_method_set_up_for_scrolling)
 	{
 		glfwSetScrollCallback(window, scroll_callback);
+		is_call_back_method_set_up_for_scrolling = true;
 	}
-	is_call_back_method_set_up_for_scrolling = true;
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 	ProjectionMatrix = glm::perspective(glm::radians(FoV), 4.0f / 3.0f, 0.1f, 100.0f);
@@ -118,6 +140,4 @@ void computeMatricesFromInputs(GLFWwindow* window){
 								up                  // Head is up (set to 0,-1,0 to look upside-down)
 						   );
 
-	// For the next frame, the "last time" will be "now"
-	lastTime = currentTime;
 }

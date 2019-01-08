@@ -94,6 +94,8 @@ int main( void )
 
 		// Swap buffers
 		glfwSwapBuffers(window);
+		KeyBoard::reSet();
+		Cursor::reSetPosition();
 		glfwPollEvents();
 
 	} // Check if the ESC key was pressed or the window was closed
