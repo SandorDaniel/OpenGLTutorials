@@ -71,7 +71,7 @@ int main( void )
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// Set the mouse at the center of the screen
-	glfwPollEvents();
+	//glfwPollEvents(); // TODO: Is it really necessary?
 	glfwSetCursorPos(window, WIDTH / 2, HEIGHT / 2);
 
 	App app(window);
@@ -104,6 +104,10 @@ int main( void )
 
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
+
+	#ifdef sd_debugger
+	std::cin.get();
+	#endif
 
 	return 0;
 }
