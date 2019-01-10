@@ -169,7 +169,7 @@ void App::Init()
 
 void App::Update()
 {
-	computeMatricesFromInputs(window);
+	camera.upDate(window);
 
 	// Model transformations
 
@@ -184,7 +184,7 @@ void App::Update()
 	// View transformation
 
 	//glm::mat4 V = glm::lookAt(glm::vec3(10.0f, 10.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 V = getViewMatrix();
+	glm::mat4 V = camera.getViewMatrix();
 
 	// Projection transformation
 
@@ -193,7 +193,7 @@ void App::Update()
 
 	//glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, static_cast<float>(width) / static_cast<float>(height), 5.0f, 100.0f);
 	//glm::mat4 P = glm::ortho(-3.0f, 3.0f, -3.0f, 3.0f, 5.0f, 100.0f);
-	glm::mat4 P = getProjectionMatrix();
+	glm::mat4 P = camera.getProjectionMatrix();
 
 	// MVP
 

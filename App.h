@@ -12,6 +12,7 @@
 #include <glm/detail/precision.hpp>
 
 #include "TEX.h"
+#include "Camera.h"
 
 
 
@@ -31,6 +32,8 @@ class App
 
 	TEX tex1;
 	TEX tex2;
+
+	Camera camera;
 
 public:
 
