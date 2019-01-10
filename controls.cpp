@@ -4,7 +4,6 @@
 // Include GLFW
 #include <GLFW/glfw3.h>
 
-
 // Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -12,16 +11,18 @@ using namespace glm;
 
 #include "controls.hpp"
 
+
 glm::mat4 ViewMatrix;
 glm::mat4 ProjectionMatrix;
 
-glm::mat4 getViewMatrix(){
+glm::mat4 getViewMatrix()
+{
 	return ViewMatrix;
 }
-glm::mat4 getProjectionMatrix(){
+glm::mat4 getProjectionMatrix()
+{
 	return ProjectionMatrix;
 }
-
 
 // Initial position : on +Z
 glm::vec3 position = glm::vec3( 0, 0, 5 ); 
@@ -67,10 +68,16 @@ void key_event_callback(GLFWwindow* window, int key, int scancode, int action, i
 
 void computeMatricesFromInputs(GLFWwindow* window){
 
+	#pragma region Window
+
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
 
-	// Get mouse position static bool is_call_back_method_set_up_for_scrolling = false;
+	#pragma endregion
+
+	#pragma region Cursor - Orientation
+
+	// Get mouse position
 	static bool is_call_back_method_set_up_for_mouse_motion = false;
 	if (!is_call_back_method_set_up_for_mouse_motion)
 	{
@@ -108,6 +115,10 @@ void computeMatricesFromInputs(GLFWwindow* window){
 	// Up vector
 	glm::vec3 up = glm::cross( right, direction );
 
+	#pragma endregion
+
+	#pragma region Keyboard - Position
+	
 	static bool is_call_back_method_set_up_for_keyboard_events = false;
 	if (!is_call_back_method_set_up_for_keyboard_events)
 	{
@@ -124,6 +135,10 @@ void computeMatricesFromInputs(GLFWwindow* window){
 	// Strafe left
 	position -= right * static_cast<float>(KeyBoard::getKey(GLFW_KEY_LEFT).getTimePressed()) * speed;
 
+	#pragma endregion
+
+	#pragma region ScrollBar - Angle
+
 	static bool is_call_back_method_set_up_for_scrolling = false;
 	if (!is_call_back_method_set_up_for_scrolling)
 	{
@@ -139,5 +154,7 @@ void computeMatricesFromInputs(GLFWwindow* window){
 								position+direction, // and looks here : at the same position, plus "direction"
 								up                  // Head is up (set to 0,-1,0 to look upside-down)
 						   );
+
+	#pragma endregion
 
 }
