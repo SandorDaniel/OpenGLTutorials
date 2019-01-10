@@ -6,17 +6,7 @@
 #include "InPuts.h"
 
 
-//void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) // time independent method
-//{
-//	float newFoV = FoV - 5 * static_cast<float>(yoffset);
-//	if (20 < newFoV && newFoV < 80)
-//	{
-//		FoV = newFoV;
-//	}
-//}
-
-
-class Camera
+class Camera : public ScrollBar::Observer
 {
 
 	glm::mat4 ViewMatrix;
@@ -118,12 +108,13 @@ public:
 
 		#pragma region ScrollBar - Angle
 
-		//static bool is_call_back_method_set_up_for_scrolling = false;
-		//if (!is_call_back_method_set_up_for_scrolling)
-		//{
-		//	glfwSetScrollCallback(window, scroll_callback);
-		//	is_call_back_method_set_up_for_scrolling = true;
-		//}
+		static bool is_call_back_method_set_up_for_scrolling = false;
+		if (!is_call_back_method_set_up_for_scrolling)
+		{
+			glfwSetScrollCallback(window, ScrollBar::scrollCallBack);
+			ScrollBar::regist(*this);
+			is_call_back_method_set_up_for_scrolling = true;
+		}
 
 		#pragma endregion
 
@@ -136,6 +127,15 @@ public:
 			up                  // Head is up (set to 0,-1,0 to look upside-down)
 		);
 
+	}
+
+	void scrollCallBack(double yoffset)
+	{
+		float newFoV = FoV - 5 * static_cast<float>(yoffset);
+		if (20 < newFoV && newFoV < 80)
+		{
+			FoV = newFoV;
+		}
 	}
 
 };
