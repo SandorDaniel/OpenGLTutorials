@@ -23,8 +23,6 @@
 
 #include "App.h"
 
-#include "controls.hpp"
-
 
 int main( void )
 {
