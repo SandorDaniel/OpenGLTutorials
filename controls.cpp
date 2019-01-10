@@ -47,25 +47,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) // time
 }
 
 
-GLFWwindow* Cursor::p_win = nullptr;
-double Cursor::xpos = 0;
-double Cursor::ypos = 0;
-
-void cursor_motion_callback(GLFWwindow* window, double xpos, double ypos)
-{
-	Cursor::motion_callback(window, xpos, ypos);
-}
-
-
-std::map<int, KeyBoard::Key> KeyBoard::active_keys{};
-
-void key_event_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-	KeyBoard::event_callback(window, key, scancode, action, mods);
-}
-
-
-
 void computeMatricesFromInputs(GLFWwindow* window){
 
 	#pragma region Window
@@ -81,7 +62,7 @@ void computeMatricesFromInputs(GLFWwindow* window){
 	static bool is_call_back_method_set_up_for_mouse_motion = false;
 	if (!is_call_back_method_set_up_for_mouse_motion)
 	{
-		glfwSetCursorPosCallback(window, cursor_motion_callback);
+		glfwSetCursorPosCallback(window, Cursor::motion_callback);
 		is_call_back_method_set_up_for_mouse_motion = true;
 	}
 
@@ -122,7 +103,7 @@ void computeMatricesFromInputs(GLFWwindow* window){
 	static bool is_call_back_method_set_up_for_keyboard_events = false;
 	if (!is_call_back_method_set_up_for_keyboard_events)
 	{
-		glfwSetKeyCallback(window, key_event_callback);
+		glfwSetKeyCallback(window, KeyBoard::press_or_release_callback);
 		is_call_back_method_set_up_for_keyboard_events = true;
 	}
 
