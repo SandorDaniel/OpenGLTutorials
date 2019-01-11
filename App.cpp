@@ -164,12 +164,14 @@ void App::Init()
 
 	tex1.Bind();
 	tex2.Bind();
+
+	camera.init(window);
 }
 
 
 void App::Update()
 {
-	camera.upDate(window);
+	//camera.upDate(window);
 
 	// Model transformations
 

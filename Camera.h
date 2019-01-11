@@ -53,7 +53,24 @@ public:
 				cos(m_P_cam->verticalAngle) * cos(m_P_cam->horizontalAngle)
 			);
 
+			// Right vector
+			glm::vec3 right = glm::vec3(
+				sin(m_P_cam->horizontalAngle - 3.14f / 2.0f),
+				0,
+				cos(m_P_cam->horizontalAngle - 3.14f / 2.0f)
+			);
+
+			// Up vector
+			glm::vec3 up = glm::cross(right, direction);
+
 			m_P_cam->position += static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * direction;
+
+			// Camera matrix
+			m_P_cam->ViewMatrix = glm::lookAt(
+				m_P_cam->position,           // Camera is here
+				m_P_cam->position + direction, // and looks here : at the same position, plus "direction"
+				up                  // Head is up (set to 0,-1,0 to look upside-down)
+			);
 		}
 
 	} m_observer_up = this;
@@ -85,7 +102,24 @@ public:
 				cos(m_P_cam->verticalAngle) * cos(m_P_cam->horizontalAngle)
 			);
 
+			// Right vector
+			glm::vec3 right = glm::vec3(
+				sin(m_P_cam->horizontalAngle - 3.14f / 2.0f),
+				0,
+				cos(m_P_cam->horizontalAngle - 3.14f / 2.0f)
+			);
+
+			// Up vector
+			glm::vec3 up = glm::cross(right, direction);
+
 			m_P_cam->position -= static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * direction;
+
+			// Camera matrix
+			m_P_cam->ViewMatrix = glm::lookAt(
+				m_P_cam->position,           // Camera is here
+				m_P_cam->position + direction, // and looks here : at the same position, plus "direction"
+				up                  // Head is up (set to 0,-1,0 to look upside-down)
+			);
 		}
 
 	} m_observer_down = this;
@@ -125,7 +159,17 @@ public:
 				cos(m_P_cam->horizontalAngle - 3.14f / 2.0f)
 			);
 
+			// Up vector
+			glm::vec3 up = glm::cross(right, direction);
+
 			m_P_cam->position += static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * right;
+
+			// Camera matrix
+			m_P_cam->ViewMatrix = glm::lookAt(
+				m_P_cam->position,           // Camera is here
+				m_P_cam->position + direction, // and looks here : at the same position, plus "direction"
+				up                  // Head is up (set to 0,-1,0 to look upside-down)
+			);
 		}
 
 	} m_observer_right = this;
@@ -165,7 +209,17 @@ public:
 				cos(m_P_cam->horizontalAngle - 3.14f / 2.0f)
 			);
 
+			// Up vector
+			glm::vec3 up = glm::cross(right, direction);
+
 			m_P_cam->position -= static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * right;
+
+			// Camera matrix
+			m_P_cam->ViewMatrix = glm::lookAt(
+				m_P_cam->position,           // Camera is here
+				m_P_cam->position + direction, // and looks here : at the same position, plus "direction"
+				up                  // Head is up (set to 0,-1,0 to look upside-down)
+			);
 		}
 
 	} m_observer_left = this;
@@ -286,6 +340,30 @@ public:
 		// Compute new orientation
 		horizontalAngle += mouseSpeed * static_cast<float>(width / 2 - InPut::Cursor::getXPos());
 		verticalAngle += mouseSpeed * static_cast<float>(height / 2 - InPut::Cursor::getYPos());
+
+		// Direction : Spherical coordinates to Cartesian coordinates conversion
+		glm::vec3 direction(
+			cos(verticalAngle) * sin(horizontalAngle),
+			sin(verticalAngle),
+			cos(verticalAngle) * cos(horizontalAngle)
+		);
+
+		// Right vector
+		glm::vec3 right = glm::vec3(
+			sin(horizontalAngle - 3.14f / 2.0f),
+			0,
+			cos(horizontalAngle - 3.14f / 2.0f)
+		);
+
+		// Up vector
+		glm::vec3 up = glm::cross(right, direction);
+
+		// Camera matrix
+		ViewMatrix = glm::lookAt(
+			position,           // Camera is here
+			position + direction, // and looks here : at the same position, plus "direction"
+			up                  // Head is up (set to 0,-1,0 to look upside-down)
+		);
 	}
 
 	virtual void scrollCallBack(double yoffset)
@@ -295,6 +373,30 @@ public:
 		{
 			FoV = newFoV;
 		}
+		
+		// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+		ProjectionMatrix = glm::perspective(glm::radians(FoV), 4.0f / 3.0f, 0.1f, 100.0f);
+	}
+
+	void init(GLFWwindow* window)
+	{
+		int width, height;
+		glfwGetWindowSize(window, &width, &height);
+
+		glfwSetCursorPosCallback(window, InPut::Cursor::motionCallback);
+		InPut::Cursor::regist(*this);
+		InPut::Cursor::motionCallback(window, width / 2, height / 2);
+
+		glfwSetKeyCallback(window, InPut::KeyBoard::press_or_release_callback);
+		InPut::KeyBoard::getKey(GLFW_KEY_UP).regist(m_observer_up);
+		InPut::KeyBoard::getKey(GLFW_KEY_DOWN).regist(m_observer_down);
+		InPut::KeyBoard::getKey(GLFW_KEY_RIGHT).regist(m_observer_right);
+		InPut::KeyBoard::getKey(GLFW_KEY_LEFT).regist(m_observer_left);
+
+		glfwSetScrollCallback(window, InPut::ScrollBar::scrollCallBack);
+		InPut::ScrollBar::regist(*this);
+
+		scrollCallBack(0);
 	}
 
 };
