@@ -170,11 +170,11 @@ public:
 
 	} m_observer_left = this;
 
-	glm::mat4 getViewMatrix()
+	const glm::mat4& getViewMatrix() const
 	{
 		return ViewMatrix;
 	}
-	glm::mat4 getProjectionMatrix()
+	const glm::mat4& getProjectionMatrix() const
 	{
 		return ProjectionMatrix;
 	}
