@@ -1,3 +1,6 @@
+//#define sd_debugger
+#include "Debug.h"
+
 #include "KeyBoard.h"
 
 #include <map>

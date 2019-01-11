@@ -28,7 +28,6 @@
 #include "VBO.hpp"
 #include "VAO.hpp"
 #include "TEX.h"
-#include "controls.hpp"
 
 namespace sdd // stands for Sandor Daniels Debugger
 {

@@ -35,7 +35,7 @@ public:
 
 	//};
 
-	static void motion_callback(GLFWwindow* p_win, double xpos, double ypos)
+	static void motionCallback(GLFWwindow* p_win, double xpos, double ypos)
 	{
 		Cursor::p_win = p_win;
 		Cursor::xpos = xpos;

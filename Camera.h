@@ -50,7 +50,7 @@ public:
 		static bool is_call_back_method_set_up_for_mouse_motion = false;
 		if (!is_call_back_method_set_up_for_mouse_motion)
 		{
-			glfwSetCursorPosCallback(window, Cursor::motion_callback);
+			glfwSetCursorPosCallback(window, Cursor::motionCallback);
 			is_call_back_method_set_up_for_mouse_motion = true;
 		}
 
@@ -58,8 +58,7 @@ public:
 		static bool is_mouse_inited = false;
 		if (!is_mouse_inited)
 		{
-			Cursor::motion_callback(window, width / 2, height / 2);
-
+			Cursor::motionCallback(window, width / 2, height / 2);
 			is_mouse_inited = true;
 		}
 
