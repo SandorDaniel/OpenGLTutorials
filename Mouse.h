@@ -23,23 +23,39 @@ class Cursor
 
 public:
 
-	//class Observer
-	//{
+	class Observer
+	{
 
-	//public:
+	public:
 
-	//	virtual ~Observer() {  }
+		virtual ~Observer() {  }
+		virtual void motionCallBack(GLFWwindow* p_win, double xpos, double ypos) = 0;
 
-	//	virtual void pressCallBack() = 0;
-	//	virtual void releaseCallBack() = 0;
+	};
 
-	//};
+private:
+
+	static std::set<Observer*> m_set_p_observer;
+
+public:
+
+	static void regist(Observer& observer) { m_set_p_observer.insert(&observer); }
+	static void unRegist(Observer& observer)
+	{
+		auto it = m_set_p_observer.find(&observer);
+		m_set_p_observer.erase(it);
+	}
 
 	static void motionCallback(GLFWwindow* p_win, double xpos, double ypos)
 	{
 		Cursor::p_win = p_win;
 		Cursor::xpos = xpos;
 		Cursor::ypos = ypos;
+
+		for (auto it : m_set_p_observer)
+		{
+			it->motionCallBack(p_win, xpos, ypos);
+		}
 	}
 
 	static void reSetPosition()

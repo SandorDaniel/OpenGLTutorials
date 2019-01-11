@@ -6,7 +6,7 @@
 #include "InPuts.h"
 
 
-class Camera : public ScrollBar::Observer
+class Camera : public ScrollBar::Observer, public Cursor::Observer
 {
 
 	glm::mat4 ViewMatrix;
@@ -25,6 +25,150 @@ class Camera : public ScrollBar::Observer
 	float mouseSpeed = 0.005f;
 
 public:
+
+	friend class ObserverUP;
+	class ObserverUP : public KeyBoard::Key::Observer
+	{
+
+		Camera* const m_P_cam = nullptr;
+
+		double m_time_last_pressed = 0;
+
+	public:
+
+		ObserverUP(Camera* p_cam) : m_P_cam(p_cam) 
+		{ 
+		}
+
+		virtual void pressCallBack()
+		{
+			m_time_last_pressed = glfwGetTime();
+		}
+
+		virtual void releaseCallBack()
+		{
+			glm::vec3 direction(
+				cos(m_P_cam->verticalAngle) * sin(m_P_cam->horizontalAngle),
+				sin(m_P_cam->verticalAngle),
+				cos(m_P_cam->verticalAngle) * cos(m_P_cam->horizontalAngle)
+			);
+
+			m_P_cam->position += static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * direction;
+		}
+
+	} m_observer_up = this;
+
+	friend class ObserverDOWN;
+	class ObserverDOWN : public KeyBoard::Key::Observer
+	{
+
+		Camera* const m_P_cam = nullptr;
+
+		double m_time_last_pressed = 0;
+
+	public:
+
+		ObserverDOWN(Camera* p_cam) : m_P_cam(p_cam)
+		{
+		}
+
+		virtual void pressCallBack()
+		{
+			m_time_last_pressed = glfwGetTime();
+		}
+
+		virtual void releaseCallBack()
+		{
+			glm::vec3 direction(
+				cos(m_P_cam->verticalAngle) * sin(m_P_cam->horizontalAngle),
+				sin(m_P_cam->verticalAngle),
+				cos(m_P_cam->verticalAngle) * cos(m_P_cam->horizontalAngle)
+			);
+
+			m_P_cam->position -= static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * direction;
+		}
+
+	} m_observer_down = this;
+
+	friend class ObserverRIGHT;
+	class ObserverRIGHT : public KeyBoard::Key::Observer
+	{
+
+		Camera* const m_P_cam = nullptr;
+
+		double m_time_last_pressed = 0;
+
+	public:
+
+		ObserverRIGHT(Camera* p_cam) : m_P_cam(p_cam)
+		{
+		}
+
+		virtual void pressCallBack()
+		{
+			m_time_last_pressed = glfwGetTime();
+		}
+
+		virtual void releaseCallBack()
+		{
+			// Direction : Spherical coordinates to Cartesian coordinates conversion
+			glm::vec3 direction(
+				cos(m_P_cam->verticalAngle) * sin(m_P_cam->horizontalAngle),
+				sin(m_P_cam->verticalAngle),
+				cos(m_P_cam->verticalAngle) * cos(m_P_cam->horizontalAngle)
+			);
+
+			// Right vector
+			glm::vec3 right = glm::vec3(
+				sin(m_P_cam->horizontalAngle - 3.14f / 2.0f),
+				0,
+				cos(m_P_cam->horizontalAngle - 3.14f / 2.0f)
+			);
+
+			m_P_cam->position += static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * right;
+		}
+
+	} m_observer_right = this;
+
+	friend class ObserverLEFT;
+	class ObserverLEFT : public KeyBoard::Key::Observer
+	{
+
+		Camera* const m_P_cam = nullptr;
+
+		double m_time_last_pressed = 0;
+
+	public:
+
+		ObserverLEFT(Camera* p_cam) : m_P_cam(p_cam)
+		{
+		}
+
+		virtual void pressCallBack()
+		{
+			m_time_last_pressed = glfwGetTime();
+		}
+
+		virtual void releaseCallBack()
+		{
+			// Direction : Spherical coordinates to Cartesian coordinates conversion
+			glm::vec3 direction(
+				cos(m_P_cam->verticalAngle) * sin(m_P_cam->horizontalAngle),
+				sin(m_P_cam->verticalAngle),
+				cos(m_P_cam->verticalAngle) * cos(m_P_cam->horizontalAngle)
+			);
+
+			// Right vector
+			glm::vec3 right = glm::vec3(
+				sin(m_P_cam->horizontalAngle - 3.14f / 2.0f),
+				0,
+				cos(m_P_cam->horizontalAngle - 3.14f / 2.0f)
+			);
+
+			m_P_cam->position -= static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * right;
+		}
+
+	} m_observer_left = this;
 
 	glm::mat4 getViewMatrix()
 	{
@@ -59,12 +203,13 @@ public:
 		if (!is_mouse_inited)
 		{
 			Cursor::motionCallback(window, width / 2, height / 2);
+			Cursor::regist(*this);
 			is_mouse_inited = true;
 		}
 
-		// Compute new orientation
-		horizontalAngle += mouseSpeed * static_cast<float>(width / 2 - Cursor::getXPos());
-		verticalAngle += mouseSpeed * static_cast<float>(height / 2 - Cursor::getYPos());
+		//// Compute new orientation
+		//horizontalAngle += mouseSpeed * static_cast<float>(width / 2 - Cursor::getXPos());
+		//verticalAngle += mouseSpeed * static_cast<float>(height / 2 - Cursor::getYPos());
 
 		// Direction : Spherical coordinates to Cartesian coordinates conversion
 		glm::vec3 direction(
@@ -91,17 +236,21 @@ public:
 		if (!is_call_back_method_set_up_for_keyboard_events)
 		{
 			glfwSetKeyCallback(window, KeyBoard::press_or_release_callback);
+			KeyBoard::getKey(GLFW_KEY_UP).regist(m_observer_up);
+			KeyBoard::getKey(GLFW_KEY_DOWN).regist(m_observer_down);
+			KeyBoard::getKey(GLFW_KEY_RIGHT).regist(m_observer_right);
+			KeyBoard::getKey(GLFW_KEY_LEFT).regist(m_observer_left);
 			is_call_back_method_set_up_for_keyboard_events = true;
 		}
 
-		// Move forward
-		position += direction * static_cast<float>(KeyBoard::getKey(GLFW_KEY_UP).getTimePressed()) * speed;
-		// Move backward
-		position -= direction * static_cast<float>(KeyBoard::getKey(GLFW_KEY_DOWN).getTimePressed()) * speed;
-		// Strafe right
-		position += right * static_cast<float>(KeyBoard::getKey(GLFW_KEY_RIGHT).getTimePressed()) * speed;
-		// Strafe left
-		position -= right * static_cast<float>(KeyBoard::getKey(GLFW_KEY_LEFT).getTimePressed()) * speed;
+		//// Move forward
+		//position += direction * static_cast<float>(KeyBoard::getKey(GLFW_KEY_UP).getTimePressed()) * speed;
+		//// Move backward
+		//position -= direction * static_cast<float>(KeyBoard::getKey(GLFW_KEY_DOWN).getTimePressed()) * speed;
+		//// Strafe right
+		//position += right * static_cast<float>(KeyBoard::getKey(GLFW_KEY_RIGHT).getTimePressed()) * speed;
+		//// Strafe left
+		//position -= right * static_cast<float>(KeyBoard::getKey(GLFW_KEY_LEFT).getTimePressed()) * speed;
 
 		#pragma endregion
 
@@ -128,7 +277,17 @@ public:
 
 	}
 
-	void scrollCallBack(double yoffset)
+	virtual void motionCallBack(GLFWwindow* p_win, double xpos, double ypos)
+	{
+		int width, height;
+		glfwGetWindowSize(p_win, &width, &height);
+
+		// Compute new orientation
+		horizontalAngle += mouseSpeed * static_cast<float>(width / 2 - Cursor::getXPos());
+		verticalAngle += mouseSpeed * static_cast<float>(height / 2 - Cursor::getYPos());
+	}
+
+	virtual void scrollCallBack(double yoffset)
 	{
 		float newFoV = FoV - 5 * static_cast<float>(yoffset);
 		if (20 < newFoV && newFoV < 80)

@@ -16,10 +16,10 @@ void KeyBoard::Key::press()
 {
 	m_time_last_pressed = glfwGetTime();
 
-	//for (auto it : m_set_p_observer)
-	//{
-	//	it->pressCallBack();
-	//}
+	for (auto it : m_set_p_observers)
+	{
+		it->pressCallBack();
+	}
 }
 
 
@@ -28,10 +28,10 @@ void KeyBoard::Key::release()
 	m_time_duration_pressed += (glfwGetTime() - m_time_last_pressed);
 	m_time_last_pressed = 0;
 
-	//for (auto it : m_set_p_observer)
-	//{
-	//	it->releaseCallBack();
-	//}
+	for (auto it : m_set_p_observers)
+	{
+		it->releaseCallBack();
+	}
 }
 
 

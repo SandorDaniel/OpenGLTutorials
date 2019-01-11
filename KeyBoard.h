@@ -1,7 +1,7 @@
 #pragma once
 
 #include <map>
-//#include <set> // TODO: priority queue may be a beter choice, because different callbacks could have a cocncrete proper order of invocation.
+#include <set> // TODO: priority queue may be a beter choice, because different callbacks could have a cocncrete proper order of invocation.
 
 #include <GLFW/glfw3.h>
 
@@ -16,35 +16,35 @@ public:
 
 		friend class KeyBoard;
 
-	//public:
+	public:
 
-	//	class Observer
-	//	{
-	//		
-	//	public:
+		class Observer
+		{
+			
+		public:
 
-	//		virtual ~Observer() {  }
+			virtual ~Observer() {  }
 
-	//		virtual void pressCallBack() = 0;
-	//		virtual void releaseCallBack() = 0;
+			virtual void pressCallBack() = 0;
+			virtual void releaseCallBack() = 0;
 
-	//	};
+		};
 
-	//private:
+	private:
 
-	//	std::set<Observer*> m_set_p_observer;
+		std::set<Observer*> m_set_p_observers;
 
 		double m_time_duration_pressed = 0;
 		double m_time_last_pressed = 0; // m_time_last_pressed == 0 <-> key is not being pressed
 
 	public:
 
-		//void operator+=(Observer& observer) { m_set_p_observer.insert(&observer); }
-		//void operator-=(Observer& observer)
-		//{
-		//	auto it = m_set_p_observer.find(&observer);
-		//	m_set_p_observer.erase(it);
-		//}
+		void regist(Observer& observer) { m_set_p_observers.insert(&observer); }
+		void unRegist(Observer& observer)
+		{
+			auto it = m_set_p_observers.find(&observer);
+			m_set_p_observers.erase(it);
+		}
 
 		void press();
 		void release();
@@ -61,7 +61,7 @@ public:
 
 	static void press_or_release_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-	static const Key& getKey(const int GLFW_KEY_ID) { return active_keys[GLFW_KEY_ID]; }
+	static Key& getKey(const int GLFW_KEY_ID) { return active_keys[GLFW_KEY_ID]; }
 
 	static void reSet(); // Has to be called right before processing input events.
 
