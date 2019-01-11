@@ -6,7 +6,7 @@
 #include "InPuts.h"
 
 
-class Camera : public ScrollBar::Observer, public Cursor::Observer
+class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 {
 
 	glm::mat4 ViewMatrix;
@@ -27,7 +27,7 @@ class Camera : public ScrollBar::Observer, public Cursor::Observer
 public:
 
 	friend class ObserverUP;
-	class ObserverUP : public KeyBoard::Key::Observer
+	class ObserverUP : public InPut::KeyBoard::Key::Observer
 	{
 
 		Camera* const m_P_cam = nullptr;
@@ -59,7 +59,7 @@ public:
 	} m_observer_up = this;
 
 	friend class ObserverDOWN;
-	class ObserverDOWN : public KeyBoard::Key::Observer
+	class ObserverDOWN : public InPut::KeyBoard::Key::Observer
 	{
 
 		Camera* const m_P_cam = nullptr;
@@ -91,7 +91,7 @@ public:
 	} m_observer_down = this;
 
 	friend class ObserverRIGHT;
-	class ObserverRIGHT : public KeyBoard::Key::Observer
+	class ObserverRIGHT : public InPut::KeyBoard::Key::Observer
 	{
 
 		Camera* const m_P_cam = nullptr;
@@ -131,7 +131,7 @@ public:
 	} m_observer_right = this;
 
 	friend class ObserverLEFT;
-	class ObserverLEFT : public KeyBoard::Key::Observer
+	class ObserverLEFT : public InPut::KeyBoard::Key::Observer
 	{
 
 		Camera* const m_P_cam = nullptr;
@@ -194,7 +194,7 @@ public:
 		static bool is_call_back_method_set_up_for_mouse_motion = false;
 		if (!is_call_back_method_set_up_for_mouse_motion)
 		{
-			glfwSetCursorPosCallback(window, Cursor::motionCallback);
+			glfwSetCursorPosCallback(window, InPut::Cursor::motionCallback);
 			is_call_back_method_set_up_for_mouse_motion = true;
 		}
 
@@ -202,14 +202,15 @@ public:
 		static bool is_mouse_inited = false;
 		if (!is_mouse_inited)
 		{
-			Cursor::motionCallback(window, width / 2, height / 2);
-			Cursor::regist(*this);
+			InPut::Cursor::motionCallback(window, width / 2, height / 2);
+			InPut::Cursor::regist(*this);
 			is_mouse_inited = true;
 		}
 
+
 		//// Compute new orientation
-		//horizontalAngle += mouseSpeed * static_cast<float>(width / 2 - Cursor::getXPos());
-		//verticalAngle += mouseSpeed * static_cast<float>(height / 2 - Cursor::getYPos());
+		//horizontalAngle += mouseSpeed * static_cast<float>(width / 2 - InPut::Cursor::getXPos());
+		//verticalAngle += mouseSpeed * static_cast<float>(height / 2 - InPut::Cursor::getYPos());
 
 		// Direction : Spherical coordinates to Cartesian coordinates conversion
 		glm::vec3 direction(
@@ -235,22 +236,22 @@ public:
 		static bool is_call_back_method_set_up_for_keyboard_events = false;
 		if (!is_call_back_method_set_up_for_keyboard_events)
 		{
-			glfwSetKeyCallback(window, KeyBoard::press_or_release_callback);
-			KeyBoard::getKey(GLFW_KEY_UP).regist(m_observer_up);
-			KeyBoard::getKey(GLFW_KEY_DOWN).regist(m_observer_down);
-			KeyBoard::getKey(GLFW_KEY_RIGHT).regist(m_observer_right);
-			KeyBoard::getKey(GLFW_KEY_LEFT).regist(m_observer_left);
+			glfwSetKeyCallback(window, InPut::KeyBoard::press_or_release_callback);
+			InPut::KeyBoard::getKey(GLFW_KEY_UP).regist(m_observer_up);
+			InPut::KeyBoard::getKey(GLFW_KEY_DOWN).regist(m_observer_down);
+			InPut::KeyBoard::getKey(GLFW_KEY_RIGHT).regist(m_observer_right);
+			InPut::KeyBoard::getKey(GLFW_KEY_LEFT).regist(m_observer_left);
 			is_call_back_method_set_up_for_keyboard_events = true;
 		}
 
-		//// Move forward
-		//position += direction * static_cast<float>(KeyBoard::getKey(GLFW_KEY_UP).getTimePressed()) * speed;
-		//// Move backward
-		//position -= direction * static_cast<float>(KeyBoard::getKey(GLFW_KEY_DOWN).getTimePressed()) * speed;
-		//// Strafe right
-		//position += right * static_cast<float>(KeyBoard::getKey(GLFW_KEY_RIGHT).getTimePressed()) * speed;
-		//// Strafe left
-		//position -= right * static_cast<float>(KeyBoard::getKey(GLFW_KEY_LEFT).getTimePressed()) * speed;
+		// Move forward
+		position += direction * static_cast<float>(InPut::KeyBoard::getKey(GLFW_KEY_UP).getTimePressed()) * speed;
+		// Move backward
+		position -= direction * static_cast<float>(InPut::KeyBoard::getKey(GLFW_KEY_DOWN).getTimePressed()) * speed;
+		// Strafe right
+		position += right * static_cast<float>(InPut::KeyBoard::getKey(GLFW_KEY_RIGHT).getTimePressed()) * speed;
+		// Strafe left
+		position -= right * static_cast<float>(InPut::KeyBoard::getKey(GLFW_KEY_LEFT).getTimePressed()) * speed;
 
 		#pragma endregion
 
@@ -259,8 +260,8 @@ public:
 		static bool is_call_back_method_set_up_for_scrolling = false;
 		if (!is_call_back_method_set_up_for_scrolling)
 		{
-			glfwSetScrollCallback(window, ScrollBar::scrollCallBack);
-			ScrollBar::regist(*this);
+			glfwSetScrollCallback(window, InPut::ScrollBar::scrollCallBack);
+			InPut::ScrollBar::regist(*this);
 			is_call_back_method_set_up_for_scrolling = true;
 		}
 
@@ -283,8 +284,8 @@ public:
 		glfwGetWindowSize(p_win, &width, &height);
 
 		// Compute new orientation
-		horizontalAngle += mouseSpeed * static_cast<float>(width / 2 - Cursor::getXPos());
-		verticalAngle += mouseSpeed * static_cast<float>(height / 2 - Cursor::getYPos());
+		horizontalAngle += mouseSpeed * static_cast<float>(width / 2 - InPut::Cursor::getXPos());
+		verticalAngle += mouseSpeed * static_cast<float>(height / 2 - InPut::Cursor::getYPos());
 	}
 
 	virtual void scrollCallBack(double yoffset)

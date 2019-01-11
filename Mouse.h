@@ -5,123 +5,128 @@
 #include <GLFW/glfw3.h>
 
 
-class Cursor
+namespace InPut
 {
 
-	static GLFWwindow* p_win;
-
-	static double xpos;
-	static double ypos;
-
-	static void initCheck()
+	class Cursor
 	{
-		if (!p_win)
+
+		static GLFWwindow* p_win;
+
+		static double xpos;
+		static double ypos;
+
+		static void initCheck()
 		{
-			throw; // TODO
+			if (!p_win)
+			{
+				throw; // TODO
+			}
 		}
-	}
 
-public:
+	public:
 
-	class Observer
+		class Observer
+		{
+
+		public:
+
+			virtual ~Observer() {  }
+			virtual void motionCallBack(GLFWwindow* p_win, double xpos, double ypos) = 0;
+
+		};
+
+	private:
+
+		static std::set<Observer*> m_set_p_observer;
+
+	public:
+
+		static void regist(Observer& observer) { m_set_p_observer.insert(&observer); }
+		static void unRegist(Observer& observer)
+		{
+			auto it = m_set_p_observer.find(&observer);
+			m_set_p_observer.erase(it);
+		}
+
+		static void motionCallback(GLFWwindow* p_win, double xpos, double ypos)
+		{
+			Cursor::p_win = p_win;
+			Cursor::xpos = xpos;
+			Cursor::ypos = ypos;
+
+			for (auto it : m_set_p_observer)
+			{
+				it->motionCallBack(p_win, xpos, ypos);
+			}
+		}
+
+		static void reSetPosition()
+		{
+			initCheck();
+
+			int width, height;
+			glfwGetWindowSize(p_win, &width, &height);
+
+			glfwSetCursorPos(p_win, width / 2, height / 2);
+
+			xpos = width / 2;
+			ypos = height / 2;
+		}
+
+		static double getXPos()
+		{
+			initCheck();
+
+			return xpos;
+		}
+
+		static double getYPos()
+		{
+			initCheck();
+
+			return ypos;
+		}
+
+	};
+
+
+	class ScrollBar
 	{
 
 	public:
 
-		virtual ~Observer() {  }
-		virtual void motionCallBack(GLFWwindow* p_win, double xpos, double ypos) = 0;
-
-	};
-
-private:
-
-	static std::set<Observer*> m_set_p_observer;
-
-public:
-
-	static void regist(Observer& observer) { m_set_p_observer.insert(&observer); }
-	static void unRegist(Observer& observer)
-	{
-		auto it = m_set_p_observer.find(&observer);
-		m_set_p_observer.erase(it);
-	}
-
-	static void motionCallback(GLFWwindow* p_win, double xpos, double ypos)
-	{
-		Cursor::p_win = p_win;
-		Cursor::xpos = xpos;
-		Cursor::ypos = ypos;
-
-		for (auto it : m_set_p_observer)
+		class Observer
 		{
-			it->motionCallBack(p_win, xpos, ypos);
-		}
-	}
 
-	static void reSetPosition()
-	{
-		initCheck();
+		public:
 
-		int width, height;
-		glfwGetWindowSize(p_win, &width, &height);
+			virtual ~Observer() {  }
+			virtual void scrollCallBack(double yoffset) = 0;
 
-		glfwSetCursorPos(p_win, width / 2, height / 2);
+		};
 
-		xpos = width / 2;
-		ypos = height / 2;
-	}
+	private:
 
-	static double getXPos()
-	{
-		initCheck();
-
-		return xpos;
-	}
-
-	static double getYPos()
-	{
-		initCheck();
-
-		return ypos;
-	}
-
-};
-
-
-class ScrollBar
-{
-
-public:
-
-	class Observer
-	{
+		static std::set<Observer*> m_set_p_observer;
 
 	public:
 
-		virtual ~Observer() {  }
-		virtual void scrollCallBack(double yoffset) = 0;
+		static void regist(Observer& observer) { m_set_p_observer.insert(&observer); }
+		static void unRegist(Observer& observer)
+		{
+			auto it = m_set_p_observer.find(&observer);
+			m_set_p_observer.erase(it);
+		}
+
+		static void scrollCallBack(GLFWwindow* window, double xoffset, double yoffset) // time independent method
+		{
+			for (auto it : m_set_p_observer)
+			{
+				it->scrollCallBack(yoffset);
+			}
+		}
 
 	};
-
-private:
-	
-	static std::set<Observer*> m_set_p_observer;
-
-public:
-
-	static void regist(Observer& observer) { m_set_p_observer.insert(&observer); }
-	static void unRegist(Observer& observer)
-	{
-		auto it = m_set_p_observer.find(&observer);
-		m_set_p_observer.erase(it);
-	}
-
-	static void scrollCallBack(GLFWwindow* window, double xoffset, double yoffset) // time independent method
-	{
-		for (auto it : m_set_p_observer)
-		{
-			it->scrollCallBack(yoffset);
-		}
-	}
 
 };
