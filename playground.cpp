@@ -80,8 +80,10 @@ int main( void )
 	 
 	glEnable(GL_DEPTH_TEST); // Enable depth test
 	glDepthFunc(GL_LESS); // Accept fragment if it closer to the camera than the former one
+	
 	glEnable(GL_CULL_FACE); // Cull triangles which normal is not towards the camera ...
 	glCullFace(GL_BACK); // ... ie let the GPU check if the camera is behind => 2 times less triangles on average
+	
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f); // Dark blue background
 
 	do{
