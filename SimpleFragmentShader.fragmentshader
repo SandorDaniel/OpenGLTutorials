@@ -1,7 +1,7 @@
 #version 330 core
 
 // Interpolated values from the vertex shaders
-in vec2 UV;
+in vec2 out_vert_tex;
 
 // Ouput data
 out vec4 color;
@@ -12,6 +12,6 @@ uniform sampler2D myTextureSampler;
 void main()
 {
 	// Output color = color of the texture at the specified UV
-    color = texture( myTextureSampler, vec2(UV.s, 1.0f - UV.t) ).rgba;
+    color = texture( myTextureSampler, vec2(out_vert_tex.s, 1.0f - out_vert_tex.t) ).rgba;
 
 }
