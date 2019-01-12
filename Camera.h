@@ -224,14 +224,7 @@ public:
 
 	} m_observer_left = this;
 
-	const glm::mat4& getViewMatrix() const
 	{
-		return ViewMatrix;
-	}
-	const glm::mat4& getProjectionMatrix() const
-	{
-		return ProjectionMatrix;
-	}
 
 	void upDate(GLFWwindow* window) {
 
@@ -286,6 +279,14 @@ public:
 		#pragma endregion
 
 		#pragma region Keyboard - Position
+	const glm::mat4& getViewMatrix() const
+	{
+		return ViewMatrix;
+	}
+	const glm::mat4& getProjectionMatrix() const
+	{
+		return ProjectionMatrix;
+	}
 
 		static bool is_call_back_method_set_up_for_keyboard_events = false;
 		if (!is_call_back_method_set_up_for_keyboard_events)
