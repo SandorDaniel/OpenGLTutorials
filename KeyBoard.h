@@ -17,8 +17,6 @@ namespace InPut
 		class Key
 		{
 
-			friend class KeyBoard;
-
 		public:
 
 			class Observer
@@ -35,10 +33,7 @@ namespace InPut
 
 		private:
 
-			std::set<Observer*> m_set_p_observers;
-
-			double m_time_duration_pressed = 0;
-			double m_time_last_pressed = 0; // m_time_last_pressed == 0 <-> key is not being pressed
+			std::set<Observer*> m_set_p_observers{};
 
 		public:
 
@@ -55,8 +50,6 @@ namespace InPut
 			void press();
 			void release();
 
-			double getTimePressed() const { return m_time_duration_pressed; }
-
 		};
 
 	private:
@@ -66,10 +59,14 @@ namespace InPut
 	public:
 
 		static void press_or_release_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-
-		static Key& getKey(const int GLFW_KEY_ID) { return active_keys[GLFW_KEY_ID]; }
-
-		static void reSet(); // Has to be called right before processing input events.
+		static Key& getKey(const int GLFW_KEY_ID)
+		{ 
+			return active_keys[GLFW_KEY_ID];
+		}
+		static const std::map<int, KeyBoard::Key>& getActiveKeys()
+		{
+			return active_keys;
+		}
 
 	};
 

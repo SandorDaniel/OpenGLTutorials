@@ -224,6 +224,36 @@ public:
 
 	} m_observer_left = this;
 
+	Camera() // TODO: parametrize methods
+	{
+		// Direction : Spherical coordinates to Cartesian coordinates conversion
+		glm::vec3 direction(
+			cos(verticalAngle) * sin(horizontalAngle),
+			sin(verticalAngle),
+			cos(verticalAngle) * cos(horizontalAngle)
+		);
+
+		// Right vector
+		glm::vec3 right = glm::vec3(
+			sin(horizontalAngle - 3.14f / 2.0f),
+			0,
+			cos(horizontalAngle - 3.14f / 2.0f)
+		);
+
+		// Up vector
+		glm::vec3 up = glm::cross(right, direction);
+
+		// Camera matrix
+		ViewMatrix = glm::lookAt(
+			position,           // Camera is here
+			position + direction, // and looks here : at the same position, plus "direction"
+			up                  // Head is up (set to 0,-1,0 to look upside-down)
+		);
+
+		// Projection matrix : 45digrees Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+		ProjectionMatrix = glm::perspective(glm::radians(FoV), 4.0f / 3.0f, 0.1f, 100.0f);
+	}
+
 	const glm::mat4& getViewMatrix() const
 	{
 		return ViewMatrix;

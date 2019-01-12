@@ -171,8 +171,21 @@ void App::Init()
 
 void App::Update()
 {
+	// Input update
+
+	for (auto it : InPut::KeyBoard::getActiveKeys())
+	{
+		if(glfwGetKey(window, it.first) == GLFW_PRESS)
+		{
+			it.second.release();
+			it.second.press();
+		}
+	}
+
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
+	glfwSetCursorPos(window, width / 2, height / 2);
+
 	//camera.upDate(window);
 
 	// Model transformations
