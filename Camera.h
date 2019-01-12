@@ -24,208 +24,89 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 	float speed = 3.0f; // 3 units / second
 	float mouseSpeed = 0.005f;
 
+	enum class Direction
+	{
+		UP, DOWN, RIGHT, LEFT
+	};
+
+	friend class Obs;
+	class Obs : public InPut::KeyBoard::Key::Observer
+	{
+
+	private:
+
+		Camera* m_P_cam;
+
+		Direction DIRECTION;
+
+		double m_time_last_pressed = 0;
+
+	public:
+
+		void set(Camera* cam, Direction dir)
+		{
+			m_P_cam = cam;
+			DIRECTION = dir;
+		}
+
+		virtual void pressCallBack()
+		{
+			m_time_last_pressed = glfwGetTime();
+		}
+
+		virtual void releaseCallBack()
+		{
+			glm::vec3 direction(
+				cos(m_P_cam->verticalAngle) * sin(m_P_cam->horizontalAngle),
+				sin(m_P_cam->verticalAngle),
+				cos(m_P_cam->verticalAngle) * cos(m_P_cam->horizontalAngle)
+			);
+
+			// Right vector
+			glm::vec3 right = glm::vec3(
+				sin(m_P_cam->horizontalAngle - 3.14f / 2.0f),
+				0,
+				cos(m_P_cam->horizontalAngle - 3.14f / 2.0f)
+			);
+
+			// Up vector
+			glm::vec3 up = glm::cross(right, direction);
+
+			switch (DIRECTION)
+			{
+			case Direction::UP:
+				m_P_cam->position += static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * direction;
+				break;
+			case Direction::DOWN:
+				m_P_cam->position -= static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * direction;
+				break;
+			case Direction::RIGHT:
+				m_P_cam->position += static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * right;
+				break;
+			case Direction::LEFT:
+				m_P_cam->position -= static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * right;
+				break;
+			}
+
+			// Camera matrix
+			m_P_cam->ViewMatrix = glm::lookAt(
+				m_P_cam->position,           // Camera is here
+				m_P_cam->position + direction, // and looks here : at the same position, plus "direction"
+				up                  // Head is up (set to 0,-1,0 to look upside-down)
+			);
+		}
+
+	} m_observer_up, m_observer_down, m_observer_right, m_observer_left;
+
 public:
-
-	friend class ObserverUP;
-	class ObserverUP : public InPut::KeyBoard::Key::Observer
-	{
-
-		Camera* const m_P_cam = nullptr;
-
-		double m_time_last_pressed = 0;
-
-	public:
-
-		ObserverUP(Camera* p_cam) : m_P_cam(p_cam) 
-		{ 
-		}
-
-		virtual void pressCallBack()
-		{
-			m_time_last_pressed = glfwGetTime();
-		}
-
-		virtual void releaseCallBack()
-		{
-			glm::vec3 direction(
-				cos(m_P_cam->verticalAngle) * sin(m_P_cam->horizontalAngle),
-				sin(m_P_cam->verticalAngle),
-				cos(m_P_cam->verticalAngle) * cos(m_P_cam->horizontalAngle)
-			);
-
-			// Right vector
-			glm::vec3 right = glm::vec3(
-				sin(m_P_cam->horizontalAngle - 3.14f / 2.0f),
-				0,
-				cos(m_P_cam->horizontalAngle - 3.14f / 2.0f)
-			);
-
-			// Up vector
-			glm::vec3 up = glm::cross(right, direction);
-
-			m_P_cam->position += static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * direction;
-
-			// Camera matrix
-			m_P_cam->ViewMatrix = glm::lookAt(
-				m_P_cam->position,           // Camera is here
-				m_P_cam->position + direction, // and looks here : at the same position, plus "direction"
-				up                  // Head is up (set to 0,-1,0 to look upside-down)
-			);
-		}
-
-	} m_observer_up = this;
-
-	friend class ObserverDOWN;
-	class ObserverDOWN : public InPut::KeyBoard::Key::Observer
-	{
-
-		Camera* const m_P_cam = nullptr;
-
-		double m_time_last_pressed = 0;
-
-	public:
-
-		ObserverDOWN(Camera* p_cam) : m_P_cam(p_cam)
-		{
-		}
-
-		virtual void pressCallBack()
-		{
-			m_time_last_pressed = glfwGetTime();
-		}
-
-		virtual void releaseCallBack()
-		{
-			glm::vec3 direction(
-				cos(m_P_cam->verticalAngle) * sin(m_P_cam->horizontalAngle),
-				sin(m_P_cam->verticalAngle),
-				cos(m_P_cam->verticalAngle) * cos(m_P_cam->horizontalAngle)
-			);
-
-			// Right vector
-			glm::vec3 right = glm::vec3(
-				sin(m_P_cam->horizontalAngle - 3.14f / 2.0f),
-				0,
-				cos(m_P_cam->horizontalAngle - 3.14f / 2.0f)
-			);
-
-			// Up vector
-			glm::vec3 up = glm::cross(right, direction);
-
-			m_P_cam->position -= static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * direction;
-
-			// Camera matrix
-			m_P_cam->ViewMatrix = glm::lookAt(
-				m_P_cam->position,           // Camera is here
-				m_P_cam->position + direction, // and looks here : at the same position, plus "direction"
-				up                  // Head is up (set to 0,-1,0 to look upside-down)
-			);
-		}
-
-	} m_observer_down = this;
-
-	friend class ObserverRIGHT;
-	class ObserverRIGHT : public InPut::KeyBoard::Key::Observer
-	{
-
-		Camera* const m_P_cam = nullptr;
-
-		double m_time_last_pressed = 0;
-
-	public:
-
-		ObserverRIGHT(Camera* p_cam) : m_P_cam(p_cam)
-		{
-		}
-
-		virtual void pressCallBack()
-		{
-			m_time_last_pressed = glfwGetTime();
-		}
-
-		virtual void releaseCallBack()
-		{
-			// Direction : Spherical coordinates to Cartesian coordinates conversion
-			glm::vec3 direction(
-				cos(m_P_cam->verticalAngle) * sin(m_P_cam->horizontalAngle),
-				sin(m_P_cam->verticalAngle),
-				cos(m_P_cam->verticalAngle) * cos(m_P_cam->horizontalAngle)
-			);
-
-			// Right vector
-			glm::vec3 right = glm::vec3(
-				sin(m_P_cam->horizontalAngle - 3.14f / 2.0f),
-				0,
-				cos(m_P_cam->horizontalAngle - 3.14f / 2.0f)
-			);
-
-			// Up vector
-			glm::vec3 up = glm::cross(right, direction);
-
-			m_P_cam->position += static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * right;
-
-			// Camera matrix
-			m_P_cam->ViewMatrix = glm::lookAt(
-				m_P_cam->position,           // Camera is here
-				m_P_cam->position + direction, // and looks here : at the same position, plus "direction"
-				up                  // Head is up (set to 0,-1,0 to look upside-down)
-			);
-		}
-
-	} m_observer_right = this;
-
-	friend class ObserverLEFT;
-	class ObserverLEFT : public InPut::KeyBoard::Key::Observer
-	{
-
-		Camera* const m_P_cam = nullptr;
-
-		double m_time_last_pressed = 0;
-
-	public:
-
-		ObserverLEFT(Camera* p_cam) : m_P_cam(p_cam)
-		{
-		}
-
-		virtual void pressCallBack()
-		{
-			m_time_last_pressed = glfwGetTime();
-		}
-
-		virtual void releaseCallBack()
-		{
-			// Direction : Spherical coordinates to Cartesian coordinates conversion
-			glm::vec3 direction(
-				cos(m_P_cam->verticalAngle) * sin(m_P_cam->horizontalAngle),
-				sin(m_P_cam->verticalAngle),
-				cos(m_P_cam->verticalAngle) * cos(m_P_cam->horizontalAngle)
-			);
-
-			// Right vector
-			glm::vec3 right = glm::vec3(
-				sin(m_P_cam->horizontalAngle - 3.14f / 2.0f),
-				0,
-				cos(m_P_cam->horizontalAngle - 3.14f / 2.0f)
-			);
-
-			// Up vector
-			glm::vec3 up = glm::cross(right, direction);
-
-			m_P_cam->position -= static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * right;
-
-			// Camera matrix
-			m_P_cam->ViewMatrix = glm::lookAt(
-				m_P_cam->position,           // Camera is here
-				m_P_cam->position + direction, // and looks here : at the same position, plus "direction"
-				up                  // Head is up (set to 0,-1,0 to look upside-down)
-			);
-		}
-
-	} m_observer_left = this;
 
 	Camera() // TODO: parametrize methods
 	{
+		m_observer_up.set(this, Direction::UP);
+		m_observer_down.set(this, Direction::DOWN);
+		m_observer_right.set(this, Direction::RIGHT);
+		m_observer_left.set(this, Direction::LEFT);
+
 		// Direction : Spherical coordinates to Cartesian coordinates conversion
 		glm::vec3 direction(
 			cos(verticalAngle) * sin(horizontalAngle),
