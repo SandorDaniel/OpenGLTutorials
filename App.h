@@ -22,7 +22,6 @@ class App
 
 	VAO m_vao;
 	VBO<glm::tvec4, float, glm::highp, 4> m_vbo_pos;
-	VBO<glm::tvec4, float, glm::highp, 4> m_vbo_col;
 	VBO<glm::tvec2, float, glm::highp, 2> m_vbo_tex;
 
 	GLuint m_programID;
