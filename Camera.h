@@ -347,8 +347,8 @@ public:
 		glfwGetWindowSize(p_win, &width, &height);
 
 		// Compute new orientation
-		horizontalAngle += mouseSpeed * static_cast<float>(width / 2 - InPut::Cursor::getXPos());
-		verticalAngle += mouseSpeed * static_cast<float>(height / 2 - InPut::Cursor::getYPos());
+		horizontalAngle += mouseSpeed * static_cast<float>(width / 2 - xpos);
+		verticalAngle += mouseSpeed * static_cast<float>(height / 2 - ypos);
 
 		// Direction : Spherical coordinates to Cartesian coordinates conversion
 		glm::vec3 direction(
