@@ -1,5 +1,6 @@
 #version 330 core
 
+
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec4 in_vert_pos;
 layout(location = 1) in vec2 in_vert_tex;
@@ -9,6 +10,7 @@ out vec2 out_vert_tex;
   
 // Values that stay constant for the whole mesh.
 uniform mat4 MVP;
+
 
 void main(){
 

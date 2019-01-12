@@ -4,6 +4,7 @@
 #include "VAO.hpp"
 
 
+
 VAO::VAO(VAO&& vao) : m_vertexArrayID(vao.m_vertexArrayID), m_channel_number(vao.m_channel_number)
 {
 	vao.m_vertexArrayID = 0;
@@ -28,7 +29,7 @@ VAO& VAO::operator=(VAO&& vao)
 }
 
 
-void VAO::Clear()
+void VAO::clear()
 {
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 	m_vertexArrayID = 0;
@@ -36,7 +37,7 @@ void VAO::Clear()
 }
 
 
-void VAO::Enable() const
+void VAO::enAble() const
 {
 	for (unsigned int i = 0; i < m_channel_number; ++i)
 	{
@@ -45,7 +46,7 @@ void VAO::Enable() const
 }
 
 
-void VAO::Disable() const
+void VAO::disAble() const
 {
 	for (unsigned int i = 0; i < m_channel_number; ++i)
 	{

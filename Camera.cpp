@@ -1,47 +1,52 @@
 //#define sd_debugger
 #include "Debug.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp> // after <glm/glm.hpp>
+
+#include "InPuts.h"
 #include "Camera.h"
+
 
 
 void Camera::KeyObserver::releaseCallBack()
 {
 	glm::vec3 direction(
-		cos(m_P_cam->verticalAngle) * sin(m_P_cam->horizontalAngle),
-		sin(m_P_cam->verticalAngle),
-		cos(m_P_cam->verticalAngle) * cos(m_P_cam->horizontalAngle)
+		cos(m_P_cam->m_vertical_angle) * sin(m_P_cam->m_horizontal_angle),
+		sin(m_P_cam->m_vertical_angle),
+		cos(m_P_cam->m_vertical_angle) * cos(m_P_cam->m_horizontal_angle)
 	);
 
 	// Right vector
 	glm::vec3 right = glm::vec3(
-		sin(m_P_cam->horizontalAngle - 3.14f / 2.0f),
+		sin(m_P_cam->m_horizontal_angle - 3.14f / 2.0f),
 		0,
-		cos(m_P_cam->horizontalAngle - 3.14f / 2.0f)
+		cos(m_P_cam->m_horizontal_angle - 3.14f / 2.0f)
 	);
 
 	// Up vector
 	glm::vec3 up = glm::cross(right, direction);
 
-	switch (DIRECTION)
+	switch (m_direction)
 	{
 	case Direction::UP:
-		m_P_cam->position += static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * direction;
+		m_P_cam->m_position += static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->m_speed * direction;
 		break;
 	case Direction::DOWN:
-		m_P_cam->position -= static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * direction;
+		m_P_cam->m_position -= static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->m_speed * direction;
 		break;
 	case Direction::RIGHT:
-		m_P_cam->position += static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * right;
+		m_P_cam->m_position += static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->m_speed * right;
 		break;
 	case Direction::LEFT:
-		m_P_cam->position -= static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->speed * right;
+		m_P_cam->m_position -= static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->m_speed * right;
 		break;
 	}
 
 	// Camera matrix
-	m_P_cam->ViewMatrix = glm::lookAt(
-		m_P_cam->position,           // Camera is here
-		m_P_cam->position + direction, // and looks here : at the same position, plus "direction"
+	m_P_cam->m_view_matrix = glm::lookAt(
+		m_P_cam->m_position,           // Camera is here
+		m_P_cam->m_position + direction, // and looks here : at the same position, plus "direction"
 		up                  // Head is up (set to 0,-1,0 to look upside-down)
 	);
 }
@@ -56,30 +61,30 @@ Camera::Camera() // TODO: parametrize methods
 
 	// Direction : Spherical coordinates to Cartesian coordinates conversion
 	glm::vec3 direction(
-		cos(verticalAngle) * sin(horizontalAngle),
-		sin(verticalAngle),
-		cos(verticalAngle) * cos(horizontalAngle)
+		cos(m_vertical_angle) * sin(m_horizontal_angle),
+		sin(m_vertical_angle),
+		cos(m_vertical_angle) * cos(m_horizontal_angle)
 	);
 
 	// Right vector
 	glm::vec3 right = glm::vec3(
-		sin(horizontalAngle - 3.14f / 2.0f),
+		sin(m_horizontal_angle - 3.14f / 2.0f),
 		0,
-		cos(horizontalAngle - 3.14f / 2.0f)
+		cos(m_horizontal_angle - 3.14f / 2.0f)
 	);
 
 	// Up vector
 	glm::vec3 up = glm::cross(right, direction);
 
 	// Camera matrix
-	ViewMatrix = glm::lookAt(
-		position,           // Camera is here
-		position + direction, // and looks here : at the same position, plus "direction"
+	m_view_matrix = glm::lookAt(
+		m_position,           // Camera is here
+		m_position + direction, // and looks here : at the same position, plus "direction"
 		up                  // Head is up (set to 0,-1,0 to look upside-down)
 	);
 
 	// Projection matrix : 45digrees Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	ProjectionMatrix = glm::perspective(glm::radians(FoV), 4.0f / 3.0f, 0.1f, 100.0f);
+	m_projection_matrix = glm::perspective(glm::radians(m_fov), 4.0f / 3.0f, 0.1f, 100.0f);
 }
 
 void Camera::init(GLFWwindow* window)
@@ -226,42 +231,42 @@ void Camera::motionCallBack(GLFWwindow* p_win, double xpos, double ypos)
 	glfwGetWindowSize(p_win, &width, &height);
 
 	// Compute new orientation
-	horizontalAngle += mouseSpeed * static_cast<float>(width / 2 - xpos);
-	verticalAngle += mouseSpeed * static_cast<float>(height / 2 - ypos);
+	m_horizontal_angle += m_mouse_speed * static_cast<float>(width / 2 - xpos);
+	m_vertical_angle += m_mouse_speed * static_cast<float>(height / 2 - ypos);
 
 	// Direction : Spherical coordinates to Cartesian coordinates conversion
 	glm::vec3 direction(
-		cos(verticalAngle) * sin(horizontalAngle),
-		sin(verticalAngle),
-		cos(verticalAngle) * cos(horizontalAngle)
+		cos(m_vertical_angle) * sin(m_horizontal_angle),
+		sin(m_vertical_angle),
+		cos(m_vertical_angle) * cos(m_horizontal_angle)
 	);
 
 	// Right vector
 	glm::vec3 right = glm::vec3(
-		sin(horizontalAngle - 3.14f / 2.0f),
+		sin(m_horizontal_angle - 3.14f / 2.0f),
 		0,
-		cos(horizontalAngle - 3.14f / 2.0f)
+		cos(m_horizontal_angle - 3.14f / 2.0f)
 	);
 
 	// Up vector
 	glm::vec3 up = glm::cross(right, direction);
 
 	// Camera matrix
-	ViewMatrix = glm::lookAt(
-		position,           // Camera is here
-		position + direction, // and looks here : at the same position, plus "direction"
+	m_view_matrix = glm::lookAt(
+		m_position,           // Camera is here
+		m_position + direction, // and looks here : at the same position, plus "direction"
 		up                  // Head is up (set to 0,-1,0 to look upside-down)
 	);
 }
 
 void Camera::scrollCallBack(double yoffset)
 {
-	float newFoV = FoV - 5 * static_cast<float>(yoffset);
+	float newFoV = m_fov - 5 * static_cast<float>(yoffset);
 	if (20 < newFoV && newFoV < 80)
 	{
-		FoV = newFoV;
+		m_fov = newFoV;
 	}
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	ProjectionMatrix = glm::perspective(glm::radians(FoV), 4.0f / 3.0f, 0.1f, 100.0f);
+	m_projection_matrix = glm::perspective(glm::radians(m_fov), 4.0f / 3.0f, 0.1f, 100.0f);
 }

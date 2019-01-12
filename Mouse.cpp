@@ -1,7 +1,10 @@
 //#define sd_debugger
 #include "Debug.h"
 
+#include <set> // TODO: priority queue may be a beter choice, because different callbacks could have a cocncrete proper order of invocation.
+
 #include "Mouse.h"
+
 
 
 namespace InPut

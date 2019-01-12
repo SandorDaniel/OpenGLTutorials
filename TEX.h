@@ -1,8 +1,9 @@
 #pragma once
 
+#include <queue>
+
 #include <GL/glew.h>
 
-#include <queue>
 
 
 class TEX
@@ -18,7 +19,7 @@ class TEX
 
 	static std::priority_queue<GLint, std::vector<GLint>, Less> FreeTextureUnitNumbers;
 	static bool is_class_loaded;
-	static void LoadClass();
+	static void loadClass();
 
 	bool m_image_is_loaded = false;
 	GLuint m_texture;
@@ -37,12 +38,12 @@ public:
 	TEX(TEX&& tex);
 	TEX& operator=(TEX&& T);
 
-	void LoadBMP_custom(const char* const filepath); // TODO: a két függvényt regexpes estszétválasztással összevonni egybe
-	void LoadDDS(const char* const filepath);
+	void loadBMP_custom(const char* const filepath); // TODO: a két függvényt regexpes estszétválasztással összevonni egybe
+	void loadDDS(const char* const filepath);
 
-	void Bind();
+	void bind();
 
-	void Uniform(const GLuint programID, const char* const name) const;
+	void setUniform(const GLuint programID, const char* const name) const;
 
 	void Clean();
 };

@@ -1,11 +1,13 @@
 //#define sd_debugger
 #include "Debug.h"
 
-#include "KeyBoard.h"
-
 #include <map>
+#include <set> // TODO: priority queue may be a beter choice, because different callbacks could have a cocncrete proper order of invocation.
 
 #include <GLFW/glfw3.h>
+
+#include "KeyBoard.h"
+
 
 
 namespace InPut
@@ -21,6 +23,8 @@ namespace InPut
 			it->pressCallBack();
 		}
 	}
+
+
 	void KeyBoard::Key::release()
 	{
 		for (auto it : m_set_p_observers)
@@ -28,6 +32,7 @@ namespace InPut
 			it->releaseCallBack();
 		}
 	}
+
 
 	void KeyBoard::press_or_release_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{

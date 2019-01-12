@@ -1,9 +1,9 @@
 //#define sd_debugger
 #include "Debug.h"
 
-#include <GL/glew.h>
-
 #include <queue>
+
+#include <GL/glew.h>
 
 #include <common/texture.hpp>
 
@@ -17,7 +17,7 @@ std::priority_queue<GLint, std::vector<GLint>, TEX::Less> TEX::FreeTextureUnitNu
 bool TEX::is_class_loaded = false;
 
 
-void TEX::LoadClass()
+void TEX::loadClass()
 {
 	GLint MaxTextureUnitNumber;
 	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &MaxTextureUnitNumber); // A total number of textures that can be used, period (GL_MAX_TEXTURE_IMAGE_UNITS - the number of textures that can be accessed by the fragment shader)
@@ -58,21 +58,21 @@ TEX& TEX::operator=(TEX&& T)
 }
 
 
-void TEX::LoadBMP_custom(const char* const filepath) // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
+void TEX::loadBMP_custom(const char* const filepath) // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
 {
-	m_texture = loadBMP_custom(filepath);
+	m_texture = ::loadBMP_custom(filepath);
 	m_image_is_loaded = true;
 }
 
 
-void TEX::LoadDDS(const char* const filepath)
+void TEX::loadDDS(const char* const filepath)
 {
-	m_texture = loadDDS(filepath);
+	m_texture = ::loadDDS(filepath);
 	m_image_is_loaded = true;
 }
 
 
-void TEX::Bind()
+void TEX::bind()
 {
 	if (!m_image_is_loaded)
 	{
@@ -81,7 +81,7 @@ void TEX::Bind()
 
 	if (!is_class_loaded)
 	{
-		LoadClass();
+		loadClass();
 	}
 
 	m_textureunitnumber = FreeTextureUnitNumbers.top();
@@ -95,7 +95,7 @@ void TEX::Bind()
 }
 
 	
-void TEX::Uniform(const GLuint programID, const char* const name) const
+void TEX::setUniform(const GLuint programID, const char* const name) const
 {
 	if (!m_is_bound)
 	{

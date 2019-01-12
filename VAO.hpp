@@ -12,6 +12,7 @@
 #include <exception>
 
 
+
 class VAO final
 {
 
@@ -27,7 +28,7 @@ public:
 	};
 
 	VAO() { glGenVertexArrays(1, &m_vertexArrayID); } // Generate a name for a new array.
-	~VAO() { Clear(); }
+	~VAO() { clear(); }
 
 	VAO(const VAO&) = delete;
 	VAO& operator=(const VAO&) = delete;
@@ -35,17 +36,17 @@ public:
 	VAO(VAO&& vao);
 	VAO& operator=(VAO&& vao);
 
-	void Clear();
+	void clear();
 
 	template<
 		template<typename, glm::precision> class TVec,
 		typename CoordType,
 		glm::precision precision,
 		const int COORD_COUNT>
-	void Bind(const VBO<TVec, CoordType, precision, COORD_COUNT>& VBO);
+	void bind(const VBO<TVec, CoordType, precision, COORD_COUNT>& VBO);
 
-	void Enable() const;
-	void Disable() const;
+	void enAble() const;
+	void disAble() const;
 
 };
 
@@ -55,9 +56,9 @@ template<
 	typename CoordType,
 	glm::precision precision,
 	const int COORD_COUNT>
-void VAO::Bind(const VBO<TVec, CoordType, precision, COORD_COUNT>& VBO)
+void VAO::bind(const VBO<TVec, CoordType, precision, COORD_COUNT>& VBO)
 {
-	if (!VBO.IsLoaded())
+	if (!VBO.isLoaded())
 	{
 		throw VBOIsNotLoaded();
 	}
@@ -70,7 +71,7 @@ void VAO::Bind(const VBO<TVec, CoordType, precision, COORD_COUNT>& VBO)
 	glVertexAttribPointer(
 		m_channel_number,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
 		COORD_COUNT,					// size
-		VBO.GetCoordGLType(),           // type
+		VBO.getCoordGLType(),           // type
 		GL_FALSE,						// normalized?
 		0,								// stride
 		(void*)0						// array buffer offset

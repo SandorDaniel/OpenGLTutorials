@@ -6,23 +6,24 @@
 #include "InPuts.h"
 
 
+
 class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 {
 
-	glm::mat4 ViewMatrix;
-	glm::mat4 ProjectionMatrix;
+	glm::mat4 m_view_matrix{};
+	glm::mat4 m_projection_matrix{};
 
 	// Initial position : on +Z
-	glm::vec3 position = glm::vec3(0, 0, 5);
+	glm::vec3 m_position = glm::vec3(0, 0, 5);
 	// Initial horizontal angle : toward -Z
-	float horizontalAngle = 3.14f;
+	float m_horizontal_angle = 3.14f;
 	// Initial vertical angle : none
-	float verticalAngle = 0.0f;
+	float m_vertical_angle = 0.0f;
 	// Initial Field of View
-	float FoV = 45.0f;
+	float m_fov = 45.0f;
 
-	float speed = 3.0f; // 3 units / second
-	float mouseSpeed = 0.005f;
+	float m_speed = 3.0f; // 3 units / second
+	float m_mouse_speed = 0.005f;
 
 	enum class Direction
 	{
@@ -37,7 +38,7 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 
 		Camera* m_P_cam;
 
-		Direction DIRECTION;
+		Direction m_direction;
 
 		double m_time_last_pressed = 0;
 
@@ -46,7 +47,7 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 		void set(Camera* cam, Direction dir)
 		{
 			m_P_cam = cam;
-			DIRECTION = dir;
+			m_direction = dir;
 		}
 
 		virtual void pressCallBack()
@@ -63,11 +64,11 @@ public:
 
 	const glm::mat4& getViewMatrix() const
 	{
-		return ViewMatrix;
+		return m_view_matrix;
 	}
 	const glm::mat4& getProjectionMatrix() const
 	{
-		return ProjectionMatrix;
+		return m_projection_matrix;
 	}
 
 	void init(GLFWwindow* window);

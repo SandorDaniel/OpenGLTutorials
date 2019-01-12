@@ -76,7 +76,7 @@ int main( void )
 
 	App app(window);
 
-	app.Init();
+	app.init();
 	 
 	glEnable(GL_DEPTH_TEST); // Enable depth test
 	glDepthFunc(GL_LESS); // Accept fragment if it closer to the camera than the former one
@@ -88,11 +88,11 @@ int main( void )
 
 	do{
 
-		app.Update();
+		app.upDate();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		app.Render();
+		app.render();
 
 		// Swap buffers
 		glfwSwapBuffers(window);

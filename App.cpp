@@ -1,30 +1,35 @@
 //#define sd_debugger
 #include "Debug.h"
 
-#include "App.h"
+#include <vector>
 
 #include <GL/glew.h>
 
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
+#include <glm/detail/type_vec.hpp>
+#include <glm/detail/precision.hpp>
 #include <glm/gtx/transform.hpp> // after <glm/glm.hpp>
 
 #include <common/shader.hpp>
 #include <common/objloader.hpp>
 
-#include <vector>
-
+#include "VBO.hpp"
+#include "VAO.hpp"
+#include "TEX.h"
+#include "App.h"
 #include "Camera.h"
 
 
 
-void App::Init()
+void App::init()
 {
 	// Read our .obj file
 	std::vector< glm::vec3 > v_pos3;
 	std::vector< glm::vec2 > v_tex2;
 	std::vector< glm::vec3 > v_nor3; // Won't be used at the moment.
+
 	bool res = loadOBJ("../tutorial07_model_loading/cube.obj", v_pos3, v_tex2, v_nor3);
 
 	std::vector< glm::vec4 > v_pos{};
@@ -32,7 +37,6 @@ void App::Init()
 	{
 		v_pos.push_back(glm::vec4(v3, 1.0f));
 	}
-	m_vbo_pos.Load(v_pos);
 
 	// Create and compile our GLSL program from the shaders
 	m_programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
@@ -41,24 +45,23 @@ void App::Init()
 	// Only during the initialisation
 	m_MVPID = glGetUniformLocation(m_programID, "MVP");
 
-	m_vao.Bind(m_vbo_pos);
+	m_vbo_pos.load(v_pos);
+	m_vao.bind(m_vbo_pos);
 
-	m_vbo_tex.Load(v_tex2);
-
-	m_vao.Bind(m_vbo_tex);
+	m_vbo_tex.load(v_tex2);
+	m_vao.bind(m_vbo_tex);
 
 	// Load the texture using any two methods
-	tex1.LoadBMP_custom("../tutorial05_textured_cube/uvtemplate.bmp");
-	tex2.LoadDDS("../tutorial07_model_loading/uvmap.DDS");
+	//tex.LoadBMP_custom("../tutorial05_textured_cube/uvtemplate.bmp");
+	m_tex.loadDDS("../tutorial07_model_loading/uvmap.DDS");
 
-	tex1.Bind();
-	tex2.Bind();
+	m_tex.bind();
 
-	camera.init(window);
+	m_camera.init(window);
 }
 
 
-void App::Update()
+void App::upDate()
 {
 	// Input update
 
@@ -90,13 +93,13 @@ void App::Update()
 	// View transformation
 
 	//glm::mat4 V = glm::lookAt(glm::vec3(10.0f, 10.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 V = camera.getViewMatrix();
+	glm::mat4 V = m_camera.getViewMatrix();
 
 	// Projection transformation
 
 	//glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, static_cast<float>(width) / static_cast<float>(height), 5.0f, 100.0f);
 	//glm::mat4 P = glm::ortho(-3.0f, 3.0f, -3.0f, 3.0f, 5.0f, 100.0f);
-	glm::mat4 P = camera.getProjectionMatrix();
+	glm::mat4 P = m_camera.getProjectionMatrix();
 
 	// MVP
 
@@ -104,9 +107,9 @@ void App::Update()
 }
 
 
-void App::Render() const
+void App::render() const
 {
-	m_vao.Enable();
+	m_vao.enAble();
 
 	// Use our shader
 	glUseProgram(m_programID);
@@ -115,16 +118,16 @@ void App::Render() const
 	// This is done in the main loop since each model will have a different MVP matrix (At least for the M part)
 	glUniformMatrix4fv(m_MVPID, 1, GL_FALSE, &m_MVP[0][0]);
 
-	tex2.Uniform(m_programID, "myTextureSampler"); // Two UV coordinatesfor each vertex. They were created with Blender.
+	m_tex.setUniform(m_programID, "myTextureSampler"); // Two UV coordinatesfor each vertex. They were created with Blender.
 
 	// Draw the triangle !
-	glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.GetElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
+	glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
 
-	m_vao.Disable();
+	m_vao.disAble();
 }
 
 
-void App::Clean()
+void App::clean()
 {
 	glDeleteProgram(m_programID);
 }

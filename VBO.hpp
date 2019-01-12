@@ -1,15 +1,14 @@
 #pragma once
 
+#include <vector>
+#include <typeinfo>
+#include <exception>
+
 #include <GL/glew.h>
 
 #include <glm/glm.hpp>
 #include <glm/detail/precision.hpp>
 
-#include <vector>
-
-#include <typeinfo>
-
-#include <exception>
 
 
 template<
@@ -27,7 +26,7 @@ class VBO final
 public:
 
 	VBO() = default;
-	~VBO() { UnLoad(); }
+	~VBO() { unLoad(); }
 
 	VBO(const VBO&) = delete;
 	VBO& operator=(const VBO&) = delete;
@@ -37,12 +36,14 @@ public:
 
 	operator GLuint() const { return m_id; }
 
-	void Load(const std::vector<TVec<CoordType, precision>>& g_vertex_buffer_data);
-	void UnLoad();
+	void load(const std::vector<TVec<CoordType, precision>>& g_vertex_buffer_data);
+	void unLoad();
 
-	GLsizei GetElementCount() const{ return m_element_count_of_vertexbuffer; }
-
-	GLenum GetCoordGLType() const
+	GLsizei getElementCount() const
+	{ 
+		return m_element_count_of_vertexbuffer;
+	}
+	GLenum getCoordGLType() const
 	{
 		if(typeid(CoordType) == typeid(float))
 		{
@@ -54,7 +55,10 @@ public:
 		}
 	}
 
-	bool IsLoaded() const { return m_isLoaded; }
+	bool isLoaded() const 
+	{ 
+		return m_isLoaded;
+	}
 };
 
 
@@ -65,6 +69,7 @@ VBO<TVec, CoordType, precision, COORD_COUNT>::VBO(VBO&& vbo) : m_id(vbo.m_id), m
 	m_element_count_of_vertexbuffer = 0;
 }
 
+
 template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
 VBO<TVec, CoordType, precision, COORD_COUNT>& VBO<TVec, CoordType, precision, COORD_COUNT>::operator=(VBO&& vbo)
 {
@@ -73,7 +78,7 @@ VBO<TVec, CoordType, precision, COORD_COUNT>& VBO<TVec, CoordType, precision, CO
 		return *this;
 	}
 
-	UnLoad();
+	unLoad();
 
 	m_id = vbo.m_id;
 	m_element_count_of_vertexbuffer = vbo.m_element_count_of_vertexbuffer;
@@ -84,8 +89,9 @@ VBO<TVec, CoordType, precision, COORD_COUNT>& VBO<TVec, CoordType, precision, CO
 	return *this;
 }
 
+
 template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
-void VBO<TVec, CoordType, precision, COORD_COUNT>::Load(const std::vector<TVec<CoordType, precision>>& g_vertex_buffer_data)
+void VBO<TVec, CoordType, precision, COORD_COUNT>::load(const std::vector<TVec<CoordType, precision>>& g_vertex_buffer_data)
 {
 	m_element_count_of_vertexbuffer = g_vertex_buffer_data.size();
 
@@ -96,8 +102,9 @@ void VBO<TVec, CoordType, precision, COORD_COUNT>::Load(const std::vector<TVec<C
 	m_isLoaded = true;
 }
 
+
 template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
-void VBO<TVec, CoordType, precision, COORD_COUNT>::UnLoad()
+void VBO<TVec, CoordType, precision, COORD_COUNT>::unLoad()
 {
 	glDeleteBuffers(1, &m_id);
 	m_element_count_of_vertexbuffer = 0;
