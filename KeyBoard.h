@@ -42,7 +42,10 @@ namespace InPut
 
 		public:
 
-			void regist(Observer& observer) { m_set_p_observers.insert(&observer); }
+			void regist(Observer& observer) 
+			{ 
+				m_set_p_observers.insert(&observer);
+			}
 			void unRegist(Observer& observer)
 			{
 				auto it = m_set_p_observers.find(&observer);
