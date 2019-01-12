@@ -224,8 +224,6 @@ public:
 
 	} m_observer_left = this;
 
-	{
-
 	void upDate(GLFWwindow* window) {
 
 		//#pragma region Time
