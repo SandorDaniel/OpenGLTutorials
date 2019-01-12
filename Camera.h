@@ -224,6 +224,15 @@ public:
 
 	} m_observer_left = this;
 
+	const glm::mat4& getViewMatrix() const
+	{
+		return ViewMatrix;
+	}
+	const glm::mat4& getProjectionMatrix() const
+	{
+		return ProjectionMatrix;
+	}
+
 	void upDate(GLFWwindow* window) {
 
 		////#pragma region Time
