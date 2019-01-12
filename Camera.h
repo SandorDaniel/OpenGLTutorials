@@ -53,7 +53,6 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 		{
 			m_time_last_pressed = glfwGetTime();
 		}
-
 		virtual void releaseCallBack()
 		{
 			glm::vec3 direction(
@@ -144,6 +143,26 @@ public:
 		return ProjectionMatrix;
 	}
 
+	void init(GLFWwindow* window)
+	{
+		int width, height;
+		glfwGetWindowSize(window, &width, &height);
+
+		glfwSetCursorPosCallback(window, InPut::Cursor::motionCallback);
+		InPut::Cursor::regist(*this);
+		InPut::Cursor::motionCallback(window, width / 2, height / 2);
+
+		glfwSetKeyCallback(window, InPut::KeyBoard::press_or_release_callback);
+		InPut::KeyBoard::getKey(GLFW_KEY_UP).regist(m_observer_up);
+		InPut::KeyBoard::getKey(GLFW_KEY_DOWN).regist(m_observer_down);
+		InPut::KeyBoard::getKey(GLFW_KEY_RIGHT).regist(m_observer_right);
+		InPut::KeyBoard::getKey(GLFW_KEY_LEFT).regist(m_observer_left);
+
+		glfwSetScrollCallback(window, InPut::ScrollBar::scrollCallBack);
+		InPut::ScrollBar::regist(*this);
+
+		scrollCallBack(0);
+	}
 	void upDate(GLFWwindow* window) {
 
 		////#pragma region Time
@@ -294,7 +313,6 @@ public:
 			up                  // Head is up (set to 0,-1,0 to look upside-down)
 		);
 	}
-
 	virtual void scrollCallBack(double yoffset)
 	{
 		float newFoV = FoV - 5 * static_cast<float>(yoffset);
@@ -305,27 +323,6 @@ public:
 		
 		// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 		ProjectionMatrix = glm::perspective(glm::radians(FoV), 4.0f / 3.0f, 0.1f, 100.0f);
-	}
-
-	void init(GLFWwindow* window)
-	{
-		int width, height;
-		glfwGetWindowSize(window, &width, &height);
-
-		glfwSetCursorPosCallback(window, InPut::Cursor::motionCallback);
-		InPut::Cursor::regist(*this);
-		InPut::Cursor::motionCallback(window, width / 2, height / 2);
-
-		glfwSetKeyCallback(window, InPut::KeyBoard::press_or_release_callback);
-		InPut::KeyBoard::getKey(GLFW_KEY_UP).regist(m_observer_up);
-		InPut::KeyBoard::getKey(GLFW_KEY_DOWN).regist(m_observer_down);
-		InPut::KeyBoard::getKey(GLFW_KEY_RIGHT).regist(m_observer_right);
-		InPut::KeyBoard::getKey(GLFW_KEY_LEFT).regist(m_observer_left);
-
-		glfwSetScrollCallback(window, InPut::ScrollBar::scrollCallBack);
-		InPut::ScrollBar::regist(*this);
-
-		scrollCallBack(0);
 	}
 
 };
