@@ -265,7 +265,6 @@ public:
 			is_mouse_inited = true;
 		}
 
-
 		//// Compute new orientation
 		//horizontalAngle += mouseSpeed * static_cast<float>(width / 2 - InPut::Cursor::getXPos());
 		//verticalAngle += mouseSpeed * static_cast<float>(height / 2 - InPut::Cursor::getYPos());
