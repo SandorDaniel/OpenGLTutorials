@@ -11,6 +11,7 @@
 #include <glm/gtx/transform.hpp> // after <glm/glm.hpp>
 
 #include <common/shader.hpp>
+#include <common/objloader.hpp>
 
 #include <vector>
 
@@ -20,48 +21,18 @@
 
 void App::Init()
 {
-	// Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
-	// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
-	const std::vector<glm::vec4> g_position_buffer_data = {
-		glm::vec4(-1.0f,-1.0f,-1.0f, 1.0f), // triangle 1 : begin
-		glm::vec4(-1.0f,-1.0f, 1.0f, 1.0f),
-		glm::vec4(-1.0f, 1.0f, 1.0f, 1.0f), // triangle 1 : end
-		glm::vec4(1.0f, 1.0f,-1.0f, 1.0f), // triangle 2 : begin
-		glm::vec4(-1.0f,-1.0f,-1.0f, 1.0f),
-		glm::vec4(-1.0f, 1.0f,-1.0f, 1.0f), // triangle 2 : end
-		glm::vec4(1.0f,-1.0f, 1.0f, 1.0f),
-		glm::vec4(-1.0f,-1.0f,-1.0f, 1.0f),
-		glm::vec4(1.0f,-1.0f,-1.0f, 1.0f),
-		glm::vec4(1.0f, 1.0f,-1.0f, 1.0f),
-		glm::vec4(1.0f,-1.0f,-1.0f, 1.0f),
-		glm::vec4(-1.0f,-1.0f,-1.0f, 1.0f),
-		glm::vec4(-1.0f,-1.0f,-1.0f, 1.0f),
-		glm::vec4(-1.0f, 1.0f, 1.0f, 1.0f),
-		glm::vec4(-1.0f, 1.0f,-1.0f, 1.0f),
-		glm::vec4(1.0f,-1.0f, 1.0f, 1.0f),
-		glm::vec4(-1.0f,-1.0f, 1.0f, 1.0f),
-		glm::vec4(-1.0f,-1.0f,-1.0f, 1.0f),
-		glm::vec4(-1.0f, 1.0f, 1.0f, 1.0f),
-		glm::vec4(-1.0f,-1.0f, 1.0f, 1.0f),
-		glm::vec4(1.0f,-1.0f, 1.0f, 1.0f),
-		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
-		glm::vec4(1.0f,-1.0f,-1.0f, 1.0f),
-		glm::vec4(1.0f, 1.0f,-1.0f, 1.0f),
-		glm::vec4(1.0f,-1.0f,-1.0f, 1.0f),
-		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
-		glm::vec4(1.0f,-1.0f, 1.0f, 1.0f),
-		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
-		glm::vec4(1.0f, 1.0f,-1.0f, 1.0f),
-		glm::vec4(-1.0f, 1.0f,-1.0f, 1.0f),
-		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
-		glm::vec4(-1.0f, 1.0f,-1.0f, 1.0f),
-		glm::vec4(-1.0f, 1.0f, 1.0f, 1.0f),
-		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
-		glm::vec4(-1.0f, 1.0f, 1.0f, 1.0f),
-		glm::vec4(1.0f,-1.0f, 1.0f, 1.0f)
-	};
+	// Read our .obj file
+	std::vector< glm::vec3 > v_pos3;
+	std::vector< glm::vec2 > v_tex2;
+	std::vector< glm::vec3 > v_nor3; // Won't be used at the moment.
+	bool res = loadOBJ("../tutorial07_model_loading/cube.obj", v_pos3, v_tex2, v_nor3);
 
-	m_vbo_pos.Load(g_position_buffer_data);
+	std::vector< glm::vec4 > v_pos{};
+	for (auto v3 : v_pos3)
+	{
+		v_pos.push_back(glm::vec4(v3, 1.0f));
+	}
+	m_vbo_pos.Load(v_pos);
 
 	// Create and compile our GLSL program from the shaders
 	m_programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
@@ -72,52 +43,13 @@ void App::Init()
 
 	m_vao.Bind(m_vbo_pos);
 
-	const std::vector<glm::vec2> g_uv_buffer_data = {
-		glm::vec2(0.000059f, 1.0f - 0.000004f),
-		glm::vec2(0.000103f, 1.0f - 0.336048f),
-		glm::vec2(0.335973f, 1.0f - 0.335903f),
-		glm::vec2(1.000023f, 1.0f - 0.000013f),
-		glm::vec2(0.667979f, 1.0f - 0.335851f),
-		glm::vec2(0.999958f, 1.0f - 0.336064f),
-		glm::vec2(0.667979f, 1.0f - 0.335851f),
-		glm::vec2(0.336024f, 1.0f - 0.671877f),
-		glm::vec2(0.667969f, 1.0f - 0.671889f),
-		glm::vec2(1.000023f, 1.0f - 0.000013f),
-		glm::vec2(0.668104f, 1.0f - 0.000013f),
-		glm::vec2(0.667979f, 1.0f - 0.335851f),
-		glm::vec2(0.000059f, 1.0f - 0.000004f),
-		glm::vec2(0.335973f, 1.0f - 0.335903f),
-		glm::vec2(0.336098f, 1.0f - 0.000071f),
-		glm::vec2(0.667979f, 1.0f - 0.335851f),
-		glm::vec2(0.335973f, 1.0f - 0.335903f),
-		glm::vec2(0.336024f, 1.0f - 0.671877f),
-		glm::vec2(1.000004f, 1.0f - 0.671847f),
-		glm::vec2(0.999958f, 1.0f - 0.336064f),
-		glm::vec2(0.667979f, 1.0f - 0.335851f),
-		glm::vec2(0.668104f, 1.0f - 0.000013f),
-		glm::vec2(0.335973f, 1.0f - 0.335903f),
-		glm::vec2(0.667979f, 1.0f - 0.335851f),
-		glm::vec2(0.335973f, 1.0f - 0.335903f),
-		glm::vec2(0.668104f, 1.0f - 0.000013f),
-		glm::vec2(0.336098f, 1.0f - 0.000071f),
-		glm::vec2(0.000103f, 1.0f - 0.336048f),
-		glm::vec2(0.000004f, 1.0f - 0.671870f),
-		glm::vec2(0.336024f, 1.0f - 0.671877f),
-		glm::vec2(0.000103f, 1.0f - 0.336048f),
-		glm::vec2(0.336024f, 1.0f - 0.671877f),
-		glm::vec2(0.335973f, 1.0f - 0.335903f),
-		glm::vec2(0.667969f, 1.0f - 0.671889f),
-		glm::vec2(1.000004f, 1.0f - 0.671847f),
-		glm::vec2(0.667979f, 1.0f - 0.335851f)
-	};
-
-	m_vbo_tex.Load(g_uv_buffer_data);
+	m_vbo_tex.Load(v_tex2);
 
 	m_vao.Bind(m_vbo_tex);
 
 	// Load the texture using any two methods
 	tex1.LoadBMP_custom("../tutorial05_textured_cube/uvtemplate.bmp");
-	tex2.LoadDDS("../tutorial05_textured_cube/uvtemplate.DDS");
+	tex2.LoadDDS("../tutorial07_model_loading/uvmap.DDS");
 
 	tex1.Bind();
 	tex2.Bind();

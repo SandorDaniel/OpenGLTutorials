@@ -11,7 +11,7 @@ uniform sampler2D myTextureSampler;
 
 void main()
 {
-	// Output color = color of the texture at the specified UV
-    color = texture( myTextureSampler, vec2(out_vert_tex.s, 1.0f - out_vert_tex.t) ).rgba;
+	// Output color = color of the texture at the specified st
+    color = texture( myTextureSampler, vec2(out_vert_tex.s, out_vert_tex.t) ).rgba;
 
 }
