@@ -171,6 +171,8 @@ void App::Init()
 
 void App::Update()
 {
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
 	//camera.upDate(window);
 
 	// Model transformations
@@ -189,9 +191,6 @@ void App::Update()
 	glm::mat4 V = camera.getViewMatrix();
 
 	// Projection transformation
-
-	int width, height;
-	glfwGetWindowSize(window, &width, &height);
 
 	//glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, static_cast<float>(width) / static_cast<float>(height), 5.0f, 100.0f);
 	//glm::mat4 P = glm::ortho(-3.0f, 3.0f, -3.0f, 3.0f, 5.0f, 100.0f);
