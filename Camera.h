@@ -228,6 +228,17 @@ public:
 
 	void upDate(GLFWwindow* window) {
 
+		//#pragma region Time
+
+		// glfwGetTime is called only once, the first time this function is called
+		static double lastTime = glfwGetTime();
+
+		// Compute time difference between current and last frame
+		double currentTime = glfwGetTime();
+		float deltaTime = float(currentTime - lastTime);
+
+		//#pragma endregion
+
 		#pragma region Window
 
 		int width, height;
