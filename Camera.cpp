@@ -4,7 +4,7 @@
 #include "Camera.h"
 
 
-void Camera::Obs::releaseCallBack()
+void Camera::KeyObserver::releaseCallBack()
 {
 	glm::vec3 direction(
 		cos(m_P_cam->verticalAngle) * sin(m_P_cam->horizontalAngle),

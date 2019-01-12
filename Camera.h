@@ -29,8 +29,8 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 		UP, DOWN, RIGHT, LEFT
 	};
 
-	friend class Obs;
-	class Obs : public InPut::KeyBoard::Key::Observer
+	friend class KeyObserver;
+	class KeyObserver : public InPut::KeyBoard::Key::Observer
 	{
 
 	private:
