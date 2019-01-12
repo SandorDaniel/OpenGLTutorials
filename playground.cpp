@@ -11,6 +11,7 @@
 // - nullptr instead of 0 and NULL
 // - intialization for all variables
 // - inheritance chencking, final, virtual destructor, virtual/pure virtual functions, protected members
+// - explicit initialization (prefer uniform)
 
 //#define sd_debugger
 #include "Debug.h"
