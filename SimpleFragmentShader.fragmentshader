@@ -18,8 +18,8 @@ uniform sampler2D myTextureSampler;
 void main()
 {
     vec3 source_light_col = vec3(1.0f, 1.0f, 0.0f);
-
 	vec3 source_light_pos = vec3(0.0f, 0.0f, 100.0f);
+
 	vec3 source_light_dir = normalize(source_light_pos - out_vert_pos.xyz);
 
 	vec3 diffuse = clamp(dot( out_vert_nor.xyz, source_light_dir ), 0.0f, 1.0f) * source_light_col; // clamp: if dot product of the light direction and the surface normal is negative, then the reflected diffuse light is zero
