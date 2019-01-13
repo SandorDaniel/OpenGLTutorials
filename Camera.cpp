@@ -104,8 +104,6 @@ void Camera::init(GLFWwindow* window)
 
 	glfwSetScrollCallback(window, InPut::ScrollBar::scrollCallBack);
 	InPut::ScrollBar::regist(*this);
-
-	scrollCallBack(0);
 }
 
 void Camera::upDate(GLFWwindow* window)
