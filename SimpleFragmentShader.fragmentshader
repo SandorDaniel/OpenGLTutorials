@@ -20,7 +20,7 @@ void main()
 	vec3 reflector_pos = vec3(0.0f, 0.0f, 100.0f);
 	vec3 light_dir = normalize(reflector_pos - out_vert_pos.xyz);
 
-	vec3 diffuse = dot( out_vert_nor.xyz, light_dir ) * light_col;
+	vec3 diffuse = clamp(dot( out_vert_nor.xyz, light_dir ), 0.0f, 1.0f) * light_col; // clamp: if dot product of the light direction and the surface normal is negative, then the reflected diffuse light is zero
 
 	light_col = diffuse;
 
