@@ -13,7 +13,7 @@
 // - inheritance chencking, final, virtual destructor, virtual/pure virtual functions, protected members
 // - explicit initialization (prefer uniform)
 
-//#define sd_debugger
+#define sd_debugger
 #include "Debug.h"
 
 #include <iostream>
@@ -24,6 +24,7 @@
 #include <GLFW/glfw3.h>
 
 #include "App.h"
+
 
 
 int main( void )
