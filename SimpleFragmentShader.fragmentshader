@@ -15,6 +15,17 @@ uniform sampler2D myTextureSampler;
 
 void main()
 {
-	// Output color = color of the texture at the specified st
-    color = texture( myTextureSampler, vec2(out_vert_tex.s, out_vert_tex.t) ).rgba;
+    vec3 light_col = vec3(1.0f, 1.0f, 1.0f);
+
+	vec3 reflector_pos = vec3(0.0f, 0.0f, 100.0f);
+	vec3 light_dir = normalize(reflector_pos - out_vert_pos.xyz);
+
+	vec3 diffuse = dot( out_vert_nor.xyz, light_dir ) * light_col;
+
+	light_col = diffuse;
+
+    color = texture( myTextureSampler, out_vert_tex.st ); // color of the texture at the specified st
+	color.r *= light_col.r;
+	color.g *= light_col.g;
+	color.b *= light_col.b;
 }
