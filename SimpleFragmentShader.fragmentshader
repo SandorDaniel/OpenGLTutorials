@@ -17,7 +17,7 @@ uniform sampler2D myTextureSampler;
 
 void main()
 {
-    vec3 light_col = vec3(1.0f, 1.0f, 1.0f);
+    vec3 light_col = vec3(1.0f, 1.0f, 0.0f);
 
 	vec3 reflector_pos = vec3(0.0f, 0.0f, 100.0f);
 	vec3 light_dir = normalize(reflector_pos - out_vert_pos.xyz);
