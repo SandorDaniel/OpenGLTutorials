@@ -7,6 +7,7 @@ layout(location = 1) in vec4 in_vert_nor;
 layout(location = 2) in vec2 in_vert_tex;
 
 // Output data ; will be interpolated for each fragment.
+out vec4 out_vert_pos;
 out vec4 out_vert_nor;
 out vec2 out_vert_tex;
   
@@ -19,6 +20,7 @@ void main(){
     // Output position of the vertex, in clip space : MVP * position
     gl_Position =  MVP * in_vert_pos;
 
+	out_vert_pos = in_vert_pos;
 	out_vert_nor = in_vert_nor;
 	out_vert_tex = in_vert_tex;
 }
