@@ -27,8 +27,8 @@ void App::init()
 {
 	// Read our .obj file
 	std::vector< glm::vec3 > v_pos3;
-	std::vector< glm::vec2 > v_tex2;
 	std::vector< glm::vec3 > v_nor3; // Won't be used at the moment.
+	std::vector< glm::vec2 > v_tex;
 
 	bool res = loadOBJ("../tutorial07_model_loading/cube.obj", v_pos3, v_tex2, v_nor3);
 
@@ -48,7 +48,7 @@ void App::init()
 	m_vbo_pos.load(v_pos);
 	m_vao.bind(m_vbo_pos);
 
-	m_vbo_tex.load(v_tex2);
+	m_vbo_tex.load(v_tex);
 	m_vao.bind(m_vbo_tex);
 
 	// Load the texture using any two methods
