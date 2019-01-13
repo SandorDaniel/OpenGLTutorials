@@ -27,5 +27,5 @@ void main()
 	light_col = diffuse;
 
     color = texture( myTextureSampler, out_vert_tex.st ); // color of the texture at the specified st
-	color.rgb = color.rgb * light_col;
+	color.rgb *= light_col;
 }
