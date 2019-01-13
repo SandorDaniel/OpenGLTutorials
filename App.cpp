@@ -27,15 +27,21 @@ void App::init()
 {
 	// Read our .obj file
 	std::vector< glm::vec3 > v_pos3;
-	std::vector< glm::vec3 > v_nor3; // Won't be used at the moment.
+	std::vector< glm::vec3 > v_nor3;
 	std::vector< glm::vec2 > v_tex;
 
-	bool res = loadOBJ("../tutorial07_model_loading/cube.obj", v_pos3, v_tex2, v_nor3);
+	bool res = loadOBJ("../tutorial07_model_loading/cube.obj", v_pos3, v_tex, v_nor3);
 
 	std::vector< glm::vec4 > v_pos{};
 	for (auto v3 : v_pos3)
 	{
 		v_pos.push_back(glm::vec4(v3, 1.0f));
+	}
+
+	std::vector< glm::vec4 > v_nor{};
+	for (auto v3 : v_nor3)
+	{
+		v_nor.push_back(glm::vec4(v3, 1.0f));
 	}
 
 	// Create and compile our GLSL program from the shaders
@@ -47,6 +53,9 @@ void App::init()
 
 	m_vbo_pos.load(v_pos);
 	m_vao.bind(m_vbo_pos);
+
+	m_vbo_nor.load(v_nor);
+	m_vao.bind(m_vbo_nor);
 
 	m_vbo_tex.load(v_tex);
 	m_vao.bind(m_vbo_tex);

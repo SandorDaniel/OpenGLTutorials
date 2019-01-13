@@ -3,9 +3,11 @@
 
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec4 in_vert_pos;
-layout(location = 1) in vec2 in_vert_tex;
+layout(location = 1) in vec4 in_vert_nor;
+layout(location = 2) in vec2 in_vert_tex;
 
 // Output data ; will be interpolated for each fragment.
+out vec4 out_vert_nor;
 out vec2 out_vert_tex;
   
 // Values that stay constant for the whole mesh.
@@ -17,6 +19,6 @@ void main(){
     // Output position of the vertex, in clip space : MVP * position
     gl_Position =  MVP * in_vert_pos;
 
-    // UV of the vertex. No special space for this one.
-    out_vert_tex = in_vert_tex;
+	out_vert_nor = in_vert_nor;
+	out_vert_tex = in_vert_tex;
 }

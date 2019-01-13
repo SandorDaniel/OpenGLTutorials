@@ -2,6 +2,7 @@
 
 
 // Interpolated values from the vertex shaders
+in vec4 out_vert_nor;
 in vec2 out_vert_tex;
 
 // Ouput data
