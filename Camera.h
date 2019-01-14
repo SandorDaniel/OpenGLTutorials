@@ -13,17 +13,13 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 	glm::mat4 m_view_matrix{};
 	glm::mat4 m_projection_matrix{};
 
-	// Initial position : on +Z
 	glm::vec3 m_position = glm::vec3(0, 0, 5);
-	// Initial horizontal angle : toward -Z
 	float m_horizontal_angle = 3.14f;
-	// Initial vertical angle : none
 	float m_vertical_angle = 0.0f;
-	// Initial Field of View
-	float m_fov = 45.0f;
+	float m_fov = 45.0f; // filed of view // TODO: tisztazni, hogy milyen szogrol van szo pontosan
 
-	float m_speed = 3.0f; // 3 units / second
-	float m_mouse_speed = 0.005f;
+	const float m_speed = 3.0f; // 3 units / second
+	const float m_mouse_speed = 0.005f;
 
 	enum class Direction
 	{
