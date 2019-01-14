@@ -33,7 +33,7 @@ void Camera::KeyObserver::releaseCallBack()
 }
 
 
-Camera::Camera(GLFWwindow* window) : m_p_win(window) // TODO: parametrize methods
+Camera::Camera() // TODO: parametrize methods
 {
 	m_observer_up.set(this, Direction::FORWARD);
 	m_observer_down.set(this, Direction::BACKWARD);
@@ -194,4 +194,27 @@ void Camera::scrollCallBack(double yoffset)
 	{
 		m_fov = newFoV;
 	}
+}
+
+
+glm::mat4 getView(const Camera& CAM)
+{
+	glm::vec3 position = CAM.getPos();
+	glm::vec3 direction = CAM.getDir();
+	glm::vec3 right = CAM.getRight();
+	glm::vec3 up = glm::cross(right, direction);
+
+	return glm::lookAt(
+		position,           // Camera is here
+		position + direction, // and looks here : at the same position, plus "direction"
+		up                  // Head is up (set to 0,-1,0 to look upside-down)
+	);
+}
+
+glm::mat4 getProj(const Camera& CAM, int win_width, int win_height)
+{
+	return glm::perspective(
+		glm::radians(CAM.getFov()),
+		static_cast<float>(win_width) / static_cast<float>(win_height),
+		0.1f, 100.0f);
 }

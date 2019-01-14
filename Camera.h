@@ -45,8 +45,6 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 
 private:
 
-	GLFWwindow* m_p_win = nullptr;
-
 	glm::vec3 m_position = glm::vec3(0, 0, 5);
 	float m_horizontal_angle = 3.14f;
 	float m_vertical_angle = 0.0f;
@@ -57,6 +55,14 @@ private:
 	
 	KeyObserver m_observer_up, m_observer_down, m_observer_right, m_observer_left;
 
+public:
+
+	Camera();
+
+	glm::vec3 getPos() const
+	{
+		return m_position;
+	}
 	glm::vec3 getDir() const
 	{
 		return glm::vec3(
@@ -73,32 +79,9 @@ private:
 			cos(m_horizontal_angle - 3.14f / 2.0f)
 		);
 	}
-
-
-public:
-
-	Camera(GLFWwindow* p_win);
-
-	const glm::mat4 getViewMatrix() const
+	float getFov() const
 	{
-		glm::vec3 direction = getDir();
-		glm::vec3 right = getRight();
-		glm::vec3 up = glm::cross(right, direction);
-
-		// Camera matrix
-		return glm::lookAt(
-			m_position,           // Camera is here
-			m_position + direction, // and looks here : at the same position, plus "direction"
-			up                  // Head is up (set to 0,-1,0 to look upside-down)
-		);
-	}
-	const glm::mat4 getProjectionMatrix() const
-	{
-		// Projection matrix : 45digrees Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-		int width, height;
-		glfwGetWindowSize(m_p_win, &width, &height);
-		
-		return glm::perspective(glm::radians(m_fov), static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.0f);
+		return m_fov;
 	}
 
 	void init(GLFWwindow* window);
@@ -108,3 +91,7 @@ public:
 	virtual void scrollCallBack(double yoffset);
 
 };
+
+
+glm::mat4 getView(const Camera&);
+glm::mat4 getProj(const Camera&, int win_width, int win_height);

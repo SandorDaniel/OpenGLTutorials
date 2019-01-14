@@ -110,7 +110,9 @@ void App::render() const
 
 	// Send our transformation to the currently bound shader, in the "MVP" uniform
 	// This is done in the main loop since each model will have a different MVP matrix (At least for the M part)
-	glm::mat4 MVP = m_camera.getProjectionMatrix() * m_camera.getViewMatrix() * m_M;
+	int win_width, win_height;
+	glfwGetWindowSize(window, &win_width, &win_height);
+	glm::mat4 MVP = getProj(m_camera, win_width, win_height) * getView(m_camera) * m_M;
 	glUniformMatrix4fv(m_MVPID, 1, GL_FALSE, &MVP[0][0]);
 
 	m_tex.setUniform(m_programID, "myTextureSampler"); // Two UV coordinatesfor each vertex. They were created with Blender.

@@ -35,7 +35,7 @@ class App
 
 public:
 
-	App(GLFWwindow* window) : window(window), m_camera(window)
+	App(GLFWwindow* window) : window(window)
 	{  
 	}
 
