@@ -18,7 +18,7 @@
 
 class App
 {
-	GLFWwindow* window = nullptr;
+	GLFWwindow* window = nullptr; // TODO: rename it properly
 
 	VAO m_vao;
 	VBO<glm::tvec4, float, glm::highp, 4> m_vbo_pos;
@@ -35,7 +35,7 @@ class App
 
 public:
 
-	App(GLFWwindow* window) : window(window) 
+	App(GLFWwindow* window) : window(window), m_camera(window)
 	{  
 	}
 

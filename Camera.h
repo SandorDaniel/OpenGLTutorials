@@ -9,9 +9,8 @@
 
 class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 {
+	GLFWwindow* m_p_win = nullptr;
 
-	glm::mat4 m_view_matrix{};
-	glm::mat4 m_projection_matrix{};
 	glm::mat4 m_view_matrix{}; // Only for efficiency reasons.
 	glm::mat4 m_projection_matrix{}; // Only for efficiency reasons.
 
@@ -58,7 +57,7 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 
 public:
 
-	Camera();
+	Camera(GLFWwindow* p_win);
 
 	const glm::mat4& getViewMatrix() const
 	{

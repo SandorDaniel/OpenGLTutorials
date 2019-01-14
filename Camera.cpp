@@ -52,7 +52,7 @@ void Camera::KeyObserver::releaseCallBack()
 }
 
 
-Camera::Camera() // TODO: parametrize methods
+Camera::Camera(GLFWwindow* window) : m_p_win(window) // TODO: parametrize methods
 {
 	m_observer_up.set(this, Direction::UP);
 	m_observer_down.set(this, Direction::DOWN);
@@ -84,7 +84,9 @@ Camera::Camera() // TODO: parametrize methods
 	);
 
 	// Projection matrix : 45digrees Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	m_projection_matrix = glm::perspective(glm::radians(m_fov), 4.0f / 3.0f, 0.1f, 100.0f);
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+	m_projection_matrix = glm::perspective(glm::radians(m_fov), static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.0f);
 }
 
 void Camera::init(GLFWwindow* window)
@@ -265,6 +267,7 @@ void Camera::scrollCallBack(double yoffset)
 		m_fov = newFoV;
 	}
 
-	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	m_projection_matrix = glm::perspective(glm::radians(m_fov), 4.0f / 3.0f, 0.1f, 100.0f);
+	int width, height;
+	glfwGetWindowSize(m_p_win, &width, &height);
+	m_projection_matrix = glm::perspective(glm::radians(m_fov), static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.0f);
 }
