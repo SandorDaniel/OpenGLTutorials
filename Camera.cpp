@@ -11,20 +11,8 @@
 
 void Camera::KeyObserver::releaseCallBack()
 {
-	glm::vec3 direction(
-		cos(m_P_cam->m_vertical_angle) * sin(m_P_cam->m_horizontal_angle),
-		sin(m_P_cam->m_vertical_angle),
-		cos(m_P_cam->m_vertical_angle) * cos(m_P_cam->m_horizontal_angle)
-	);
-
-	// Right vector
-	glm::vec3 right = glm::vec3(
-		sin(m_P_cam->m_horizontal_angle - 3.14f / 2.0f),
-		0,
-		cos(m_P_cam->m_horizontal_angle - 3.14f / 2.0f)
-	);
-
-	// Up vector
+	glm::vec3 direction = m_P_cam->getDir();
+	glm::vec3 right = m_P_cam->getRight();
 	glm::vec3 up = glm::cross(right, direction);
 
 	switch (m_direction)
@@ -51,23 +39,6 @@ Camera::Camera(GLFWwindow* window) : m_p_win(window) // TODO: parametrize method
 	m_observer_down.set(this, Direction::BACKWARD);
 	m_observer_right.set(this, Direction::RIGHT);
 	m_observer_left.set(this, Direction::LEFT);
-
-	// Direction : Spherical coordinates to Cartesian coordinates conversion
-	glm::vec3 direction(
-		cos(m_vertical_angle) * sin(m_horizontal_angle),
-		sin(m_vertical_angle),
-		cos(m_vertical_angle) * cos(m_horizontal_angle)
-	);
-
-	// Right vector
-	glm::vec3 right = glm::vec3(
-		sin(m_horizontal_angle - 3.14f / 2.0f),
-		0,
-		cos(m_horizontal_angle - 3.14f / 2.0f)
-	);
-
-	// Up vector
-	glm::vec3 up = glm::cross(right, direction);
 }
 
 void Camera::init(GLFWwindow* window)

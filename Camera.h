@@ -57,27 +57,32 @@ private:
 	
 	KeyObserver m_observer_up, m_observer_down, m_observer_right, m_observer_left;
 
+	glm::vec3 getDir() const
 	{
-		// Direction : Spherical coordinates to Cartesian coordinates conversion
-		glm::vec3 direction(
+		return glm::vec3(
 			cos(m_vertical_angle) * sin(m_horizontal_angle),
 			sin(m_vertical_angle),
 			cos(m_vertical_angle) * cos(m_horizontal_angle)
 		);
-
-		// Right vector
-		glm::vec3 right = glm::vec3(
+	}
+	glm::vec3 getRight() const
+	{
+		return  glm::vec3(
 			sin(m_horizontal_angle - 3.14f / 2.0f),
 			0,
 			cos(m_horizontal_angle - 3.14f / 2.0f)
 		);
+	}
 
-		// Up vector
+
 public:
 
 	Camera(GLFWwindow* p_win);
 
 	const glm::mat4 getViewMatrix() const
+	{
+		glm::vec3 direction = getDir();
+		glm::vec3 right = getRight();
 		glm::vec3 up = glm::cross(right, direction);
 
 		// Camera matrix
