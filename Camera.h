@@ -57,11 +57,6 @@ private:
 	
 	KeyObserver m_observer_up, m_observer_down, m_observer_right, m_observer_left;
 
-public:
-
-	Camera(GLFWwindow* p_win);
-
-	const glm::mat4 getViewMatrix() const
 	{
 		// Direction : Spherical coordinates to Cartesian coordinates conversion
 		glm::vec3 direction(
@@ -78,6 +73,11 @@ public:
 		);
 
 		// Up vector
+public:
+
+	Camera(GLFWwindow* p_win);
+
+	const glm::mat4 getViewMatrix() const
 		glm::vec3 up = glm::cross(right, direction);
 
 		// Camera matrix
