@@ -95,18 +95,6 @@ public:
 		
 		return glm::perspective(glm::radians(m_fov), static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.0f);
 	}
-	
-	const glm::vec3& getPos() const
-	{
-		return m_position;
-	}
-	const glm::vec3& getDir() const
-	{
-		return glm::vec3(
-			cos(m_vertical_angle) * sin(m_horizontal_angle),
-			sin(m_vertical_angle),
-			cos(m_vertical_angle) * cos(m_horizontal_angle));
-	}
 
 	void init(GLFWwindow* window);
 	void upDate(GLFWwindow* window);
