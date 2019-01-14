@@ -12,6 +12,8 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 
 	glm::mat4 m_view_matrix{};
 	glm::mat4 m_projection_matrix{};
+	glm::mat4 m_view_matrix{}; // Only for efficiency reasons.
+	glm::mat4 m_projection_matrix{}; // Only for efficiency reasons.
 
 	glm::vec3 m_position = glm::vec3(0, 0, 5);
 	float m_horizontal_angle = 3.14f;
