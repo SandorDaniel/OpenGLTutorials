@@ -29,7 +29,7 @@ class App
 	GLuint m_programID;
 	GLuint m_MVPID;
 
-	glm::mat4 m_M = glm::mat4(); // Identity matrix
+	glm::mat4 m_M = glm::mat4(); // glm::mat4() is the identity matrix
 
 	Camera m_camera;
 
