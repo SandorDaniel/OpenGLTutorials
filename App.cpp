@@ -44,13 +44,6 @@ void App::init()
 		v_nor.push_back(glm::vec4(v3, 1.0f));
 	}
 
-	// Create and compile our GLSL program from the shaders
-	m_programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
-
-	// Get a handle for our "MVP" uniform
-	// Only during the initialisation
-	m_MVPID = glGetUniformLocation(m_programID, "MVP");
-
 	m_vbo_pos.load(v_pos);
 	m_vao.bind(m_vbo_pos);
 
@@ -67,6 +60,13 @@ void App::init()
 	m_tex.bind();
 
 	m_camera.init(window);
+
+	// Create and compile our GLSL program from the shaders
+	m_programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
+
+	// Get a handle for our "MVP" uniform
+	// Only during the initialisation
+	m_MVPID = glGetUniformLocation(m_programID, "MVP");
 }
 
 
