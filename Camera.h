@@ -11,9 +11,6 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 {
 	GLFWwindow* m_p_win = nullptr;
 
-	glm::mat4 m_view_matrix{}; // Only for efficiency reasons.
-	glm::mat4 m_projection_matrix{}; // Only for efficiency reasons.
-
 	glm::vec3 m_position = glm::vec3(0, 0, 5);
 	float m_horizontal_angle = 3.14f;
 	float m_vertical_angle = 0.0f;
@@ -59,13 +56,51 @@ public:
 
 	Camera(GLFWwindow* p_win);
 
-	const glm::mat4& getViewMatrix() const
+	const glm::mat4 getViewMatrix() const
 	{
-		return m_view_matrix;
+		// Direction : Spherical coordinates to Cartesian coordinates conversion
+		glm::vec3 direction(
+			cos(m_vertical_angle) * sin(m_horizontal_angle),
+			sin(m_vertical_angle),
+			cos(m_vertical_angle) * cos(m_horizontal_angle)
+		);
+
+		// Right vector
+		glm::vec3 right = glm::vec3(
+			sin(m_horizontal_angle - 3.14f / 2.0f),
+			0,
+			cos(m_horizontal_angle - 3.14f / 2.0f)
+		);
+
+		// Up vector
+		glm::vec3 up = glm::cross(right, direction);
+
+		// Camera matrix
+		return glm::lookAt(
+			m_position,           // Camera is here
+			m_position + direction, // and looks here : at the same position, plus "direction"
+			up                  // Head is up (set to 0,-1,0 to look upside-down)
+		);
 	}
-	const glm::mat4& getProjectionMatrix() const
+	const glm::mat4 getProjectionMatrix() const
 	{
-		return m_projection_matrix;
+		// Projection matrix : 45digrees Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+		int width, height;
+		glfwGetWindowSize(m_p_win, &width, &height);
+		
+		return glm::perspective(glm::radians(m_fov), static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.0f);
+	}
+	
+	const glm::vec3& getPos() const
+	{
+		return m_position;
+	}
+	const glm::vec3& getDir() const
+	{
+		return glm::vec3(
+			cos(m_vertical_angle) * sin(m_horizontal_angle),
+			sin(m_vertical_angle),
+			cos(m_vertical_angle) * cos(m_horizontal_angle));
 	}
 
 	void init(GLFWwindow* window);

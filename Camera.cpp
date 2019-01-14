@@ -42,13 +42,6 @@ void Camera::KeyObserver::releaseCallBack()
 		m_P_cam->m_position -= static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->m_speed * right;
 		break;
 	}
-
-	// Camera matrix
-	m_P_cam->m_view_matrix = glm::lookAt(
-		m_P_cam->m_position,           // Camera is here
-		m_P_cam->m_position + direction, // and looks here : at the same position, plus "direction"
-		up                  // Head is up (set to 0,-1,0 to look upside-down)
-	);
 }
 
 
@@ -75,18 +68,6 @@ Camera::Camera(GLFWwindow* window) : m_p_win(window) // TODO: parametrize method
 
 	// Up vector
 	glm::vec3 up = glm::cross(right, direction);
-
-	// Camera matrix
-	m_view_matrix = glm::lookAt(
-		m_position,           // Camera is here
-		m_position + direction, // and looks here : at the same position, plus "direction"
-		up                  // Head is up (set to 0,-1,0 to look upside-down)
-	);
-
-	// Projection matrix : 45digrees Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	int width, height;
-	glfwGetWindowSize(window, &width, &height);
-	m_projection_matrix = glm::perspective(glm::radians(m_fov), static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.0f);
 }
 
 void Camera::init(GLFWwindow* window)
@@ -233,30 +214,6 @@ void Camera::motionCallBack(GLFWwindow* p_win, double xpos, double ypos)
 	// Compute new orientation
 	m_horizontal_angle += m_mouse_speed * static_cast<float>(width / 2 - xpos);
 	m_vertical_angle += m_mouse_speed * static_cast<float>(height / 2 - ypos);
-
-	// Direction : Spherical coordinates to Cartesian coordinates conversion
-	glm::vec3 direction(
-		cos(m_vertical_angle) * sin(m_horizontal_angle),
-		sin(m_vertical_angle),
-		cos(m_vertical_angle) * cos(m_horizontal_angle)
-	);
-
-	// Right vector
-	glm::vec3 right = glm::vec3(
-		sin(m_horizontal_angle - 3.14f / 2.0f),
-		0,
-		cos(m_horizontal_angle - 3.14f / 2.0f)
-	);
-
-	// Up vector
-	glm::vec3 up = glm::cross(right, direction);
-
-	// Camera matrix
-	m_view_matrix = glm::lookAt(
-		m_position,           // Camera is here
-		m_position + direction, // and looks here : at the same position, plus "direction"
-		up                  // Head is up (set to 0,-1,0 to look upside-down)
-	);
 }
 
 void Camera::scrollCallBack(double yoffset)
@@ -266,8 +223,4 @@ void Camera::scrollCallBack(double yoffset)
 	{
 		m_fov = newFoV;
 	}
-
-	int width, height;
-	glfwGetWindowSize(m_p_win, &width, &height);
-	m_projection_matrix = glm::perspective(glm::radians(m_fov), static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.0f);
 }
