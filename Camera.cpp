@@ -29,10 +29,10 @@ void Camera::KeyObserver::releaseCallBack()
 
 	switch (m_direction)
 	{
-	case Direction::UP:
+	case Direction::FORWARD:
 		m_P_cam->m_position += static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->m_speed * direction;
 		break;
-	case Direction::DOWN:
+	case Direction::BACKWARD:
 		m_P_cam->m_position -= static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->m_speed * direction;
 		break;
 	case Direction::RIGHT:
@@ -54,8 +54,8 @@ void Camera::KeyObserver::releaseCallBack()
 
 Camera::Camera(GLFWwindow* window) : m_p_win(window) // TODO: parametrize methods
 {
-	m_observer_up.set(this, Direction::UP);
-	m_observer_down.set(this, Direction::DOWN);
+	m_observer_up.set(this, Direction::FORWARD);
+	m_observer_down.set(this, Direction::BACKWARD);
 	m_observer_right.set(this, Direction::RIGHT);
 	m_observer_left.set(this, Direction::LEFT);
 

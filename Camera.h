@@ -24,7 +24,7 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 
 	enum class Direction
 	{
-		UP, DOWN, RIGHT, LEFT
+		FORWARD, BACKWARD, RIGHT, LEFT
 	};
 
 	friend class KeyObserver;
