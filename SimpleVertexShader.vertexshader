@@ -15,8 +15,8 @@ out vec2 out_vert_tex;
 uniform mat4 MVP;
 
 
-void main(){
-
+void main()
+{
     // Output position of the vertex, in clip space : MVP * position
     gl_Position =  MVP * in_vert_pos;
 
