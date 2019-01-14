@@ -9,15 +9,6 @@
 
 class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 {
-	GLFWwindow* m_p_win = nullptr;
-
-	glm::vec3 m_position = glm::vec3(0, 0, 5);
-	float m_horizontal_angle = 3.14f;
-	float m_vertical_angle = 0.0f;
-	float m_fov = 45.0f; // filed of view // TODO: tisztazni, hogy milyen szogrol van szo pontosan
-
-	const float m_speed = 3.0f; // 3 units / second
-	const float m_mouse_speed = 0.005f;
 
 	enum class Direction
 	{
@@ -50,7 +41,21 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 		}
 		virtual void releaseCallBack();
 
-	} m_observer_up, m_observer_down, m_observer_right, m_observer_left;
+	};
+
+private:
+
+	GLFWwindow* m_p_win = nullptr;
+
+	glm::vec3 m_position = glm::vec3(0, 0, 5);
+	float m_horizontal_angle = 3.14f;
+	float m_vertical_angle = 0.0f;
+	float m_fov = 45.0f; // filed of view // TODO: tisztazni, hogy milyen szogrol van szo pontosan
+
+	const float m_speed = 3.0f; // 3 units / second
+	const float m_mouse_speed = 0.005f;
+	
+	KeyObserver m_observer_up, m_observer_down, m_observer_right, m_observer_left;
 
 public:
 
