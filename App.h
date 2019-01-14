@@ -27,9 +27,9 @@ class App
 	TEX m_tex;
 
 	GLuint m_programID;
-
-	glm::mat4 m_MVP;
 	GLuint m_MVPID;
+
+	glm::mat4 m_M = glm::mat4(); // Identity matrix
 
 	Camera m_camera;
 

@@ -95,24 +95,9 @@ void App::upDate()
 	//glm::mat4 R = glm::rotate(glm::mat4(), glm::radians<float>(45), glm::vec3(0.0f, 0.0f, 1.0f));
 	//glm::mat4 T = glm::translate(glm::mat4(), glm::vec3(2.0f, 2.0f, 0.0f));
 
-	//glm::mat4 M = T * R * S;
+	//M = T * R * S;
 
-	glm::mat4 M;
-
-	// View transformation
-
-	//glm::mat4 V = glm::lookAt(glm::vec3(10.0f, 10.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 V = m_camera.getViewMatrix();
-
-	// Projection transformation
-
-	//glm::mat4 P = glm::perspective(glm::pi<float>() / 4.0f, static_cast<float>(width) / static_cast<float>(height), 5.0f, 100.0f);
-	//glm::mat4 P = glm::ortho(-3.0f, 3.0f, -3.0f, 3.0f, 5.0f, 100.0f);
-	glm::mat4 P = m_camera.getProjectionMatrix();
-
-	// MVP
-
-	m_MVP = P * V * M;
+	m_M;
 }
 
 
@@ -125,7 +110,8 @@ void App::render() const
 
 	// Send our transformation to the currently bound shader, in the "MVP" uniform
 	// This is done in the main loop since each model will have a different MVP matrix (At least for the M part)
-	glUniformMatrix4fv(m_MVPID, 1, GL_FALSE, &m_MVP[0][0]);
+	glm::mat4 MVP = m_camera.getProjectionMatrix() * m_camera.getViewMatrix() * m_M;
+	glUniformMatrix4fv(m_MVPID, 1, GL_FALSE, &MVP[0][0]);
 
 	m_tex.setUniform(m_programID, "myTextureSampler"); // Two UV coordinatesfor each vertex. They were created with Blender.
 
