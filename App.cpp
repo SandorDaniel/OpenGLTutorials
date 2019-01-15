@@ -15,10 +15,10 @@
 #include <common/shader.hpp>
 #include <common/objloader.hpp>
 
+#include "App.h"
 #include "VBO.hpp"
 #include "VAO.hpp"
 #include "TEX.h"
-#include "App.h"
 #include "Camera.h"
 
 
