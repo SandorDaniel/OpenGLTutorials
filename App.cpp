@@ -12,10 +12,10 @@
 #include <glm/detail/precision.hpp>
 #include <glm/gtx/transform.hpp> // after <glm/glm.hpp>
 
-#include <common/shader.hpp>
 #include <common/objloader.hpp>
 
 #include "App.h"
+#include "Shader.hpp"
 #include "VBO.hpp"
 #include "VAO.hpp"
 #include "TEX.h"
@@ -62,7 +62,9 @@ void App::init()
 	m_camera.init(window);
 
 	// Create and compile our GLSL program from the shaders
-	m_programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
+	m_programID = LoadShaders(
+		std::vector<const char*>{"SimpleVertexShader.vertexshader"},
+		std::vector<const char*>{"SimpleFragmentShader.fragmentshader"});
 
 	// Get a handle for our "MVP" uniform
 	// Only during the initialisation
