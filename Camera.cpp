@@ -1,6 +1,9 @@
 //#define sd_debugger
 #include "Debug.h"
 
+#include <limits>
+#include <exception>
+
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp> // after <glm/glm.hpp>
 
@@ -18,16 +21,16 @@ void Camera::KeyObserver::releaseCallBack()
 	switch (m_direction)
 	{
 	case Direction::FORWARD:
-		m_P_cam->m_position += static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->m_speed * direction;
+		m_P_cam->m_position += static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ? glfwGetTime() - m_time_last_pressed : throw std::domain_error("Camera.cpp: elapsed time is to big to be represented as a float")) * m_P_cam->m_speed * direction;
 		break;
 	case Direction::BACKWARD:
-		m_P_cam->m_position -= static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->m_speed * direction;
+		m_P_cam->m_position -= static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ? glfwGetTime() - m_time_last_pressed : throw std::domain_error("Camera.cpp: elapsed time is to big to be represented as a float")) * m_P_cam->m_speed * direction;
 		break;
 	case Direction::RIGHT:
-		m_P_cam->m_position += static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->m_speed * right;
+		m_P_cam->m_position += static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ? glfwGetTime() - m_time_last_pressed : throw std::domain_error("Camera.cpp: elapsed time is to big to be represented as a float")) * m_P_cam->m_speed * right;
 		break;
 	case Direction::LEFT:
-		m_P_cam->m_position -= static_cast<float>(glfwGetTime() - m_time_last_pressed) * m_P_cam->m_speed * right;
+		m_P_cam->m_position -= static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ? glfwGetTime() - m_time_last_pressed : throw std::domain_error("Camera.cpp: elapsed time is to big to be represented as a float")) * m_P_cam->m_speed * right;
 		break;
 	}
 }
@@ -189,7 +192,7 @@ void Camera::motionCallBack(GLFWwindow* p_win, double xpos, double ypos)
 
 void Camera::scrollCallBack(double yoffset)
 {
-	float newFoV = m_fov - 5 * static_cast<float>(yoffset);
+	float newFoV = m_fov - 5 * static_cast<float>(yoffset <= std::numeric_limits<float>::max() ? yoffset : throw std::domain_error("Camera.cpp: scrollbars yoffset is to big to be represented as a float"));
 	if (20 < newFoV && newFoV < 80)
 	{
 		m_fov = newFoV;
