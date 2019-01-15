@@ -1,31 +1,81 @@
-// TODO: material color
+// TODO: Generalize this shader with macros, if-statements
+// TODO: Testing inhomogeneous material
+// TODO: uniformization of light datas
+// TODO: multiple lights (array)
 
 #version 330 core
 
 
-// Interpolated values from the vertex shaders
+uniform vec3 source_light_diffuse_col = vec3(1.0f, 1.0f, 0.0f);
+uniform vec4 source_light_diffuse_posdir = vec4(0.0f, 0.0f, 100.0f, 1.0f);
+uniform float source_light_diffuse_power = 1.0f;
+
+uniform vec3 source_light_specular_col = vec3(1.0f, 1.0f, 0.0f);
+uniform vec4 source_light_specular_posdir = vec4(0.0f, 0.0f, 100.0f, 1.0f);
+uniform float source_light_specular_power = 1.0f;
+
+uniform vec3 source_light_ambient_col = vec3(1.0f, 1.0f, 0.0f);
+uniform float source_light_ambient_power = 1.0f;
+
+uniform sampler2D myTextureSampler;
+
+
 in vec4 out_vert_pos;
 in vec4 out_vert_nor;
 in vec2 out_vert_tex;
 
-// Ouput data
-out vec4 color;
 
-// Values that stay constant for the whole mesh.
-uniform sampler2D myTextureSampler;
+#define HOMOGENEOUS_MATERIAL
+
+#ifdef INHOMOGENEOUS_MATERIAL
+#define INHOM
+	in vec3 material_specular_col;
+#endif
+
+#ifdef HOMOGENEOUS_MATERIAL
+#define HOM
+	uniform vec3 material_specular_col = vec3(0.3,0.3,0.3);
+#endif
+
+out vec4 col;
 
 
 void main()
 {
-    vec3 source_light_col = vec3(1.0f, 1.0f, 0.0f); // TODO: uniform
-	vec3 source_light_pos = vec3(0.0f, 0.0f, 100.0f); // TODO: uniform
+	vec3 material_diffuse_col = texture( myTextureSampler, out_vert_tex.st ).rgb; // col of the texture at the specified st
+	vec3 material_ambient_col = vec3(0.1,0.1,0.1) * material_diffuse_col;
 
-	vec3 source_light_dir = normalize(source_light_pos - out_vert_pos.xyz);
+	vec3 diffuse;
+	{
+		vec3 source_light_diffuse_dir;
+		
+		if(source_light_diffuse_posdir.w != 0) // Positional light source
+		{
+			source_light_diffuse_dir = normalize((source_light_diffuse_posdir / source_light_diffuse_posdir.w).xyz - out_vert_pos.xyz);
+		}
+		else // Positional light source
+		{
+			source_light_diffuse_dir = normalize(source_light_specular_posdir / source_light_specular_posdir.w).xyz;
+		}
 
-	vec3 diffuse = clamp(dot( out_vert_nor.xyz, source_light_dir ), 0.0f, 1.0f) * source_light_col; // clamp: if dot product of the light direction and the surface normal is negative, then the reflected diffuse light is zero
+		// MaterialDiffuseColor * LightColor * LightPower * cosTheta / (distance*distance)
+		diffuse =
+			material_diffuse_col *
+			source_light_diffuse_col *
+			source_light_diffuse_power *
+			clamp(dot( out_vert_nor.xyz, source_light_diffuse_dir ), 0.0f, 1.0f);
+	}
 
-	vec3 reflected_light_col = diffuse;
+	vec3 specular;
+	{
+		
+	}
 
-    color = texture( myTextureSampler, out_vert_tex.st ); // color of the texture at the specified st
-	color.rgb *= reflected_light_col;
+	vec3 ambient;
+	{
+		// TODO
+	}
+
+	col.rgb = (diffuse);
+	col.a = 1.0f;
 }
