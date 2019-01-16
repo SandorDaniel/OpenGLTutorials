@@ -7,8 +7,8 @@
 
 
 uniform vec3 source_light_diffuse_col = vec3(1.0f, 1.0f, 0.0f);
-uniform vec4 source_light_diffuse_posdir = vec4(0.0f, 0.0f, 100.0f, 1.0f);
-uniform float source_light_diffuse_power = 1.0f;
+uniform vec4 source_light_diffuse_posdir = vec4(0.0f, 0.0f, 100.0f, 0.0f);
+uniform float source_light_diffuse_power = 1000.0f;
 
 uniform vec3 source_light_specular_col = vec3(1.0f, 1.0f, 0.0f);
 uniform vec4 source_light_specular_posdir = vec4(0.0f, 0.0f, 100.0f, 1.0f);
@@ -48,27 +48,30 @@ void main()
 	vec3 diffuse;
 	{
 		vec3 source_light_diffuse_dir;
-		
 		if(source_light_diffuse_posdir.w != 0) // Positional light source
 		{
 			source_light_diffuse_dir = normalize((source_light_diffuse_posdir / source_light_diffuse_posdir.w).xyz - out_vert_pos.xyz);
 		}
 		else // Positional light source
 		{
-			source_light_diffuse_dir = normalize(source_light_specular_posdir / source_light_specular_posdir.w).xyz;
+			source_light_diffuse_dir = normalize(source_light_specular_posdir.xyz);
 		}
 
-		// MaterialDiffuseColor * LightColor * LightPower * cosTheta / (distance*distance)
+		float distance = length( source_light_diffuse_posdir.xyz - out_vert_pos.xyz );
+		float distance_factor = source_light_diffuse_posdir.w != 0 ? distance*distance : 1;
+
+		// MaterialDiffuseColor * LightColor * LightPower * cosTheta / (distance_factor)
 		diffuse =
 			material_diffuse_col *
 			source_light_diffuse_col *
 			source_light_diffuse_power *
-			clamp(dot( out_vert_nor.xyz, source_light_diffuse_dir ), 0.0f, 1.0f);
+			clamp(dot( out_vert_nor.xyz, source_light_diffuse_dir ), 0.0f, 1.0f) / 
+			(distance_factor);
 	}
 
 	vec3 specular;
 	{
-		
+		// TODO
 	}
 
 	vec3 ambient;
