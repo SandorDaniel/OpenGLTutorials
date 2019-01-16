@@ -1,4 +1,16 @@
-//Altalanos TODO :
+// TODO: FRAGMENT SHADERS LIBRARY (FSL)
+//       In order to avoid fragment shader's code-redundancy (so in order to make our fragment shaders more maintainable)
+//       write separate header files for every reused (or willing to be reused) functionality and encapsulate and hide their implementation
+//       in separate functions.
+//       If some functionalities are different only in some types (including type-qualifiers like uniform, in, ...) then ad-hoc generalize
+//       them with macro directives.
+//       Treat global vaiables as the interface of the shader.
+//       Shader interface - API interface
+//       (its the responsibility of API to adapt shader interface as an interface of the implementation or a part of the implementation of a feature
+//        of the api)
+
+//TODO general regenerate:
+// - Mini API for specific but not concrete shaders ie ShaderAdaptors or something lie this...
 // - kodredundancia - vizsgalat ill.csokkentes(template, inheritance, class, function)
 // - helyes kulso eroforras kezeles
 // - muveleti ill. memoria hatekonysag optimalizalas
