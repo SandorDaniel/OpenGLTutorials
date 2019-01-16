@@ -6,16 +6,11 @@
 #version 330 core
 
 
+uniform vec4 source_light_posdir = vec4(0.0f, 0.0f, 100.0f, 0.0f);
+uniform float source_light_power = 1000.0f;
 uniform vec3 source_light_diffuse_col = vec3(1.0f, 1.0f, 0.0f);
-uniform vec4 source_light_diffuse_posdir = vec4(0.0f, 0.0f, 100.0f, 0.0f);
-uniform float source_light_diffuse_power = 1000.0f;
-
 uniform vec3 source_light_specular_col = vec3(1.0f, 1.0f, 0.0f);
-uniform vec4 source_light_specular_posdir = vec4(0.0f, 0.0f, 100.0f, 1.0f);
-uniform float source_light_specular_power = 1.0f;
-
 uniform vec3 source_light_ambient_col = vec3(1.0f, 1.0f, 0.0f);
-uniform float source_light_ambient_power = 1.0f;
 
 uniform sampler2D myTextureSampler;
 
@@ -45,29 +40,25 @@ void main()
 	vec3 material_diffuse_col = texture( myTextureSampler, out_vert_tex.st ).rgb; // col of the texture at the specified st
 	vec3 material_ambient_col = vec3(0.1,0.1,0.1) * material_diffuse_col;
 
-	vec3 diffuse;
+	vec3 source_light_diffuse_dir;
+	if(source_light_posdir.w != 0) // Positional light source
 	{
-		vec3 source_light_diffuse_dir;
-		if(source_light_diffuse_posdir.w != 0) // Positional light source
-		{
-			source_light_diffuse_dir = normalize((source_light_diffuse_posdir / source_light_diffuse_posdir.w).xyz - out_vert_pos.xyz);
-		}
-		else // Positional light source
-		{
-			source_light_diffuse_dir = normalize(source_light_specular_posdir.xyz);
-		}
-
-		float distance = length( source_light_diffuse_posdir.xyz - out_vert_pos.xyz );
-		float distance_factor = source_light_diffuse_posdir.w != 0 ? distance*distance : 1;
-
-		// MaterialDiffuseColor * LightColor * LightPower * cosTheta / (distance_factor)
-		diffuse =
-			material_diffuse_col *
-			source_light_diffuse_col *
-			source_light_diffuse_power *
-			clamp(dot( out_vert_nor.xyz, source_light_diffuse_dir ), 0.0f, 1.0f) / 
-			(distance_factor);
+		source_light_diffuse_dir = normalize((source_light_posdir / source_light_posdir.w).xyz - out_vert_pos.xyz);
 	}
+	else // Positional light source
+	{
+		source_light_diffuse_dir = normalize(source_light_posdir.xyz);
+	}
+
+	float distance = length( source_light_posdir.xyz - out_vert_pos.xyz );
+	float distance_factor = source_light_posdir.w != 0 ? distance*distance : 1;
+
+	vec3 diffuse =
+		material_diffuse_col *
+		source_light_diffuse_col *
+		source_light_power *
+		clamp(dot( out_vert_nor.xyz, source_light_diffuse_dir ), 0.0f, 1.0f) / 
+		(distance_factor);
 
 	vec3 specular;
 	{
