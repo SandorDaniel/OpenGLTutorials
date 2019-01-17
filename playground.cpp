@@ -101,6 +101,9 @@ int main( void )
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f); // Dark blue background
 
 	do{
+		#ifdef sd_debugger
+		sdd::debugSecondsPerFrame(1.0);
+		#endif
 
 		app.upDate();
 

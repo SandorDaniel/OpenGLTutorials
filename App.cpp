@@ -117,6 +117,7 @@ void App::render() const
 	glfwGetWindowSize(window, &win_width, &win_height);
 	glm::mat4 MVP = getProj(m_camera, win_width, win_height) * getView(m_camera) * m_M;
 	glUniformMatrix4fv(m_MVPID, 1, GL_FALSE, &MVP[0][0]);
+	
 	glUniform3fv(m_cam_posID, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos()));
 
 	m_tex.setUniform(m_programID, "myTextureSampler"); // Two UV coordinatesfor each vertex. They were created with Blender.
