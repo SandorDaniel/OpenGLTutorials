@@ -5,58 +5,69 @@
 #version 330 core
 
 
-uniform vec4 source_light_posdir = vec4(0.0f, 0.0f, 100.0f, 0.0f);
-uniform float source_light_power = 1000.0f;
-uniform vec3 source_light_diffuse_col = vec3(1.0f, 1.0f, 0.0f);
-uniform vec3 source_light_specular_col = vec3(1.0f, 1.0f, 0.0f);
-uniform vec3 source_light_ambient_col = vec3(1.0f, 1.0f, 0.0f);
-
 uniform sampler2D myTextureSampler;
 
+uniform float source_light_power = 1000.0f;
+uniform vec4  source_light_posdir = vec4(0.0f, 0.0f, 100.0f, 1.0f);
+
+uniform vec3  source_light_diffuse_col = vec3(1.0f, 1.0f, 0.0f);
+uniform vec3  source_light_specular_col = vec3(1.0f, 1.0f, 0.0f);
+uniform vec3  source_light_ambient_col = vec3(1.0f, 1.0f, 0.0f);
 
 in vec4 out_vert_pos;
 in vec4 out_vert_nor;
 in vec2 out_vert_tex;
 
-
-#define HOMOGENEOUS_MATERIAL
-
-#ifdef INHOMOGENEOUS_MATERIAL
-#define INHOM
-	in vec3 material_specular_col;
-#endif
-
-#ifdef HOMOGENEOUS_MATERIAL
-#define HOM
-	uniform vec3 material_specular_col = vec3(0.3,0.3,0.3);
-#endif
+uniform vec3  material_specular_col = vec3(0.3, 0.3, 0.3);
+vec3  material_diffuse_col = texture(myTextureSampler, out_vert_tex.st).rgb; // col of the texture at the specified st
+vec3  material_ambient_col = vec3(0.1, 0.1, 0.1) * material_diffuse_col;
 
 out vec4 col;
 
 
-void main()
+vec4 colFrom(
+	in vec4  source_light_posdir,
+	in float source_light_power,
+	in vec3  source_light_diffuse_col,
+	in vec3  source_light_specular_col,
+	in vec3  source_light_ambient_col,
+	in sampler2D myTextureSampler,
+	in vec4  out_vert_pos,
+	in vec4  out_vert_nor,
+	in vec2  out_vert_tex,
+	in vec3  material_diffuse_col,
+	in vec3  material_specular_col,
+	in vec3  material_ambient_col)
 {
-	vec3 material_diffuse_col = texture( myTextureSampler, out_vert_tex.st ).rgb; // col of the texture at the specified st
-	vec3 material_ambient_col = vec3(0.1,0.1,0.1) * material_diffuse_col;
+	float distance = length(source_light_posdir.xyz - out_vert_pos.xyz);
+	float distance_factor = source_light_posdir.w != 0 ? distance * distance : 1;
 
-	vec3 source_light_diffuse_dir;
-	if(source_light_posdir.w != 0) // Positional light source
+	vec3 source_light_dir;
+	if (source_light_posdir.w != 0) // Positional light source
 	{
-		source_light_diffuse_dir = normalize((source_light_posdir / source_light_posdir.w).xyz - out_vert_pos.xyz);
+		source_light_dir = normalize((source_light_posdir / source_light_posdir.w).xyz - out_vert_pos.xyz);
 	}
 	else // Positional light source
 	{
-		source_light_diffuse_dir = normalize(source_light_posdir.xyz);
+		source_light_dir = normalize(source_light_posdir.xyz);
 	}
 
-	float distance = length( source_light_posdir.xyz - out_vert_pos.xyz );
-	float distance_factor = source_light_posdir.w != 0 ? distance*distance : 1;
+	//// Normal of the computed fragment, in camera space
+	//vec3 n = normalize(Normal_cameraspace);
+	//// Direction of the light (from the fragment to the light)
+	//vec3 l = normalize(LightDirection_cameraspace);
+	//// Cosine of the angle between the normal and the light direction, 
+	//// clamped above 0
+	////  - light is at the vertical of the triangle -> 1
+	////  - light is perpendicular to the triangle -> 0
+	////  - light is behind the triangle -> 0
+	//float cosTheta = clamp(dot(n, l), 0, 1);
 
 	vec3 diffuse =
 		material_diffuse_col *
 		source_light_diffuse_col *
 		source_light_power *
-		clamp(dot( out_vert_nor.xyz, source_light_diffuse_dir ), 0.0f, 1.0f) / 
+		clamp(dot(out_vert_nor.xyz, source_light_dir), 0.0f, 1.0f) /
 		(distance_factor);
 
 	vec3 specular;
@@ -71,4 +82,24 @@ void main()
 
 	col.rgb = (diffuse);
 	col.a = 1.0f;
+
+	return col;
+}
+
+
+void main()
+{
+	col = colFrom(
+		source_light_posdir,
+		source_light_power,
+		source_light_diffuse_col,
+		source_light_specular_col,
+		source_light_ambient_col,
+		myTextureSampler,
+		out_vert_pos,
+		out_vert_nor,
+		out_vert_tex,
+		material_diffuse_col,
+		material_specular_col,
+		material_ambient_col);
 }
