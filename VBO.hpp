@@ -94,7 +94,9 @@ VBO<TVec, CoordType, precision, COORD_COUNT>& VBO<TVec, CoordType, precision, CO
 template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
 void VBO<TVec, CoordType, precision, COORD_COUNT>::load(const std::vector<TVec<CoordType, precision>>& g_vertex_buffer_data)
 {
-	m_element_count_of_vertexbuffer = static_cast<GLsizei>(g_vertex_buffer_data.size() <= 2147483647 ? g_vertex_buffer_data.size() : throw std::domain_error("VBO.hpp: buffer element count is to big to be represented as a GLsizei"));
+	m_element_count_of_vertexbuffer = static_cast<GLsizei>(g_vertex_buffer_data.size() <= 2147483647 ? 
+		g_vertex_buffer_data.size() : 
+		throw std::domain_error("VBO.hpp: buffer element count is to big to be represented as a GLsizei"));
 
 	glGenBuffers(1, &m_id);
 	glBindBuffer(GL_ARRAY_BUFFER, m_id);
