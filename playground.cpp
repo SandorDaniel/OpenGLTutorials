@@ -25,6 +25,8 @@
 // - inheritance chencking, final, virtual destructor, virtual/pure virtual functions, protected members
 // - explicit initialization (prefer uniform)
 // - function(Type*) -> function(Type&)
+// - user-defined literlas for phisycal values, and find out if separate types for separate phisycal dimensions are reasonable.
+// - find out which is better, store vertex datas in vec3s or in vec4s
 
 #define sd_debugger
 #include "Debug.h"
