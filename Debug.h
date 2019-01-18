@@ -2,6 +2,7 @@
 
 #define sd_debugger
 #ifdef sd_debugger
+
 #ifndef DEBUG_H
 #define DEBUG_H
 
@@ -14,23 +15,31 @@
 #include <exception>
 #include <typeinfo>
 
+
 #include <GL/glew.h>
+
 
 #include <GLFW/glfw3.h>
 
+
+#define GLM_META_PROG_HELPERS
 #include <glm/glm.hpp>
 #include <glm/detail/type_vec.hpp>
 #include <glm/detail/precision.hpp>
 #include <glm/gtx/transform.hpp> // after <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+
 #include <common/texture.hpp>
+
 
 #include "App.h"
 #include "Shader.hpp"
 #include "VBO.hpp"
 #include "VAO.hpp"
 #include "TEX.h"
+
+
 
 namespace sdd // stands for Sandor Daniel's Debugger
 {
@@ -53,6 +62,7 @@ namespace sdd // stands for Sandor Daniel's Debugger
 
 			return elapsed_time;
 		}
+
 	};
 
 
@@ -82,8 +92,21 @@ namespace sdd // stands for Sandor Daniel's Debugger
 		}
 	}
 
+	template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision>
+	static std::ostream& operator<<(std::ostream& os, const TVec<CoordType, precision>& vec)
+	{
+		for (int i = 0; i < (TVec<CoordType, precision>::components) - 1; ++i)
+		{
+			os << vec[i] << ' ';
+		}
+		os << vec[TVec<CoordType, precision>::components - 1];
+
+		return os;
+	}
+
 
 }
 
 #endif
+
 #endif

@@ -1,5 +1,5 @@
-//#define sd_debugger
-#include "Debug.h"
+#define sd_debugger
+#include "Debug.h" // TODO rename to sdd
 
 #include <vector>
 
@@ -36,6 +36,10 @@ void App::init()
 	for (auto v3 : v_pos3)
 	{
 		v_pos.push_back(glm::vec4(v3, 1.0f));
+
+		using namespace sdd;
+		sdd::dout << "v3: " << v3 << std::endl;
+		//sdd::operator<<(sdd::dout, v3) << std::endl;
 	}
 
 	std::vector< glm::vec4 > v_nor{};
