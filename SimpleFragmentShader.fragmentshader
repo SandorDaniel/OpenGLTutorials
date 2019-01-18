@@ -15,7 +15,7 @@ uniform vec3  source_light_diffuse_col = vec3(1.0f, 1.0f, 0.0f);
 uniform vec3  source_light_specular_col = vec3(1.0f, 1.0f, 0.0f);
 uniform vec3  source_light_ambient_col = 0.01 * vec3(1.0f, 1.0f, 0.0f);
 
-uniform vec3  cam_pos = vec3(0.0f ,0.0f ,5.0f);
+uniform vec3  cam_pos = vec3(0.0f, 0.0f, 5.0f);
 
 in vec3 out_vert_pos;
 in vec3 out_vert_nor;
