@@ -90,6 +90,7 @@ void App::upDate()
 	//M = T * R * S;
 
 	m_M;
+	m_M2 = glm::translate(glm::mat4(), glm::vec3(2.0f, 0.0f, 0.0f));
 }
 
 
@@ -104,12 +105,20 @@ void App::render() const
 	// This is done in the main loop since each model will have a different MVP matrix (At least for the M part)
 	int win_width, win_height;
 	glfwGetWindowSize(window, &win_width, &win_height);
-	glm::mat4 MVP = getProj(m_camera, win_width, win_height) * getView(m_camera) * m_M;
-	glUniformMatrix4fv(m_MVPID, 1, GL_FALSE, &MVP[0][0]);
-	
-	glUniform3fv(m_cam_posID, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos()));
 
 	m_tex.setUniform(m_programID, "myTextureSampler"); // Two UV coordinatesfor each vertex. They were created with Blender.
+	glUniform3fv(m_cam_posID, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos()));
+
+	glm::mat4 MVP = getProj(m_camera, win_width, win_height) * getView(m_camera) * m_M;
+	glUniformMatrix4fv(m_MVPID, 1, GL_FALSE, &MVP[0][0]);
+
+	// Draw the triangle !
+	glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
+
+	MVP = getProj(m_camera, win_width, win_height) * getView(m_camera) * m_M2;
+	glUniformMatrix4fv(m_MVPID, 1, GL_FALSE, &MVP[0][0]);
+
+	glUniform3fv(m_cam_posID, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos()));
 
 	// Draw the triangle !
 	glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle

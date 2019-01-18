@@ -31,6 +31,7 @@ class App
 	GLuint m_cam_posID;
 
 	glm::mat4 m_M = glm::mat4(); // glm::mat4() is the identity matrix
+	glm::mat4 m_M2 = glm::mat4();
 
 	Camera m_camera;
 
