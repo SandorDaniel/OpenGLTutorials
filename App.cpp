@@ -25,6 +25,8 @@
 
 void App::init()
 {
+	#pragma region OBJ Loading (Mass Storage -> RAM)
+
 	// Read our .obj file
 	std::vector< glm::vec3 > v_pos;
 	std::vector< glm::vec3 > v_nor;
@@ -32,6 +34,9 @@ void App::init()
 
 	bool res = loadOBJ("../tutorial07_model_loading/cube.obj", v_pos, v_tex, v_nor);
 
+	#pragma endregion
+
+	#pragma region OBJ Loading (RAM -> VRAM)
 
 	m_vbo_pos.load(v_pos);
 	m_vao.bind(m_vbo_pos);
@@ -42,13 +47,18 @@ void App::init()
 	m_vbo_tex.load(v_tex);
 	m_vao.bind(m_vbo_tex);
 
-	// Load the texture using any two methods
-	//tex.LoadBMP_custom("../tutorial05_textured_cube/uvtemplate.bmp");
-	m_tex.loadDDS("../tutorial07_model_loading/uvmap.DDS");
-
+	true ? m_tex.loadDDS("../tutorial07_model_loading/uvmap.DDS") : m_tex.loadBMP_custom("../tutorial05_textured_cube/uvtemplate.bmp"); // Load the texture using any two methods
 	m_tex.bind();
 
+	#pragma endregion
+
+	#pragma region CAMERA SetUp (window, events)
+
 	m_camera.init(window);
+
+	#pragma endregion
+
+	#pragma region GPU-Side-Program SetUp (loading and compiling sahders, setting up uniform variables)
 
 	// Create and compile our GLSL program from the shaders
 	m_programID = LoadShaders(
@@ -59,16 +69,18 @@ void App::init()
 	// Only during the initialisation
 	m_MVPID = glGetUniformLocation(m_programID, "MVP");
 	m_cam_posID = glGetUniformLocation(m_programID, "cam_pos");
+
+	#pragma endregion
 }
 
 
 void App::upDate()
 {
-	// Input update
+	#pragma region INPUT UpDate
 
 	for (auto it : InPut::KeyBoard::getActiveKeys())
 	{
-		if(glfwGetKey(window, it.first) == GLFW_PRESS)
+		if (glfwGetKey(window, it.first) == GLFW_PRESS)
 		{
 			it.second.release();
 			it.second.press();
@@ -79,9 +91,11 @@ void App::upDate()
 	glfwGetWindowSize(window, &width, &height);
 	glfwSetCursorPos(window, width / 2, height / 2);
 
+	#pragma endregion
+
 	//camera.upDate(window);
 
-	// Model transformations
+	#pragma region MODEL-TRANSFORMATIONS UpDate
 
 	//glm::mat4 S = glm::scale(glm::mat4(), glm::vec3(2.0f, 1.0f, 1.0f));
 	//glm::mat4 R = glm::rotate(glm::mat4(), glm::radians<float>(45), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -91,6 +105,8 @@ void App::upDate()
 
 	m_M;
 	m_M2 = glm::translate(glm::mat4(), glm::vec3(2.0f, 0.0f, 0.0f));
+
+	#pragma endregion
 }
 
 
