@@ -82,12 +82,12 @@ namespace sdd // stands for Sandor Daniel's Debugger
 		// Measure speed
 		double currentTime = glfwGetTime();
 		nbFrames++;
-		if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
+		if (currentTime - lastTime >= time_interval_in_seconds_for_avg_sfp) { // If last prinf() was more than 1 sec ago
 			// printf and reset timer
-			dout << "AVG: " << 1.0 / static_cast<double>(nbFrames) << "ms/frame" << std::endl;
-			dout << "MAX: " << highest_spf                         << "ms/frame" << std::endl;
+			dout << "AVG: " << time_interval_in_seconds_for_avg_sfp / static_cast<double>(nbFrames) << "ms/frame" << std::endl;
+			dout << "MAX: " << highest_spf                                                          << "ms/frame" << std::endl;
 			nbFrames = 0;
-			lastTime += 1.0;
+			lastTime += time_interval_in_seconds_for_avg_sfp;
 			highest_spf = 0;
 		}
 	}
