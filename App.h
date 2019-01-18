@@ -26,6 +26,9 @@ class App
 	VBO<glm::tvec2, float, glm::highp, 2> m_vbo_tex;
 	TEX m_tex;
 
+	std::vector<GLushort> indices{};
+	GLuint elementbuffer;
+
 	GLuint m_programID;
 	GLuint m_MVPID;
 	GLuint m_cam_posID;

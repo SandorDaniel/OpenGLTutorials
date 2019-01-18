@@ -52,6 +52,16 @@ void App::init()
 
 	#pragma endregion
 
+	for (GLushort i = 0; i < v_pos.size(); ++i)
+	{
+		indices.push_back(i);
+	}
+
+	// Generate a buffer for the indices
+	glGenBuffers(1, &elementbuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), &indices[0], GL_STATIC_DRAW);
+
 	#pragma region CAMERA SetUp (window, events)
 
 	m_camera.init(window);
@@ -114,6 +124,9 @@ void App::render() const
 {
 	m_vao.enAble();
 
+	// Index buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+
 	// Use our shader
 	glUseProgram(m_programID);
 
@@ -127,14 +140,30 @@ void App::render() const
 	glm::mat4 MVP = getProj(m_camera, win_width, win_height) * getView(m_camera) * m_M;
 	glUniformMatrix4fv(m_MVPID, 1, GL_FALSE, &MVP[0][0]);
 
-	// Draw the triangle !
-	glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
+	//// Draw the triangle !
+	//glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
+
+	// Draw the triangles !
+	glDrawElements(
+		GL_TRIANGLES,      // mode
+		indices.size(),    // count
+		GL_UNSIGNED_SHORT,   // type of indices
+		(void*)0           // element array buffer offset
+	);
 
 	MVP = getProj(m_camera, win_width, win_height) * getView(m_camera) * m_M2;
 	glUniformMatrix4fv(m_MVPID, 1, GL_FALSE, &MVP[0][0]);
 
-	// Draw the triangle !
-	glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
+	//// Draw the triangle !
+	//glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
+
+	// Draw the triangles !
+	glDrawElements(
+		GL_TRIANGLES,      // mode
+		indices.size(),    // count
+		GL_UNSIGNED_SHORT,   // type of indices
+		(void*)0           // element array buffer offset
+	);
 
 	m_vao.disAble();
 }
