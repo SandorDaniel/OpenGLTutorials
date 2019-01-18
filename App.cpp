@@ -32,7 +32,7 @@ void App::init()
 	std::vector< glm::vec3 > v_nor;
 	std::vector< glm::vec2 > v_tex;
 
-	bool res = loadOBJ("../tutorial07_model_loading/cube.obj", v_pos, v_tex, v_nor);
+	bool res = loadOBJ("../tutorial08_basic_shading/suzanne.obj", v_pos, v_tex, v_nor);
 
 	#pragma endregion
 
@@ -47,7 +47,7 @@ void App::init()
 	m_vbo_tex.load(v_tex);
 	m_vao.bind(m_vbo_tex);
 
-	true ? m_tex.loadDDS("../tutorial07_model_loading/uvmap.DDS") : m_tex.loadBMP_custom("../tutorial05_textured_cube/uvtemplate.bmp"); // Load the texture using any two methods
+	true ? m_tex.loadDDS("../tutorial08_basic_shading/uvmap.DDS") : m_tex.loadBMP_custom("../tutorial05_textured_cube/uvtemplate.bmp"); // Load the texture using any two methods
 	m_tex.bind();
 
 	#pragma endregion
