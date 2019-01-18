@@ -13,6 +13,7 @@
 #include <glm/gtx/transform.hpp> // after <glm/glm.hpp>
 
 #include <common/objloader.hpp>
+#include <common/vboindexer.hpp>
 
 #include "App.h"
 #include "Shader.hpp"
@@ -25,26 +26,43 @@
 
 void App::init()
 {
-	#pragma region OBJ Loading (Mass Storage -> RAM)
+	#pragma region OBJ Loading and Compressing (Mass Storage -> RAM)
 
 	// Read our .obj file
-	std::vector< glm::vec3 > v_pos;
-	std::vector< glm::vec3 > v_nor;
-	std::vector< glm::vec2 > v_tex;
+	std::vector< glm::vec3 > original_v_pos;
+	std::vector< glm::vec3 > original_v_nor;
+	std::vector< glm::vec2 > original_v_tex;
 
-	bool res = loadOBJ("../tutorial08_basic_shading/suzanne.obj", v_pos, v_tex, v_nor);
+	bool res = loadOBJ(
+		"../tutorial08_basic_shading/suzanne.obj", 
+		original_v_pos, 
+		original_v_tex, 
+		original_v_nor);
+
+	std::vector<glm::vec3> compressed_v_pos{};
+	std::vector<glm::vec2> compressed_v_tex{};
+	std::vector<glm::vec3> compressed_v_nor{};
+
+	indexVBO(
+		original_v_pos,
+		original_v_tex,
+		original_v_nor,
+		m_indices,
+		compressed_v_pos,
+		compressed_v_tex,
+		compressed_v_nor);
 
 	#pragma endregion
 
 	#pragma region OBJ Loading (RAM -> VRAM)
 
-	m_vbo_pos.load(v_pos);
+	m_vbo_pos.load(compressed_v_pos);
 	m_vao.bind(m_vbo_pos);
 
-	m_vbo_nor.load(v_nor);
+	m_vbo_nor.load(compressed_v_nor);
 	m_vao.bind(m_vbo_nor);
 
-	m_vbo_tex.load(v_tex);
+	m_vbo_tex.load(compressed_v_tex);
 	m_vao.bind(m_vbo_tex);
 
 	true ? m_tex.loadDDS("../tutorial08_basic_shading/uvmap.DDS") : m_tex.loadBMP_custom("../tutorial05_textured_cube/uvtemplate.bmp"); // Load the texture using any two methods
@@ -52,15 +70,10 @@ void App::init()
 
 	#pragma endregion
 
-	for (GLushort i = 0; i < v_pos.size(); ++i)
-	{
-		indices.push_back(i);
-	}
-
 	// Generate a buffer for the indices
-	glGenBuffers(1, &elementbuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), &indices[0], GL_STATIC_DRAW);
+	glGenBuffers(1, &m_elementbufferID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elementbufferID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(GLushort), &m_indices[0], GL_STATIC_DRAW);
 
 	#pragma region CAMERA SetUp (window, events)
 
@@ -125,7 +138,7 @@ void App::render() const
 	m_vao.enAble();
 
 	// Index buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elementbufferID);
 
 	// Use our shader
 	glUseProgram(m_programID);
@@ -146,7 +159,7 @@ void App::render() const
 	// Draw the triangles !
 	glDrawElements(
 		GL_TRIANGLES,      // mode
-		indices.size(),    // count
+		m_indices.size(),    // count
 		GL_UNSIGNED_SHORT,   // type of indices
 		(void*)0           // element array buffer offset
 	);
@@ -160,7 +173,7 @@ void App::render() const
 	// Draw the triangles !
 	glDrawElements(
 		GL_TRIANGLES,      // mode
-		indices.size(),    // count
+		m_indices.size(),    // count
 		GL_UNSIGNED_SHORT,   // type of indices
 		(void*)0           // element array buffer offset
 	);

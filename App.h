@@ -26,8 +26,8 @@ class App
 	VBO<glm::tvec2, float, glm::highp, 2> m_vbo_tex;
 	TEX m_tex;
 
-	std::vector<GLushort> indices{};
-	GLuint elementbuffer;
+	std::vector<GLushort> m_indices{}; // TODO encapsulation and hiding
+	GLuint m_elementbufferID;
 
 	GLuint m_programID;
 	GLuint m_MVPID;
