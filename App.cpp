@@ -26,27 +26,12 @@
 void App::init()
 {
 	// Read our .obj file
-	std::vector< glm::vec3 > v_pos3;
-	std::vector< glm::vec3 > v_nor3;
+	std::vector< glm::vec3 > v_pos;
+	std::vector< glm::vec3 > v_nor;
 	std::vector< glm::vec2 > v_tex;
 
-	bool res = loadOBJ("../tutorial07_model_loading/cube.obj", v_pos3, v_tex, v_nor3);
+	bool res = loadOBJ("../tutorial07_model_loading/cube.obj", v_pos, v_tex, v_nor);
 
-	std::vector< glm::vec4 > v_pos{};
-	for (auto v3 : v_pos3)
-	{
-		v_pos.push_back(glm::vec4(v3, 1.0f));
-
-		using namespace sdd;
-		sdd::dout << "v3: " << v3 << std::endl;
-		//sdd::operator<<(sdd::dout, v3) << std::endl;
-	}
-
-	std::vector< glm::vec4 > v_nor{};
-	for (auto v3 : v_nor3)
-	{
-		v_nor.push_back(glm::vec4(v3, 1.0f));
-	}
 
 	m_vbo_pos.load(v_pos);
 	m_vao.bind(m_vbo_pos);

@@ -17,8 +17,8 @@ uniform vec3  source_light_ambient_col = 0.01 * vec3(1.0f, 1.0f, 0.0f);
 
 uniform vec3  cam_pos = vec3(0.0f ,0.0f ,5.0f);
 
-in vec4 out_vert_pos;
-in vec4 out_vert_nor;
+in vec3 out_vert_pos;
+in vec3 out_vert_nor;
 in vec2 out_vert_tex;
 
 vec3  material_diffuse_col = texture(myTextureSampler, out_vert_tex.st).rgb; // col of the texture at the specified st
@@ -28,15 +28,15 @@ vec3  material_specular_col = 0.3f * material_diffuse_col;
 out vec4 col;
 
 
-vec4 colFrom(
+vec3 colFrom(
 	in vec4  source_light_posdir,
 	in float source_light_power,
 	in vec3  source_light_diffuse_col,
 	in vec3  source_light_specular_col,
 	in vec3  source_light_ambient_col,
 	in sampler2D myTextureSampler,
-	in vec4  out_vert_pos,
-	in vec4  out_vert_nor,
+	in vec3  out_vert_pos,
+	in vec3  out_vert_nor,
 	in vec2  out_vert_tex,
 	in vec3  material_diffuse_col,
 	in vec3  material_specular_col,
@@ -44,14 +44,14 @@ vec4 colFrom(
 {
 	float distance_factor;
 	{
-		float distance = length(source_light_posdir.xyz - out_vert_pos.xyz);
+		float distance = length(source_light_posdir.xyz - out_vert_pos);
 		distance_factor = source_light_posdir.w != 0 ? distance * distance : 1;
 	}
 
 	vec3 source_light_dir;
 	if (source_light_posdir.w != 0) // Positional light source
 	{
-		source_light_dir = normalize((source_light_posdir / source_light_posdir.w).xyz - out_vert_pos.xyz);
+		source_light_dir = normalize((source_light_posdir / source_light_posdir.w).xyz - out_vert_pos);
 	}
 	else // Directional light source
 	{
@@ -59,7 +59,7 @@ vec4 colFrom(
 	}
 
 	// Normal of the computed fragment, in camera space
-	vec3 n = normalize((out_vert_nor / out_vert_nor.w).xyz);
+	vec3 n = normalize(out_vert_nor);
 	// Direction of the light (from the fragment to the light)
 	vec3 l = normalize(source_light_dir);
 	// Cosine of the angle between the normal and the light direction, 
@@ -70,7 +70,7 @@ vec4 colFrom(
 	float cosTheta = clamp(dot(n, l), 0, 1);
 
 	// Eye vector (towards the camera)
-	vec3 E = normalize(cam_pos - out_vert_pos.xyz);
+	vec3 E = normalize(cam_pos - out_vert_pos);
 	// Direction in which the triangle reflects the light
 	vec3 R = reflect(-l, n);
 	// Cosine of the angle between the Eye vector and the Reflect vector,
@@ -79,32 +79,30 @@ vec4 colFrom(
 	//  - Looking elsewhere -> < 1
 	float cosAlpha = clamp(dot(E, R), 0, 1);
 
-	vec3 col =
+	return
 		// Ambient : simulates indirect lighting
 		material_ambient_col * source_light_ambient_col * source_light_power
 		// Diffuse : "color" of the object
       + material_diffuse_col * source_light_diffuse_col * source_light_power * cosTheta / distance_factor
 		// Specular : reflective highlight, like a mirror
       + material_specular_col * source_light_specular_col * source_light_power * pow(cosAlpha, 5) / distance_factor;
-
-	return vec4(col, 1.0f);
 }
 
 
 
 void main()
 {
-	col = colFrom(
-		source_light_posdir,
-		source_light_power,
-		source_light_diffuse_col,
-		source_light_specular_col,
-		source_light_ambient_col,
-		myTextureSampler,
-		out_vert_pos,
-		out_vert_nor,
-		out_vert_tex,
-		material_diffuse_col,
-		material_specular_col,
-		material_ambient_col);
+	col = vec4(colFrom(source_light_posdir,
+		               source_light_power,
+		               source_light_diffuse_col,
+		               source_light_specular_col,
+		               source_light_ambient_col,
+		               myTextureSampler,
+		               out_vert_pos,
+		               out_vert_nor,
+		               out_vert_tex,
+		               material_diffuse_col,
+		               material_specular_col,
+		               material_ambient_col),
+		       1.0f);
 }
