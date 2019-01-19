@@ -64,10 +64,10 @@ void VAO::bind(const VBO<TVec, CoordType, precision, COORD_COUNT>& VBO)
 	}
 
 	glBindVertexArray(m_vertexArrayID); // Make the new array active, creating it if necessary.
-
 	glEnableVertexAttribArray(m_channel_number);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
 	glVertexAttribPointer(
 		m_channel_number,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
 		COORD_COUNT,					// size
