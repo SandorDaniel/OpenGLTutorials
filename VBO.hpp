@@ -35,7 +35,10 @@ public:
 	VBO(VBO&& vbo);
 	VBO& operator=(VBO&& vbo);
 
-	operator GLuint() const { return m_id; }
+	operator GLuint() const 
+	{ 
+		return m_id; 
+	}
 
 	void load(const std::vector<TVec<CoordType, precision>>& g_vertex_buffer_data);
 	void unLoad();
