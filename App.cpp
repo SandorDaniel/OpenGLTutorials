@@ -66,7 +66,6 @@ void App::init()
 	m_vao.bind(m_vbo_tex);
 
 	true ? m_tex.loadDDS("../tutorial08_basic_shading/uvmap.DDS") : m_tex.loadBMP_custom("../tutorial05_textured_cube/uvtemplate.bmp"); // Load the texture using any two methods
-	m_tex.bind();
 
 	#pragma endregion
 
@@ -92,6 +91,8 @@ void App::init()
 	// Only during the initialisation
 	m_MVPID = glGetUniformLocation(m_programID, "MVP");
 	m_cam_posID = glGetUniformLocation(m_programID, "cam_pos");
+	// Get a handle for our "myTextureSampler" uniform
+	m_textureID = glGetUniformLocation(m_programID, "myTextureSampler");
 
 	#pragma endregion
 }
@@ -136,6 +137,7 @@ void App::upDate()
 void App::render() const
 {
 	m_vao.enAble();
+	m_tex.bind();
 
 	// Index buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elementbufferID);
@@ -143,7 +145,8 @@ void App::render() const
 	// Use our shader
 	glUseProgram(m_programID);
 
-	m_tex.setUniform(m_programID, "myTextureSampler"); // Two UV coordinatesfor each vertex. They were created with Blender.
+	// Set our "myTextureSampler" sampler to use Texture Unit TextureUnitNumber
+	glUniform1i(m_textureID, m_tex);
 	
 	glUniform3fv(m_cam_posID, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos()));
 
@@ -178,6 +181,7 @@ void App::render() const
 		(void*)0           // element array buffer offset
 	);
 
+	m_tex.unBind();
 	m_vao.disAble();
 }
 

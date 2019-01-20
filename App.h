@@ -24,6 +24,7 @@ class App
 	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_pos;
 	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_nor;
 	VBO<glm::tvec2, float, glm::highp, 2> m_vbo_tex;
+	
 	TEX m_tex;
 
 	std::vector<GLushort> m_indices{}; // TODO encapsulation and hiding
@@ -32,6 +33,7 @@ class App
 	GLuint m_programID;
 	GLuint m_MVPID;
 	GLuint m_cam_posID;
+	GLuint m_textureID;
 
 	glm::mat4 m_M = glm::mat4(); // glm::mat4() is the identity matrix
 	glm::mat4 m_M2 = glm::mat4();

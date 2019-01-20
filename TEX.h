@@ -22,10 +22,10 @@ class TEX
 	static void loadClass();
 
 	bool m_image_is_loaded = false;
-	GLuint m_texture;
+	GLuint m_texture = 0;
 
-	bool m_is_bound = false;
-	GLint m_textureunitnumber;
+	mutable bool m_is_bound = false;
+	mutable GLint m_textureunitnumber = -1;
 
 public:
 
@@ -41,9 +41,10 @@ public:
 	void loadBMP_custom(const char* const filepath); // TODO: a két függvényt regexpes estszétválasztással összevonni egybe
 	void loadDDS(const char* const filepath);
 
-	void bind();
-
-	void setUniform(const GLuint programID, const char* const name) const;
+	void bind() const; // TODO: unBind()
+	void unBind() const;
 
 	void Clean();
+
+	operator GLuint() const;
 };

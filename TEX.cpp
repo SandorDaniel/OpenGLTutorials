@@ -72,7 +72,7 @@ void TEX::loadDDS(const char* const filepath)
 }
 
 
-void TEX::bind()
+void TEX::bind() const
 {
 	if (!m_image_is_loaded)
 	{
@@ -94,18 +94,19 @@ void TEX::bind()
 	m_is_bound = true;
 }
 
-	
-void TEX::setUniform(const GLuint programID, const char* const name) const
-{
-	if (!m_is_bound)
-	{
-		throw; // TODO...
-	}
 
-	// Get a handle for our "myTextureSampler" uniform
-	GLuint TextureID = glGetUniformLocation(programID, name);
-	// Set our "myTextureSampler" sampler to use Texture Unit TextureUnitNumber
-	glUniform1i(TextureID, m_textureunitnumber);
+void TEX::unBind() const
+{
+	if (m_is_bound)
+	{
+		glActiveTexture(GL_TEXTURE0 + m_textureunitnumber);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		FreeTextureUnitNumbers.push(m_textureunitnumber);
+		m_textureunitnumber = -1;
+
+		m_is_bound = false;
+	}
 }
 
 
@@ -113,8 +114,7 @@ void TEX::Clean()
 {
 	if (m_is_bound)
 	{
-		FreeTextureUnitNumbers.push(m_textureunitnumber);
-		m_is_bound = false;
+		unBind();
 	}
 
 	if (m_image_is_loaded)
@@ -124,3 +124,13 @@ void TEX::Clean()
 	}
 }
 
+
+TEX::operator GLuint() const
+{
+	if (!m_is_bound)
+	{
+		throw;
+	}
+
+	return m_textureunitnumber;
+}
