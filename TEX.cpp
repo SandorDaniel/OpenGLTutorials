@@ -11,7 +11,7 @@
 
 
 
-std::priority_queue<GLint, std::vector<GLint>, TEX::Less> TEX::FreeTextureUnitNumbers{};
+std::priority_queue<GLint, std::vector<GLint>> TEX::FreeTextureUnitNumbers{};
 
 
 bool TEX::is_class_loaded = false;

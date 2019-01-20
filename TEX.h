@@ -8,16 +8,8 @@
 
 class TEX
 {
-	class Less
-	{
-
-	public:
-
-		bool operator()(const GLint a, const GLint b) const { return a > b; }
-
-	};
-
-	static std::priority_queue<GLint, std::vector<GLint>, Less> FreeTextureUnitNumbers;
+	
+	static std::priority_queue<GLint, std::vector<GLint>, std::less<typename std::vector<GLint>::value_type>> FreeTextureUnitNumbers;
 	static bool is_class_loaded;
 	static void loadClass();
 
