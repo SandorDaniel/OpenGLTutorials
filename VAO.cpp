@@ -39,6 +39,8 @@ void VAO::clear()
 
 void VAO::enAble() const
 {
+	glBindVertexArray(m_vertexArrayID);
+
 	for (unsigned int i = 0; i < m_channel_number; ++i)
 	{
 		glEnableVertexAttribArray(i);
@@ -52,4 +54,6 @@ void VAO::disAble() const
 	{
 		glDisableVertexAttribArray(i);
 	}
+
+	glBindVertexArray(0);
 }

@@ -84,6 +84,9 @@ void VAO::bind(const VBO<TVec, CoordType, precision, COORD_COUNT>& VBO)
 	);
 
 	glDisableVertexAttribArray(m_channel_number);
+	glBindVertexArray(0); // !!!VAO (container object) has to get unbound before VBO (regular object)!!! (???WHY???)
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	++m_channel_number;
 }
