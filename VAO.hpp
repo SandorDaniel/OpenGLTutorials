@@ -42,6 +42,11 @@ public:
 	VAO(VAO&& vao);
 	VAO& operator=(VAO&& vao);
 
+	operator GLuint() const
+	{
+		return m_vertexArrayID;
+	}
+
 	void clear();
 
 	template<

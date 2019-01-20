@@ -38,6 +38,8 @@ public:
 	TEX(TEX&& tex);
 	TEX& operator=(TEX&& T);
 
+	operator GLuint() const;
+
 	void loadBMP_custom(const char* const filepath); // TODO: a két függvényt regexpes estszétválasztással összevonni egybe
 	void loadDDS(const char* const filepath);
 
@@ -46,5 +48,4 @@ public:
 
 	void Clean();
 
-	operator GLuint() const;
 };
