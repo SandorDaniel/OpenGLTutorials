@@ -27,7 +27,10 @@ class VBO final
 public:
 
 	VBO() = default;
-	~VBO() { unLoad(); }
+	~VBO() 
+	{ 
+		unLoad();
+	}
 
 	VBO(const VBO&) = delete;
 	VBO& operator=(const VBO&) = delete;
