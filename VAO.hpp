@@ -27,8 +27,14 @@ public:
 		const char* what() const noexcept { return "You should have loaded the VBO object befor binding it to the VAO object."; }
 	};
 
-	VAO() { glGenVertexArrays(1, &m_vertexArrayID); } // Generate a name for a new array.
-	~VAO() { clear(); }
+	VAO() 
+	{ 
+		glGenVertexArrays(1, &m_vertexArrayID);
+	} // Generate a name for a new array.
+	~VAO() 
+	{ 
+		clear();
+	}
 
 	VAO(const VAO&) = delete;
 	VAO& operator=(const VAO&) = delete;
