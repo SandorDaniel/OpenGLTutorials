@@ -65,9 +65,6 @@ void App::init()
 	m_vbo_tex.load(compressed_v_tex);
 	m_vao.bind(m_vbo_tex);
 
-	true ? m_tex.loadDDS("../tutorial08_basic_shading/uvmap.DDS") : m_tex.loadBMP_custom("../tutorial05_textured_cube/uvtemplate.bmp"); // Load the texture using any two methods
-
-	#pragma endregion
 
 	glGenBuffers(1, &m_elementbufferID);
 
@@ -80,6 +77,12 @@ void App::init()
 	glBindVertexArray(0); // !!!VAO (container object) has to get unbound before IBO (regular object)!!! (???WHY???)
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+	true ? m_tex.loadDDS("../tutorial08_basic_shading/uvmap.DDS") : m_tex.loadBMP_custom("../tutorial05_textured_cube/uvtemplate.bmp"); // Load the texture using any two methods
+
+	#pragma endregion
+
 	#pragma region CAMERA SetUp (window, events)
 
 	m_camera.init(window);
