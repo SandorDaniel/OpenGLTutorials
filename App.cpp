@@ -69,11 +69,17 @@ void App::init()
 
 	#pragma endregion
 
-	// Generate a buffer for the indices
 	glGenBuffers(1, &m_elementbufferID);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elementbufferID);
+
+	glBindVertexArray(m_vao); // Make the new array active, creating it if necessary.
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elementbufferID); // Can not bind an IBO to courrent context, if there is no VAO bounded to the current context.
+
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(GLushort), &m_indices[0], GL_STATIC_DRAW);
 
+	glBindVertexArray(0); // !!!VAO (container object) has to get unbound before IBO (regular object)!!! (???WHY???)
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	#pragma region CAMERA SetUp (window, events)
 
 	m_camera.init(window);
@@ -138,9 +144,6 @@ void App::render() const
 {
 	m_vao.enAble();
 	m_tex.bind();
-
-	// Index buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elementbufferID);
 
 	// Use our shader
 	glUseProgram(m_programID);
