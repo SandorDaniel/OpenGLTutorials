@@ -134,3 +134,56 @@ TEX::operator GLuint() const
 
 	return m_textureunitnumber;
 }
+
+
+#include <utility>
+
+
+X_TEX::X_TEX(X_TEX&& xtex) : m_soobm(xtex.m_soobm), m_tex(std::move(xtex.m_tex))
+{
+}
+
+
+X_TEX& X_TEX::operator=(X_TEX&& xtex)
+{
+	m_soobm = xtex.m_soobm;
+	m_tex = std::move(xtex.m_tex);
+
+	return *this;
+}
+
+
+void X_TEX::loadBMP_custom(const char* const filepath) // TODO: a k�t f�ggv�nyt regexpes estsz�tv�laszt�ssal �sszevonni egybe 
+{
+	return m_tex.loadBMP_custom(filepath);
+}
+
+
+void X_TEX::loadDDS(const char* const filepath)
+{
+	return m_tex.loadDDS(filepath);
+}
+
+
+void X_TEX::bind() const
+{
+	return m_tex.bind();
+}
+
+
+void X_TEX::unBind() const
+{
+	return m_tex.unBind();
+}
+
+
+void X_TEX::Clean()
+{
+	return m_tex.Clean();
+}
+
+
+X_TEX::operator GLuint() const
+{
+	return m_tex;
+}

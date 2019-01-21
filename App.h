@@ -28,7 +28,7 @@ class App
 	std::vector<GLushort> m_indices{}; // TODO encapsulation and hiding
 	GLuint m_elementbufferID;
 	
-	TEX m_tex;
+	X_TEX m_tex;
 
 	GLuint m_programID;
 	GLuint m_MVPID;
