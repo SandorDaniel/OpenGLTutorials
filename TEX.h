@@ -21,7 +21,7 @@ class TEX
 
 public:
 
-	TEX() { }
+	TEX() = default;
 	~TEX() { Clean(); }
 
 	TEX(const TEX&) = delete;
