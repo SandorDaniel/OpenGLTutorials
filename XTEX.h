@@ -44,6 +44,10 @@ public:
 	{
 		return m_tex.loadDDS(filepath);
 	}
+	void unLoad()
+	{
+		m_tex.unLoad();
+	}
 
 	void bind() const
 	{
@@ -51,12 +55,13 @@ public:
 	}
 	void unBind() const
 	{
-		return m_tex.unBind();
+		return (m_soobm.treatConstNonReturningMethodAsUnBinding(static_cast<std::function<void(const TEX&)>>(&TEX::unBind), m_tex))();
 	}
 
 	void Clean()
 	{
-		return (m_soobm.checkNonConstNonReturningMethodForBinding(static_cast<std::function<void(TEX&)>>(&TEX::bind), m_tex))();
+		unBind();
+		unLoad();
 	}
 
 };

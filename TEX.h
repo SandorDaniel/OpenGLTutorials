@@ -38,6 +38,7 @@ public:
 
 	void loadBMP_custom(const char* const filepath); // TODO: a két függvényt regexpes estszétválasztással összevonni egybe
 	void loadDDS(const char* const filepath);
+	void unLoad();
 
 	void bind() const; // TODO: unBind()
 	void unBind() const;

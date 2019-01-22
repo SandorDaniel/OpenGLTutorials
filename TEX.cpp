@@ -73,6 +73,16 @@ void TEX::loadDDS(const char* const filepath)
 }
 
 
+void TEX::unLoad()
+{
+	if (m_image_is_loaded)
+	{
+		glDeleteTextures(1, &m_texture);
+		m_image_is_loaded = false;
+	}
+}
+
+
 void TEX::bind() const
 {
 	if (!m_image_is_loaded)
@@ -106,11 +116,8 @@ void TEX::unBind() const
 
 void TEX::Clean()
 {
-	if (m_image_is_loaded)
-	{
-		glDeleteTextures(1, &m_texture);
-		m_image_is_loaded = false;
-	}
+	unBind();
+	unLoad();
 }
 
 
