@@ -11,7 +11,7 @@
 #include <glm/detail/type_vec.hpp>
 #include <glm/detail/precision.hpp>
 
-#include "TEX.h"
+#include "XTEX.h"
 #include "Camera.h"
 
 

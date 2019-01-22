@@ -14,10 +14,11 @@ class TEX
 	static bool is_class_loaded;
 	static void loadClass();
 
+private:
+
 	bool m_image_is_loaded = false;
 	GLuint m_texture = 0;
 
-	mutable bool m_is_bound = false;
 	mutable GLint m_textureunitnumber = -1;
 
 public:
@@ -42,38 +43,4 @@ public:
 	void unBind() const;
 
 	void Clean();
-
 };
-
-
-
-
-
-class X_TEX
-{
-	StrictOGLObjectBindingManager m_soobm;
-	TEX m_tex;
-
-public:
-
-	X_TEX() = default;
-	~X_TEX() = default;
-
-	X_TEX(const X_TEX&) = delete;
-	X_TEX& operator=(const X_TEX&) = delete;
-
-	X_TEX(X_TEX&& tex);
-	X_TEX& operator=(X_TEX&& T);
-
-	operator GLuint() const;
-
-	void loadBMP_custom(const char* const filepath); // TODO: a k�t f�ggv�nyt regexpes estsz�tv�laszt�ssal �sszevonni egybe
-	void loadDDS(const char* const filepath);
-
-	void bind() const; // TODO: unBind()
-	void unBind() const;
-
-	void Clean();
-
-};
-

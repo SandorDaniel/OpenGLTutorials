@@ -36,19 +36,16 @@ void swap(TEX& t1, TEX& t2)
 
 	swap(t1.m_image_is_loaded, t2.m_image_is_loaded);
 	swap(t1.m_texture, t2.m_texture);
-	swap(t1.m_is_bound, t2.m_is_bound);
 	swap(t1.m_textureunitnumber, t2.m_textureunitnumber);
 }
 
 
 TEX::TEX(TEX&& tex) : 
 	m_image_is_loaded(tex.m_image_is_loaded),
-	m_texture(tex.m_texture), 
-	m_is_bound(tex.m_is_bound),
+	m_texture(tex.m_texture),
 	m_textureunitnumber(tex.m_textureunitnumber)
 {
 	tex.m_image_is_loaded = false;
-	tex.m_is_bound = false;
 }
 
 
@@ -94,33 +91,21 @@ void TEX::bind() const
 	// Bind our texture in Texture Unit TextureUnitNumber
 	glActiveTexture(GL_TEXTURE0 + m_textureunitnumber);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
-
-	m_is_bound = true;
 }
 
 
 void TEX::unBind() const
 {
-	if (m_is_bound)
-	{
-		glActiveTexture(GL_TEXTURE0 + m_textureunitnumber);
-		glBindTexture(GL_TEXTURE_2D, 0);
+	glActiveTexture(GL_TEXTURE0 + m_textureunitnumber);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
-		FreeTextureUnitNumbers.push(m_textureunitnumber);
-		m_textureunitnumber = -1;
-
-		m_is_bound = false;
-	}
+	FreeTextureUnitNumbers.push(m_textureunitnumber);
+	m_textureunitnumber = -1;
 }
 
 
 void TEX::Clean()
 {
-	if (m_is_bound)
-	{
-		unBind();
-	}
-
 	if (m_image_is_loaded)
 	{
 		glDeleteTextures(1, &m_texture);
@@ -131,63 +116,5 @@ void TEX::Clean()
 
 TEX::operator GLuint() const
 {
-	if (!m_is_bound)
-	{
-		throw;
-	}
-
 	return m_textureunitnumber;
-}
-
-
-#include <utility>
-
-
-X_TEX::X_TEX(X_TEX&& xtex) : m_soobm(xtex.m_soobm), m_tex(std::move(xtex.m_tex))
-{
-}
-
-
-X_TEX& X_TEX::operator=(X_TEX&& xtex)
-{
-	m_soobm = xtex.m_soobm;
-	m_tex = std::move(xtex.m_tex);
-
-	return *this;
-}
-
-
-void X_TEX::loadBMP_custom(const char* const filepath) // TODO: a k�t f�ggv�nyt regexpes estsz�tv�laszt�ssal �sszevonni egybe 
-{
-	return m_tex.loadBMP_custom(filepath);
-}
-
-
-void X_TEX::loadDDS(const char* const filepath)
-{
-	return m_tex.loadDDS(filepath);
-}
-
-
-void X_TEX::bind() const
-{
-	return m_tex.bind();
-}
-
-
-void X_TEX::unBind() const
-{
-	return m_tex.unBind();
-}
-
-
-void X_TEX::Clean()
-{
-	return m_tex.Clean();
-}
-
-
-X_TEX::operator GLuint() const
-{
-	return m_tex;
 }
