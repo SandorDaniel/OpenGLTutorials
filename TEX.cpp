@@ -30,7 +30,11 @@ void TEX::loadClass()
 }
 
 
-TEX::TEX(TEX&& tex) : m_image_is_loaded(tex.m_image_is_loaded), m_texture(tex.m_texture), m_is_bound(tex.m_is_bound), m_textureunitnumber(tex.m_textureunitnumber)
+TEX::TEX(TEX&& tex) : 
+	m_image_is_loaded(tex.m_image_is_loaded),
+	m_texture(tex.m_texture), 
+	m_is_bound(tex.m_is_bound),
+	m_textureunitnumber(tex.m_textureunitnumber)
 {
 	tex.m_image_is_loaded = false;
 	tex.m_is_bound = false;
