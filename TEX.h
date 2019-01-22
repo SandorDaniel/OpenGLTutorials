@@ -1,6 +1,7 @@
 #pragma once
 
 #include <queue>
+#include <algorithm>
 
 #include <GL/glew.h>
 
@@ -20,6 +21,8 @@ class TEX
 	mutable GLint m_textureunitnumber = -1;
 
 public:
+
+	friend void swap(TEX& t1, TEX& t2);
 
 	TEX() = default;
 	~TEX() { Clean(); }

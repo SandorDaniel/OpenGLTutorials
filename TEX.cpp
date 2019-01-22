@@ -30,6 +30,17 @@ void TEX::loadClass()
 }
 
 
+void swap(TEX& t1, TEX& t2)
+{
+	using std::swap;
+
+	swap(t1.m_image_is_loaded, t2.m_image_is_loaded);
+	swap(t1.m_texture, t2.m_texture);
+	swap(t1.m_is_bound, t2.m_is_bound);
+	swap(t1.m_textureunitnumber, t2.m_textureunitnumber);
+}
+
+
 TEX::TEX(TEX&& tex) : 
 	m_image_is_loaded(tex.m_image_is_loaded),
 	m_texture(tex.m_texture), 
@@ -43,20 +54,9 @@ TEX::TEX(TEX&& tex) :
 
 TEX& TEX::operator=(TEX&& T)
 {
-	if (this == &T)
-	{
-		return *this;
-	}
+	TEX temp_tex((std::move(T)));
 
-	Clean();
-
-	m_image_is_loaded = T.m_image_is_loaded;
-	m_texture = T.m_texture;
-	m_is_bound = T.m_is_bound;
-	m_textureunitnumber = T.m_textureunitnumber;
-
-	T.m_image_is_loaded = false;
-	T.m_is_bound = false;
+	swap(*this, temp_tex);
 
 	return *this;
 }

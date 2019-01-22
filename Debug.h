@@ -14,6 +14,7 @@
 #include <map>
 #include <exception>
 #include <typeinfo>
+#include <algorithm>
 
 
 #include <GL/glew.h>
