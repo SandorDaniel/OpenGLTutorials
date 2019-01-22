@@ -16,7 +16,7 @@
 // - muveleti ill. memoria hatekonysag optimalizalas
 // - forditasi fuggoseg csokkentes
 // - robosztussag(helyes hivasi sorrend-, elemszamegyezes- kikenyszerites; learning path)
-// - kivetelbiztossag
+// - kivetelbiztossag (eg.: copy-swap idiom https://stackoverflow.com/questions/3279543/what-is-the-copy-and-swap-idiom, https://stackoverflow.com/questions/6687388/why-do-some-people-use-swap-for-move-assignments / Kerrek SB's answer)
 // - szalbiztossag, vagy mi...
 // - eliminating C-style and function-like conversions
 // - eliminaiting magic numbers
