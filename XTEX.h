@@ -39,11 +39,11 @@ public:
 	void loadBMP_custom(const char* const filepath) // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
 	{
 		return m_tex.loadBMP_custom(filepath);
-	}
+	} // TODO: write our own Texture loader that unbinds target.
 	void loadDDS(const char* const filepath)
 	{
 		return m_tex.loadDDS(filepath);
-	}
+	} // TODO: write our own Texture loader that unbinds target.
 	void unLoad()
 	{
 		m_tex.unLoad();
