@@ -22,8 +22,8 @@ public:
 
 	VAO() 
 	{ 
-		glGenVertexArrays(1, &m_vertexArrayID);
-	} // Generate a name for a new array.
+		glGenVertexArrays(1, &m_vertexArrayID); // Generates a name for a new array.
+	}
 	~VAO() 
 	{ 
 		clear();
