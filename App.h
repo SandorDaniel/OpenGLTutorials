@@ -9,7 +9,7 @@
 #include <glm/detail/precision.hpp>
 
 #include "XVBO.hpp"
-#include "VAO.hpp"
+#include "XVAO.hpp"
 #include "XTEX.h"
 
 #include "Camera.h"
@@ -20,7 +20,7 @@ class App
 {
 	GLFWwindow* window = nullptr; // TODO: rename it properly
 
-	VAO m_vao;
+	XVAO m_vao;
 	XVBO<glm::tvec3, float, glm::highp, 3> m_vbo_pos;
 	XVBO<glm::tvec3, float, glm::highp, 3> m_vbo_nor;
 	XVBO<glm::tvec2, float, glm::highp, 2> m_vbo_tex;
