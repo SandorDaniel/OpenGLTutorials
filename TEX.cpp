@@ -83,12 +83,6 @@ void TEX::loadDDS(const char* const filepath)
 }
 
 
-void TEX::unLoad()
-{
-	glDeleteTextures(1, &m_texture);
-}
-
-
 void TEX::bind() const
 {
 	if (!is_class_loaded)
@@ -112,10 +106,4 @@ void TEX::unBind() const
 
 	FreeTextureUnitNumbers.push(m_textureunitnumber);
 	m_textureunitnumber = -1;
-}
-
-
-TEX::operator GLuint() const
-{
-	return m_textureunitnumber;
 }
