@@ -1,3 +1,5 @@
+// TODO: az egységesség jegyében minden OGL object wrapper osztály a konstruktorban generálja és a destruktorban törölje az objectet!
+
 // TODO: FRAGMENT SHADERS LIBRARY (FSL)
 //       In order to avoid fragment shader's code-redundancy (so in order to make our fragment shaders more maintainable)
 //       write separate header files for every reused (or willing to be reused) functionality and encapsulate and hide their implementation
