@@ -5,6 +5,15 @@
 
 
 
+void swap(VAO& v1, VAO& v2)
+{
+	using std::swap;
+
+	swap(v1.m_vertexArrayID, v2.m_vertexArrayID);
+	swap(v1.m_channel_number, v2.m_channel_number);
+}
+
+
 VAO::VAO(VAO&& vao) : 
 	m_vertexArrayID(vao.m_vertexArrayID),
 	m_channel_number(vao.m_channel_number)
@@ -16,16 +25,9 @@ VAO::VAO(VAO&& vao) :
 
 VAO& VAO::operator=(VAO&& vao)
 {
-	if (this == &vao)
-		return *this;
+	VAO temp_vao((std::move(vao)));
 
-	glDeleteVertexArrays(1, &m_vertexArrayID);
-
-	m_vertexArrayID = vao.m_vertexArrayID;
-	m_channel_number = vao.m_channel_number;
-
-	vao.m_vertexArrayID = 0;
-	vao.m_channel_number = 0;
+	swap(*this, temp_vao);
 
 	return *this;
 }

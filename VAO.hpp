@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include <GL/glew.h>
 
 #include <glm/glm.hpp>
@@ -19,6 +21,8 @@ class VAO final
 	unsigned int m_channel_number = 0;
 
 public:
+
+	friend void swap(VAO& v1, VAO& v2);
 
 	VAO() 
 	{ 
