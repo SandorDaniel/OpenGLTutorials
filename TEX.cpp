@@ -71,13 +71,15 @@ TEX& TEX::operator=(TEX&& T)
 
 void TEX::loadBMP_custom(const char* const filepath) // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
 {
-	m_texture = ::loadBMP_custom(filepath);
+	m_texture = ::loadBMP_custom(filepath); // TODO: write our own Texture loader that unbinds texture.
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
 void TEX::loadDDS(const char* const filepath)
 {
-	m_texture = ::loadDDS(filepath);
+	m_texture = ::loadDDS(filepath); // TODO: write our own Texture loader that unbinds texture.
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 

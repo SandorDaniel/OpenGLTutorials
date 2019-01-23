@@ -44,11 +44,11 @@ public:
 	void loadBMP_custom(const char* const filepath) // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
 	{
 		return (m_loading.turnOn(static_cast<std::function<void(TEX&, const char* const)>>(&TEX::loadBMP_custom)))(m_tex, filepath);
-	} // TODO: write our own Texture loader that unbinds target.
+	}
 	void loadDDS(const char* const filepath)
 	{
 		return (m_loading.turnOn(static_cast<std::function<void(TEX&, const char* const)>>(&TEX::loadDDS)))(m_tex, filepath);
-	} // TODO: write our own Texture loader that unbinds target.
+	}
 	void unLoad()
 	{
 		//auto func = m_bindin
