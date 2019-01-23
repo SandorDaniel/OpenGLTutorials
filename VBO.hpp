@@ -26,6 +26,8 @@ class VBO final
 
 public:
 
+	friend void swap(VBO& v1, VBO& v2);
+
 	VBO() = default;
 	~VBO() 
 	{ 
@@ -69,6 +71,21 @@ public:
 };
 
 
+template<
+	template<typename, glm::precision> class TVec,
+	typename CoordType,
+	glm::precision precision,
+	const int COORD_COUNT>
+void swap(VBO<TVec, CoordType, precision, COORD_COUNT>& v1, VBO<TVec, CoordType, precision, COORD_COUNT> & v2)
+{
+	using std::swap;
+
+	swap(v1.m_id, v2.m_id);
+	swap(v1.m_element_count_of_vertexbuffer, v2.m_element_count_of_vertexbuffer);
+	swap(v1.m_isLoaded, v2.m_isLoaded);
+}
+
+
 template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
 VBO<TVec, CoordType, precision, COORD_COUNT>::VBO(VBO&& vbo) : m_id(vbo.m_id), m_element_count_of_vertexbuffer(vbo.m_element_count_of_vertexbuffer)
 {
@@ -80,18 +97,9 @@ VBO<TVec, CoordType, precision, COORD_COUNT>::VBO(VBO&& vbo) : m_id(vbo.m_id), m
 template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
 VBO<TVec, CoordType, precision, COORD_COUNT>& VBO<TVec, CoordType, precision, COORD_COUNT>::operator=(VBO&& vbo)
 {
-	if (this == &vbo)
-	{
-		return *this;
-	}
+	VBO temp_vbo((std::move(vbo)));
 
-	unLoad();
-
-	m_id = vbo.m_id;
-	m_element_count_of_vertexbuffer = vbo.m_element_count_of_vertexbuffer;
-
-	vbo.m_id = 0;
-	vbo.m_element_count_of_vertexbuffer = 0;
+	swap(*this, temp_vbo);
 
 	return *this;
 }
