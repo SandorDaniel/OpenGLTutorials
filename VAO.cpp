@@ -5,7 +5,9 @@
 
 
 
-VAO::VAO(VAO&& vao) : m_vertexArrayID(vao.m_vertexArrayID), m_channel_number(vao.m_channel_number)
+VAO::VAO(VAO&& vao) : 
+	m_vertexArrayID(vao.m_vertexArrayID),
+	m_channel_number(vao.m_channel_number)
 {
 	vao.m_vertexArrayID = 0;
 	vao.m_channel_number = 0;
