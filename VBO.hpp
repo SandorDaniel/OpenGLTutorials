@@ -71,11 +71,7 @@ public:
 };
 
 
-template<
-	template<typename, glm::precision> class TVec,
-	typename CoordType,
-	glm::precision precision,
-	const int COORD_COUNT>
+template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
 void swap(VBO<TVec, CoordType, precision, COORD_COUNT>& v1, VBO<TVec, CoordType, precision, COORD_COUNT> & v2)
 {
 	using std::swap;
