@@ -26,7 +26,14 @@ class VBO final
 
 public:
 
-	friend void swap(VBO& v1, VBO& v2);
+	friend void swap(VBO& v1, VBO& v2)
+	{
+		using std::swap;
+
+		swap(v1.m_id, v2.m_id);
+		swap(v1.m_element_count_of_vertexbuffer, v2.m_element_count_of_vertexbuffer);
+		swap(v1.m_isLoaded, v2.m_isLoaded);
+	}
 
 	VBO() = default;
 	~VBO() 
@@ -72,20 +79,9 @@ public:
 
 
 template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
-void swap(VBO<TVec, CoordType, precision, COORD_COUNT>& v1, VBO<TVec, CoordType, precision, COORD_COUNT> & v2)
-{
-	using std::swap;
-
-	swap(v1.m_id, v2.m_id);
-	swap(v1.m_element_count_of_vertexbuffer, v2.m_element_count_of_vertexbuffer);
-	swap(v1.m_isLoaded, v2.m_isLoaded);
-}
-
-
-template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
-VBO<TVec, CoordType, precision, COORD_COUNT>::VBO(VBO&& vbo) :
+VBO<TVec, CoordType, precision, COORD_COUNT>::VBO(VBO<TVec, CoordType, precision, COORD_COUNT>&& vbo) :
 	m_id(vbo.m_id),
-	m_element_count_of_vertexbuffer(vbo.m_element_count_of_vertexbuffer)
+	m_element_count_of_vertexbuffer(vbo.m_element_count_of_vertexbuffer),
 	m_isLoaded(vbo.m_isLoaded)
 {
 	vbo.m_id = 0;
@@ -95,7 +91,7 @@ VBO<TVec, CoordType, precision, COORD_COUNT>::VBO(VBO&& vbo) :
 
 
 template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
-VBO<TVec, CoordType, precision, COORD_COUNT>& VBO<TVec, CoordType, precision, COORD_COUNT>::operator=(VBO&& vbo)
+VBO<TVec, CoordType, precision, COORD_COUNT>& VBO<TVec, CoordType, precision, COORD_COUNT>::operator=(VBO<TVec, CoordType, precision, COORD_COUNT>&& vbo)
 {
 	VBO temp_vbo((std::move(vbo)));
 
@@ -125,6 +121,7 @@ template<template<typename, glm::precision> class TVec, typename CoordType, glm:
 void VBO<TVec, CoordType, precision, COORD_COUNT>::unLoad()
 {
 	glDeleteBuffers(1, &m_id);
+	m_id = 0;
 	m_element_count_of_vertexbuffer = 0;
 
 	m_isLoaded = false;
