@@ -4,6 +4,7 @@
 #include <typeinfo>
 #include <exception>
 #include <limits>
+#include <exception>
 
 #include <GL/glew.h>
 
@@ -19,6 +20,15 @@ template<
 	const int COORD_COUNT>
 class VBO final
 {
+
+public:
+
+	class VBOIsNotLoaded : public std::exception
+	{
+		const char* what() const noexcept { return "You should have loaded the VBO object befor binding it to the VAO object."; }
+	};
+
+private:
 
 	GLuint m_id = 0;
 	GLsizei m_element_count_of_vertexbuffer = 0;
@@ -48,7 +58,12 @@ public:
 	VBO& operator=(VBO&& vbo);
 
 	operator GLuint() const 
-	{ 
+	{
+		if (!m_isLoaded)
+		{
+			throw VBOIsNotLoaded();
+		}
+
 		return m_id; 
 	}
 
@@ -56,7 +71,12 @@ public:
 	void unLoad();
 
 	GLsizei getElementCount() const
-	{ 
+	{
+		if (!m_isLoaded)
+		{
+			throw VBOIsNotLoaded();
+		}
+
 		return m_element_count_of_vertexbuffer;
 	}
 	GLenum getCoordGLType() const
@@ -69,11 +89,6 @@ public:
 		{
 			// TODO: ...
 		}
-	}
-
-	bool isLoaded() const 
-	{ 
-		return m_isLoaded;
 	}
 };
 

@@ -9,8 +9,6 @@
 
 #include "VBO.hpp"
 
-#include <exception>
-
 
 
 class VAO final
@@ -21,11 +19,6 @@ class VAO final
 	unsigned int m_channel_number = 0;
 
 public:
-
-	class VBOIsNotLoaded : public std::exception
-	{
-		const char* what() const noexcept { return "You should have loaded the VBO object befor binding it to the VAO object."; }
-	};
 
 	VAO() 
 	{ 
@@ -69,11 +62,6 @@ template<
 	const int COORD_COUNT>
 void VAO::bind(const VBO<TVec, CoordType, precision, COORD_COUNT>& VBO)
 {
-	if (!VBO.isLoaded())
-	{
-		throw VBOIsNotLoaded();
-	}
-
 	glBindVertexArray(m_vertexArrayID); // Make the new array active, creating it if necessary.
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
