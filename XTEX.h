@@ -62,7 +62,8 @@ public:
 	}
 	void unBind() const
 	{
-		return (m_binding.turnOff(static_cast<std::function<void(const TEX&)>>(&TEX::unBind)))(m_tex);
+		std::function<void(const TEX&)> func = m_binding.turnOff(static_cast<std::function<void(const TEX&)>>(&TEX::unBind));
+		return (m_binding.checkOn(func))(m_tex);
 	}
 
 };
