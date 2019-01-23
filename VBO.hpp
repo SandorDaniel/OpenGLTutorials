@@ -5,6 +5,7 @@
 #include <exception>
 #include <limits>
 #include <exception>
+#include <algorithm>
 
 #include <GL/glew.h>
 
