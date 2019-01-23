@@ -39,7 +39,7 @@ void VAO::clear()
 }
 
 
-void VAO::enAble() const
+void VAO::bind() const
 {
 	glBindVertexArray(m_vertexArrayID);
 
@@ -50,7 +50,7 @@ void VAO::enAble() const
 }
 
 
-void VAO::disAble() const
+void VAO::unBind() const
 {
 	for (unsigned int i = 0; i < m_channel_number; ++i)
 	{

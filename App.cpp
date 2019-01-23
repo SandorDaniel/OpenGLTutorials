@@ -57,13 +57,13 @@ void App::init()
 	#pragma region OBJ Loading (RAM -> VRAM)
 
 	m_vbo_pos.load(compressed_v_pos);
-	m_vao.bind(m_vbo_pos);
+	m_vao.attach(m_vbo_pos);
 
 	m_vbo_nor.load(compressed_v_nor);
-	m_vao.bind(m_vbo_nor);
+	m_vao.attach(m_vbo_nor);
 
 	m_vbo_tex.load(compressed_v_tex);
-	m_vao.bind(m_vbo_tex);
+	m_vao.attach(m_vbo_tex);
 
 
 	glGenBuffers(1, &m_elementbufferID);
@@ -145,7 +145,7 @@ void App::upDate()
 
 void App::render() const
 {
-	m_vao.enAble();
+	m_vao.bind();
 	m_tex.bind();
 
 	// Use our shader
@@ -188,7 +188,7 @@ void App::render() const
 	);
 
 	m_tex.unBind();
-	m_vao.disAble();
+	m_vao.unBind();
 }
 
 

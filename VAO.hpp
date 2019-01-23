@@ -47,10 +47,10 @@ public:
 		typename CoordType,
 		glm::precision precision,
 		const int COORD_COUNT>
-	void bind(const XVBO<TVec, CoordType, precision, COORD_COUNT>& VBO);
+	void attach(const XVBO<TVec, CoordType, precision, COORD_COUNT>& VBO);
 
-	void enAble() const;
-	void disAble() const;
+	void bind() const;
+	void unBind() const;
 
 };
 
@@ -60,7 +60,7 @@ template<
 	typename CoordType,
 	glm::precision precision,
 	const int COORD_COUNT>
-void VAO::bind(const XVBO<TVec, CoordType, precision, COORD_COUNT>& VBO)
+void VAO::attach(const XVBO<TVec, CoordType, precision, COORD_COUNT>& VBO)
 {
 	glBindVertexArray(m_vertexArrayID); // Make the new array active, creating it if necessary.
 
