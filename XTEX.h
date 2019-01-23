@@ -33,7 +33,7 @@ public:
 	
 	operator GLuint() const
 	{
-		return (m_soobm.checkConstReturningMethodForBinding(static_cast<std::function<GLuint(const TEX&)>>(&TEX::operator GLuint), m_tex))();
+		return (m_soobm.checkMethodForBinding(static_cast<std::function<GLuint(const TEX&)>>(&TEX::operator GLuint), m_tex))(m_tex);
 	}
 
 	void loadBMP_custom(const char* const filepath) // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
@@ -51,11 +51,11 @@ public:
 
 	void bind() const
 	{
-		return (m_soobm.treatConstNonReturningMethodAsBinding(static_cast<std::function<void(const TEX&)>>(&TEX::bind), m_tex))();
+		return (m_soobm.treatMethodAsBinding(static_cast<std::function<void(const TEX&)>>(&TEX::bind)))(m_tex);
 	}
 	void unBind() const
 	{
-		return (m_soobm.treatConstNonReturningMethodAsUnBinding(static_cast<std::function<void(const TEX&)>>(&TEX::unBind), m_tex))();
+		return (m_soobm.treatMethodAsUnBinding(static_cast<std::function<void(const TEX&)>>(&TEX::unBind), m_tex))(m_tex);
 	}
 
 	void Clean()
