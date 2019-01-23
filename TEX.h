@@ -44,7 +44,7 @@ public:
 		glDeleteTextures(1, &m_texture);
 	}
 
-	void bind() const; // TODO: unBind()
+	void bind() const;
 	void unBind() const;
 
 };

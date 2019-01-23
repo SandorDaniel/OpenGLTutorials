@@ -39,7 +39,7 @@ public:
 	operator GLuint() const
 	{
 		return (m_binding.checkOn(static_cast<std::function<GLuint(const TEX&)>>(&TEX::operator GLuint)))(m_tex);
-	}
+	} // returns the number of texture channel wich it is bound to
 
 	void loadBMP_custom(const char* const filepath) // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
 	{
@@ -53,7 +53,6 @@ public:
 	{
 		//auto func = m_bindin
 		return (m_loading.turnOff(static_cast<std::function<void(TEX&)>>(&TEX::unLoad)))(m_tex);
-		m_tex.unLoad();
 	}
 
 	void bind() const
