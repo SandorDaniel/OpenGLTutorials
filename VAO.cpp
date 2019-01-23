@@ -33,14 +33,6 @@ VAO& VAO::operator=(VAO&& vao)
 }
 
 
-void VAO::clear()
-{
-	glDeleteVertexArrays(1, &m_vertexArrayID);
-	m_vertexArrayID = 0;
-	m_channel_number = 0;
-}
-
-
 void VAO::bind() const
 {
 	glBindVertexArray(m_vertexArrayID);

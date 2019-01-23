@@ -16,8 +16,7 @@
 class VAO final
 {
 
-	GLuint m_vertexArrayID = 0; // TODO: ellenõrizni, hogy a OpenGL-ben a 0 valóban azt jelenti e, hogy a vertex array object még nem jött létre.
-
+	GLuint m_vertexArrayID;
 	unsigned int m_channel_number = 0;
 
 public:
@@ -29,8 +28,8 @@ public:
 		glGenVertexArrays(1, &m_vertexArrayID); // Generates a name for a new array.
 	}
 	~VAO() 
-	{ 
-		clear();
+	{
+		glDeleteVertexArrays(1, &m_vertexArrayID);
 	}
 
 	VAO(const VAO&) = delete;
@@ -43,8 +42,6 @@ public:
 	{
 		return m_vertexArrayID;
 	}
-
-	void clear();
 
 	template<
 		template<typename, glm::precision> class TVec,
