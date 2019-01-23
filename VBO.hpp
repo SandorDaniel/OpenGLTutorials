@@ -87,10 +87,14 @@ void swap(VBO<TVec, CoordType, precision, COORD_COUNT>& v1, VBO<TVec, CoordType,
 
 
 template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
-VBO<TVec, CoordType, precision, COORD_COUNT>::VBO(VBO&& vbo) : m_id(vbo.m_id), m_element_count_of_vertexbuffer(vbo.m_element_count_of_vertexbuffer)
+VBO<TVec, CoordType, precision, COORD_COUNT>::VBO(VBO&& vbo) :
+	m_id(vbo.m_id),
+	m_element_count_of_vertexbuffer(vbo.m_element_count_of_vertexbuffer)
+	m_isLoaded(vbo.m_isLoaded)
 {
 	vbo.m_id = 0;
 	m_element_count_of_vertexbuffer = 0;
+	m_isLoaded = false;
 }
 
 
