@@ -42,6 +42,7 @@ public:
 	void unLoad()
 	{
 		glDeleteTextures(1, &m_texture);
+		m_texture = 0;
 	}
 
 	void bind() const;
