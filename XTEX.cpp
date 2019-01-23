@@ -11,7 +11,8 @@ void swap(X_TEX& t1, X_TEX& t2)
 {
 	using std::swap;
 
-	swap(t1.m_soobm, t2.m_soobm);
+	swap(t1.m_loading, t2.m_loading);
+	swap(t1.m_binding, t2.m_binding);
 	swap(t1.m_tex, t2.m_tex);
 }
 

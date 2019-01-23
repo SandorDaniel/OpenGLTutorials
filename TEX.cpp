@@ -34,18 +34,28 @@ void swap(TEX& t1, TEX& t2)
 {
 	using std::swap;
 
-	swap(t1.m_image_is_loaded, t2.m_image_is_loaded);
 	swap(t1.m_texture, t2.m_texture);
 	swap(t1.m_textureunitnumber, t2.m_textureunitnumber);
 }
 
 
-TEX::TEX(TEX&& tex) : 
-	m_image_is_loaded(tex.m_image_is_loaded),
+TEX::~TEX()
+{
+	if (m_textureunitnumber >= 0)
+	{
+		unBind();
+	}
+
+	unLoad();
+}
+
+
+TEX::TEX(TEX&& tex) :
 	m_texture(tex.m_texture),
 	m_textureunitnumber(tex.m_textureunitnumber)
 {
-	tex.m_image_is_loaded = false;
+	tex.m_texture = 0;
+	tex.m_textureunitnumber = -1;
 }
 
 
@@ -62,34 +72,23 @@ TEX& TEX::operator=(TEX&& T)
 void TEX::loadBMP_custom(const char* const filepath) // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
 {
 	m_texture = ::loadBMP_custom(filepath);
-	m_image_is_loaded = true;
 }
 
 
 void TEX::loadDDS(const char* const filepath)
 {
 	m_texture = ::loadDDS(filepath);
-	m_image_is_loaded = true;
 }
 
 
 void TEX::unLoad()
 {
-	if (m_image_is_loaded)
-	{
-		glDeleteTextures(1, &m_texture);
-		m_image_is_loaded = false;
-	}
+	glDeleteTextures(1, &m_texture);
 }
 
 
 void TEX::bind() const
 {
-	if (!m_image_is_loaded)
-	{
-		throw; // TODO...
-	}
-
 	if (!is_class_loaded)
 	{
 		loadClass();
@@ -111,13 +110,6 @@ void TEX::unBind() const
 
 	FreeTextureUnitNumbers.push(m_textureunitnumber);
 	m_textureunitnumber = -1;
-}
-
-
-void TEX::Clean()
-{
-	unBind();
-	unLoad();
 }
 
 

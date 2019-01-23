@@ -16,9 +16,7 @@ class TEX
 
 private:
 
-	bool m_image_is_loaded = false;
 	GLuint m_texture = 0;
-
 	mutable GLint m_textureunitnumber = -1;
 
 public:
@@ -26,7 +24,7 @@ public:
 	friend void swap(TEX& t1, TEX& t2);
 
 	TEX() = default;
-	~TEX() { Clean(); }
+	~TEX();
 
 	TEX(const TEX&) = delete;
 	TEX& operator=(const TEX&) = delete;
@@ -43,5 +41,4 @@ public:
 	void bind() const; // TODO: unBind()
 	void unBind() const;
 
-	void Clean();
 };
