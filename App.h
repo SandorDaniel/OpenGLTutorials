@@ -4,14 +4,14 @@
 
 #include <GLFW/glfw3.h>
 
-#include "VBO.hpp"
-#include "VAO.hpp"
-
 #include <glm/glm.hpp>
 #include <glm/detail/type_vec.hpp>
 #include <glm/detail/precision.hpp>
 
+#include "XVBO.hpp"
+#include "VAO.hpp"
 #include "XTEX.h"
+
 #include "Camera.h"
 
 
@@ -21,9 +21,9 @@ class App
 	GLFWwindow* window = nullptr; // TODO: rename it properly
 
 	VAO m_vao;
-	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_pos;
-	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_nor;
-	VBO<glm::tvec2, float, glm::highp, 2> m_vbo_tex;
+	XVBO<glm::tvec3, float, glm::highp, 3> m_vbo_pos;
+	XVBO<glm::tvec3, float, glm::highp, 3> m_vbo_nor;
+	XVBO<glm::tvec2, float, glm::highp, 2> m_vbo_tex;
 
 	std::vector<GLushort> m_indices{}; // TODO encapsulation and hiding
 	GLuint m_elementbufferID;

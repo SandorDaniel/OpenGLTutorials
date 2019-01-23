@@ -21,18 +21,10 @@ template<
 class VBO final
 {
 
-public:
-
-	class VBOIsNotLoaded : public std::exception
-	{
-		const char* what() const noexcept { return "You should have loaded the VBO object befor binding it to the VAO object."; }
-	};
-
 private:
 
 	GLuint m_id = 0;
 	GLsizei m_element_count_of_vertexbuffer = 0;
-	bool m_isLoaded = false;
 
 public:
 
@@ -42,7 +34,6 @@ public:
 
 		swap(v1.m_id, v2.m_id);
 		swap(v1.m_element_count_of_vertexbuffer, v2.m_element_count_of_vertexbuffer);
-		swap(v1.m_isLoaded, v2.m_isLoaded);
 	}
 
 	VBO() = default;
@@ -59,11 +50,6 @@ public:
 
 	operator GLuint() const 
 	{
-		if (!m_isLoaded)
-		{
-			throw VBOIsNotLoaded();
-		}
-
 		return m_id; 
 	}
 
@@ -72,11 +58,6 @@ public:
 
 	GLsizei getElementCount() const
 	{
-		if (!m_isLoaded)
-		{
-			throw VBOIsNotLoaded();
-		}
-
 		return m_element_count_of_vertexbuffer;
 	}
 	GLenum getCoordGLType() const
@@ -96,12 +77,10 @@ public:
 template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
 VBO<TVec, CoordType, precision, COORD_COUNT>::VBO(VBO<TVec, CoordType, precision, COORD_COUNT>&& vbo) :
 	m_id(vbo.m_id),
-	m_element_count_of_vertexbuffer(vbo.m_element_count_of_vertexbuffer),
-	m_isLoaded(vbo.m_isLoaded)
+	m_element_count_of_vertexbuffer(vbo.m_element_count_of_vertexbuffer)
 {
 	vbo.m_id = 0;
 	m_element_count_of_vertexbuffer = 0;
-	m_isLoaded = false;
 }
 
 
@@ -127,8 +106,6 @@ void VBO<TVec, CoordType, precision, COORD_COUNT>::load(const std::vector<TVec<C
 	glBindBuffer(GL_ARRAY_BUFFER, m_id);
 	glBufferData(GL_ARRAY_BUFFER, m_element_count_of_vertexbuffer * sizeof(TVec<CoordType, precision>), &g_vertex_buffer_data[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	
-	m_isLoaded = true;
 }
 
 
@@ -138,6 +115,4 @@ void VBO<TVec, CoordType, precision, COORD_COUNT>::unLoad()
 	glDeleteBuffers(1, &m_id);
 	m_id = 0;
 	m_element_count_of_vertexbuffer = 0;
-
-	m_isLoaded = false;
 }
