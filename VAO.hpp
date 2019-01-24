@@ -14,10 +14,10 @@
 
 
 
-class XVAO final
+class VAO final
 {
 
-	class VAO final
+	class AspFreeVAO final
 	{
 
 		GLuint m_vertexArrayID;
@@ -25,22 +25,22 @@ class XVAO final
 
 	public:
 
-		friend void swap(VAO& v1, VAO& v2);
+		friend void swap(AspFreeVAO& v1, AspFreeVAO& v2);
 
-		VAO()
+		AspFreeVAO()
 		{
 			glGenVertexArrays(1, &m_vertexArrayID); // Generates a name for a new array.
 		}
-		~VAO()
+		~AspFreeVAO()
 		{
 			glDeleteVertexArrays(1, &m_vertexArrayID);
 		}
 
-		VAO(const VAO&) = delete;
-		VAO& operator=(const VAO&) = delete;
+		AspFreeVAO(const AspFreeVAO&) = delete;
+		AspFreeVAO& operator=(const AspFreeVAO&) = delete;
 
-		VAO(VAO&& vao);
-		VAO& operator=(VAO&& vao);
+		AspFreeVAO(AspFreeVAO&& vao);
+		AspFreeVAO& operator=(AspFreeVAO&& vao);
 
 		operator GLuint() const
 		{
@@ -52,43 +52,43 @@ class XVAO final
 			typename CoordType,
 			glm::precision precision,
 			const int COORD_COUNT>
-		void attach(const XVBO<TVec, CoordType, precision, COORD_COUNT>& VBO);
+		void attach(const VBO<TVec, CoordType, precision, COORD_COUNT>& AspFreeVBO);
 
 		void bind() const;
 		void unBind() const;
 
 	};
 
-	friend void swap(VAO& v1, VAO& v2);
+	friend void swap(AspFreeVAO& v1, AspFreeVAO& v2);
 
 private:
 
 	mutable TwoStatesManager m_attaching;
 	mutable TwoStatesManager m_binding;
 
-	VAO m_vao;
+	AspFreeVAO m_vao;
 
 public:
 
-	friend void swap(XVAO& v1, XVAO& v2);
+	friend void swap(VAO& v1, VAO& v2);
 
-	XVAO() = default;
-	~XVAO() = default;
+	VAO() = default;
+	~VAO() = default;
 
-	XVAO(const XVAO&) = delete;
-	XVAO& operator=(const XVAO&) = delete;
+	VAO(const VAO&) = delete;
+	VAO& operator=(const VAO&) = delete;
 
-	XVAO(XVAO&& vao) :
+	VAO(VAO&& vao) :
 		m_attaching(vao.m_attaching),
 		m_binding(vao.m_binding),
 		m_vao(std::move(vao.m_vao))
 	{
 	}
-	XVAO& operator=(XVAO&& vao);
+	VAO& operator=(VAO&& vao);
 
 	operator GLuint() const
 	{
-		return (m_attaching.checkOn(static_cast<std::function<GLuint(const VAO&)>>(&VAO::operator GLuint)))(m_vao);
+		return (m_attaching.checkOn(static_cast<std::function<GLuint(const AspFreeVAO&)>>(&AspFreeVAO::operator GLuint)))(m_vao);
 	}
 
 	template<
@@ -96,19 +96,19 @@ public:
 		typename CoordType,
 		glm::precision precision,
 		const int COORD_COUNT>
-		void attach(const XVBO<TVec, CoordType, precision, COORD_COUNT>& VBO)
+		void attach(const VBO<TVec, CoordType, precision, COORD_COUNT>& AspFreeVBO)
 	{
-		return (m_attaching.turnOn(static_cast<std::function<void(VAO&, const XVBO<TVec, CoordType, precision, COORD_COUNT>&)>>(&VAO::attach<TVec, CoordType, precision, COORD_COUNT>)))(m_vao, VBO);
+		return (m_attaching.turnOn(static_cast<std::function<void(AspFreeVAO&, const VBO<TVec, CoordType, precision, COORD_COUNT>&)>>(&AspFreeVAO::attach<TVec, CoordType, precision, COORD_COUNT>)))(m_vao, AspFreeVBO);
 	}
 
 	void bind() const// FEJL check if has attachment; treat as binding
 	{
-		std::function<void(const VAO&)> func = m_binding.turnOn(static_cast<std::function<void(const VAO&)>>(&VAO::bind));
+		std::function<void(const AspFreeVAO&)> func = m_binding.turnOn(static_cast<std::function<void(const AspFreeVAO&)>>(&AspFreeVAO::bind));
 		return (m_attaching.checkOn(func))(m_vao);
 	}
 	void unBind() const // FEJL check if it is bounded; treat as unbinding
 	{
-		std::function<void(const VAO&)> func = m_binding.turnOff(static_cast<std::function<void(const VAO&)>>(&VAO::unBind));
+		std::function<void(const AspFreeVAO&)> func = m_binding.turnOff(static_cast<std::function<void(const AspFreeVAO&)>>(&AspFreeVAO::unBind));
 		return (m_binding.checkOn(func))(m_vao);
 	}
 };
@@ -119,18 +119,18 @@ template<
 	typename CoordType,
 	glm::precision precision,
 	const int COORD_COUNT>
-void XVAO::VAO::attach(const XVBO<TVec, CoordType, precision, COORD_COUNT>& VBO)
+void VAO::AspFreeVAO::attach(const VBO<TVec, CoordType, precision, COORD_COUNT>& AspFreeVBO)
 {
 	glBindVertexArray(m_vertexArrayID); // Make the new array active, creating it if necessary.
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, AspFreeVBO);
 
 	glEnableVertexAttribArray(m_channel_number);
 
 	glVertexAttribPointer(
 		m_channel_number,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
 		COORD_COUNT,					// size
-		VBO.getCoordGLType(),           // type
+		AspFreeVBO.getCoordGLType(),           // type
 		GL_FALSE,						// normalized?
 		0,								// stride
 		(void*)0						// array buffer offset

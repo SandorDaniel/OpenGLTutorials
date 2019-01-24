@@ -22,10 +22,10 @@ template<
 	typename CoordType,
 	glm::precision precision,
 	const int COORD_COUNT>
-class XVBO final
+class VBO final
 {
 
-	class VBO final
+	class AspFreeVBO final
 	{
 
 	private:
@@ -35,7 +35,7 @@ class XVBO final
 
 	public:
 
-		friend void swap(VBO& v1, VBO& v2)
+		friend void swap(AspFreeVBO& v1, AspFreeVBO& v2)
 		{
 			using std::swap;
 
@@ -43,22 +43,22 @@ class XVBO final
 			swap(v1.m_element_count_of_vertexbuffer, v2.m_element_count_of_vertexbuffer);
 		}
 
-		VBO()
+		AspFreeVBO()
 		{
 			glGenBuffers(1, &m_vbo_id);
 		}
-		~VBO()
+		~AspFreeVBO()
 		{
 			glDeleteBuffers(1, &m_vbo_id);
 		}
 
-		VBO(const VBO&) = delete;
-		VBO& operator=(const VBO&) = delete;
+		AspFreeVBO(const AspFreeVBO&) = delete;
+		AspFreeVBO& operator=(const AspFreeVBO&) = delete;
 
-		VBO(VBO&& vbo);
-		VBO& operator=(VBO&& vbo)
+		AspFreeVBO(AspFreeVBO&& vbo);
+		AspFreeVBO& operator=(AspFreeVBO&& vbo)
 		{
-			VBO temp_vbo((std::move(vbo)));
+			AspFreeVBO temp_vbo((std::move(vbo)));
 
 			swap(*this, temp_vbo);
 
@@ -101,11 +101,11 @@ private:
 
 	mutable TwoStatesManager m_loading;
 
-	VBO m_vbo;
+	AspFreeVBO m_vbo;
 
 public:
 	
-	friend void swap(XVBO<TVec, CoordType, precision, COORD_COUNT>& t1, XVBO<TVec, CoordType, precision, COORD_COUNT>& t2)
+	friend void swap(VBO<TVec, CoordType, precision, COORD_COUNT>& t1, VBO<TVec, CoordType, precision, COORD_COUNT>& t2)
 	{
 		using std::swap;
 
@@ -113,32 +113,32 @@ public:
 		swap(t1.m_vbo, t2.m_vbo);
 	}
 
-	XVBO() = default;
-	~XVBO() = default;
+	VBO() = default;
+	~VBO() = default;
 
-	XVBO(const XVBO&) = delete;
-	XVBO& operator=(const XVBO&) = delete;
+	VBO(const VBO&) = delete;
+	VBO& operator=(const VBO&) = delete;
 
-	XVBO(XVBO&& vbo) :
+	VBO(VBO&& vbo) :
 		m_loading(vbo.m_loading),
 		m_vbo(std::move(vbo.m_vbo))
 	{
 	}
-	XVBO& operator=(XVBO&& vbo);
+	VBO& operator=(VBO&& vbo);
 
 	operator GLuint() const
 	{
-		return (m_loading.checkOn(static_cast<std::function<GLuint(const XVBO<TVec, CoordType, precision, COORD_COUNT>::VBO&)>>(&XVBO<TVec, CoordType, precision, COORD_COUNT>::VBO::operator GLuint)))(m_vbo);
+		return (m_loading.checkOn(static_cast<std::function<GLuint(const VBO<TVec, CoordType, precision, COORD_COUNT>::AspFreeVBO&)>>(&VBO<TVec, CoordType, precision, COORD_COUNT>::AspFreeVBO::operator GLuint)))(m_vbo);
 	}
 
 	void load(const std::vector<TVec<CoordType, precision>>& g_vertex_buffer_data)
 	{
-		return (m_loading.turnOn(static_cast<std::function<void(XVBO<TVec, CoordType, precision, COORD_COUNT>::VBO&, const std::vector<TVec<CoordType, precision>>&)>>(&XVBO<TVec, CoordType, precision, COORD_COUNT>::VBO::load)))(m_vbo, g_vertex_buffer_data);
+		return (m_loading.turnOn(static_cast<std::function<void(VBO<TVec, CoordType, precision, COORD_COUNT>::AspFreeVBO&, const std::vector<TVec<CoordType, precision>>&)>>(&VBO<TVec, CoordType, precision, COORD_COUNT>::AspFreeVBO::load)))(m_vbo, g_vertex_buffer_data);
 	}
 
 	GLsizei getElementCount() const
 	{
-		return (m_loading.checkOn(static_cast<std::function<GLsizei(const XVBO<TVec, CoordType, precision, COORD_COUNT>::VBO&)>>(&XVBO<TVec, CoordType, precision, COORD_COUNT>::VBO::getElementCount)))(m_vbo);
+		return (m_loading.checkOn(static_cast<std::function<GLsizei(const VBO<TVec, CoordType, precision, COORD_COUNT>::AspFreeVBO&)>>(&VBO<TVec, CoordType, precision, COORD_COUNT>::AspFreeVBO::getElementCount)))(m_vbo);
 	}
 	GLenum getCoordGLType() const
 	{
@@ -148,7 +148,7 @@ public:
 
 
 template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
-XVBO<TVec, CoordType, precision, COORD_COUNT>::VBO::VBO(XVBO<TVec, CoordType, precision, COORD_COUNT>::VBO&& vbo) :
+VBO<TVec, CoordType, precision, COORD_COUNT>::AspFreeVBO::AspFreeVBO(VBO<TVec, CoordType, precision, COORD_COUNT>::AspFreeVBO&& vbo) :
 	m_vbo_id(vbo.m_vbo_id),
 	m_element_count_of_vertexbuffer(vbo.m_element_count_of_vertexbuffer)
 {
@@ -158,7 +158,7 @@ XVBO<TVec, CoordType, precision, COORD_COUNT>::VBO::VBO(XVBO<TVec, CoordType, pr
 
 
 template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
-void XVBO<TVec, CoordType, precision, COORD_COUNT>::VBO::load(const std::vector<TVec<CoordType, precision>>& g_vertex_buffer_data)
+void VBO<TVec, CoordType, precision, COORD_COUNT>::AspFreeVBO::load(const std::vector<TVec<CoordType, precision>>& g_vertex_buffer_data)
 {
 	m_element_count_of_vertexbuffer = static_cast<GLsizei>(g_vertex_buffer_data.size() <= 2147483647 ? 
 		g_vertex_buffer_data.size() : 
@@ -171,9 +171,9 @@ void XVBO<TVec, CoordType, precision, COORD_COUNT>::VBO::load(const std::vector<
 
 
 template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
-XVBO<TVec, CoordType, precision, COORD_COUNT>& XVBO<TVec, CoordType, precision, COORD_COUNT>::operator=(XVBO<TVec, CoordType, precision, COORD_COUNT>&& vbo)
+VBO<TVec, CoordType, precision, COORD_COUNT>& VBO<TVec, CoordType, precision, COORD_COUNT>::operator=(VBO<TVec, CoordType, precision, COORD_COUNT>&& vbo)
 {
-	XVBO<TVec, CoordType, precision, COORD_COUNT> temp_vbo((std::move(vbo)));
+	VBO<TVec, CoordType, precision, COORD_COUNT> temp_vbo((std::move(vbo)));
 
 	swap(*this, temp_vbo);
 

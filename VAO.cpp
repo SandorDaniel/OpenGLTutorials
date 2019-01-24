@@ -5,7 +5,7 @@
 
 
 
-void swap(XVAO::VAO& v1, XVAO::VAO& v2)
+void swap(VAO::AspFreeVAO& v1, VAO::AspFreeVAO& v2)
 {
 	using std::swap;
 
@@ -14,7 +14,7 @@ void swap(XVAO::VAO& v1, XVAO::VAO& v2)
 }
 
 
-XVAO::VAO::VAO(XVAO::VAO&& vao) :
+VAO::AspFreeVAO::AspFreeVAO(VAO::AspFreeVAO&& vao) :
 	m_vertexArrayID(vao.m_vertexArrayID),
 	m_channel_number(vao.m_channel_number)
 {
@@ -23,9 +23,9 @@ XVAO::VAO::VAO(XVAO::VAO&& vao) :
 }
 
 
-XVAO::VAO& XVAO::VAO::operator=(XVAO::VAO&& vao)
+VAO::AspFreeVAO& VAO::AspFreeVAO::operator=(VAO::AspFreeVAO&& vao)
 {
-	XVAO::VAO temp_vao((std::move(vao)));
+	VAO::AspFreeVAO temp_vao((std::move(vao)));
 
 	swap(*this, temp_vao);
 
@@ -33,7 +33,7 @@ XVAO::VAO& XVAO::VAO::operator=(XVAO::VAO&& vao)
 }
 
 
-void XVAO::VAO::bind() const
+void VAO::AspFreeVAO::bind() const
 {
 	glBindVertexArray(m_vertexArrayID);
 
@@ -44,7 +44,7 @@ void XVAO::VAO::bind() const
 }
 
 
-void XVAO::VAO::unBind() const
+void VAO::AspFreeVAO::unBind() const
 {
 	for (unsigned int i = 0; i < m_channel_number; ++i)
 	{
@@ -55,7 +55,7 @@ void XVAO::VAO::unBind() const
 }
 
 
-void swap(XVAO& v1, XVAO& v2)
+void swap(VAO& v1, VAO& v2)
 {
 	using std::swap;
 
@@ -65,9 +65,9 @@ void swap(XVAO& v1, XVAO& v2)
 }
 
 
-XVAO& XVAO::operator=(XVAO&& vao)
+VAO& VAO::operator=(VAO&& vao)
 {
-	XVAO temp_vao((std::move(vao)));
+	VAO temp_vao((std::move(vao)));
 
 	swap(*this, temp_vao);
 

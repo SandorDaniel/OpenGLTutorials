@@ -28,10 +28,10 @@ GLuint loadDDS(const char * imagepath, GLuint textureID);
 
 
 
-class X_TEX
+class TEX
 {
 
-	class TEX
+	class AspFreeTEX
 	{
 
 		static std::priority_queue<GLint, std::vector<GLint>, std::less<typename std::vector<GLint>::value_type>> FreeTextureUnitNumbers;
@@ -45,19 +45,19 @@ class X_TEX
 
 	public:
 
-		friend void swap(X_TEX::TEX& t1, X_TEX::TEX& t2);
+		friend void swap(TEX::AspFreeTEX& t1, TEX::AspFreeTEX& t2);
 
-		TEX()
+		AspFreeTEX()
 		{
 			glGenTextures(1, &m_texture_id);
 		}
-		~TEX();
+		~AspFreeTEX();
 
-		TEX(const TEX&) = delete;
-		TEX& operator=(const TEX&) = delete;
+		AspFreeTEX(const AspFreeTEX&) = delete;
+		AspFreeTEX& operator=(const AspFreeTEX&) = delete;
 
-		TEX(TEX&& tex);
-		TEX& operator=(TEX&& T);
+		AspFreeTEX(AspFreeTEX&& tex);
+		AspFreeTEX& operator=(AspFreeTEX&& T);
 
 		operator GLuint() const
 		{
@@ -78,55 +78,55 @@ class X_TEX
 
 	};
 
-	friend void swap(X_TEX::TEX& t1, X_TEX::TEX& t2);
+	friend void swap(TEX::AspFreeTEX& t1, TEX::AspFreeTEX& t2);
 
 private:
 
 	mutable TwoStatesManager m_loading;
 	mutable TwoStatesManager m_binding;
 
-	TEX m_tex;
+	AspFreeTEX m_tex;
 
 public:
 
-	friend void swap(X_TEX& t1, X_TEX& t2);
+	friend void swap(TEX& t1, TEX& t2);
 
-	X_TEX() = default;
-	~X_TEX() = default;
+	TEX() = default;
+	~TEX() = default;
 
-	X_TEX(const X_TEX&) = delete;
-	X_TEX& operator=(const X_TEX&) = delete;
+	TEX(const TEX&) = delete;
+	TEX& operator=(const TEX&) = delete;
 
-	X_TEX(X_TEX&& xtex) :
+	TEX(TEX&& xtex) :
 		m_loading(xtex.m_loading),
 		m_binding(xtex.m_binding),
 		m_tex(std::move(xtex.m_tex))
 	{
 	}
-	X_TEX& operator=(X_TEX&& T);
+	TEX& operator=(TEX&& T);
 
 	operator GLuint() const
 	{
-		return (m_binding.checkOn(static_cast<std::function<GLuint(const TEX&)>>(&TEX::operator GLuint)))(m_tex);
+		return (m_binding.checkOn(static_cast<std::function<GLuint(const AspFreeTEX&)>>(&AspFreeTEX::operator GLuint)))(m_tex);
 	} // returns the number of texture channel wich it is bound to
 
 	void loadBMP_custom(const char* const filepath) // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
 	{
-		return (m_loading.turnOn(static_cast<std::function<void(TEX&, const char* const)>>(&TEX::loadBMP_custom)))(m_tex, filepath);
+		return (m_loading.turnOn(static_cast<std::function<void(AspFreeTEX&, const char* const)>>(&AspFreeTEX::loadBMP_custom)))(m_tex, filepath);
 	}
 	void loadDDS(const char* const filepath)
 	{
-		return (m_loading.turnOn(static_cast<std::function<void(TEX&, const char* const)>>(&TEX::loadDDS)))(m_tex, filepath);
+		return (m_loading.turnOn(static_cast<std::function<void(AspFreeTEX&, const char* const)>>(&AspFreeTEX::loadDDS)))(m_tex, filepath);
 	}
 
 	void bind() const
 	{
-		auto func = m_binding.turnOn(static_cast<std::function<void(const TEX&)>>(&TEX::bind));
+		auto func = m_binding.turnOn(static_cast<std::function<void(const AspFreeTEX&)>>(&AspFreeTEX::bind));
 		return (m_loading.checkOn(func))(m_tex);
 	}
 	void unBind() const
 	{
-		std::function<void(const TEX&)> func = m_binding.turnOff(static_cast<std::function<void(const TEX&)>>(&TEX::unBind));
+		std::function<void(const AspFreeTEX&)> func = m_binding.turnOff(static_cast<std::function<void(const AspFreeTEX&)>>(&AspFreeTEX::unBind));
 		return (m_binding.checkOn(func))(m_tex);
 	}
 

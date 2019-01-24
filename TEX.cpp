@@ -10,13 +10,13 @@
 
 
 
-std::priority_queue<GLint, std::vector<GLint>> X_TEX::TEX::FreeTextureUnitNumbers{};
+std::priority_queue<GLint, std::vector<GLint>> TEX::AspFreeTEX::FreeTextureUnitNumbers{};
 
 
-bool X_TEX::TEX::is_class_loaded = false;
+bool TEX::AspFreeTEX::is_class_loaded = false;
 
 
-void X_TEX::TEX::loadClass()
+void TEX::AspFreeTEX::loadClass()
 {
 	GLint MaxTextureUnitNumber;
 	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &MaxTextureUnitNumber); // A total number of textures that can be used, period (GL_MAX_TEXTURE_IMAGE_UNITS - the number of textures that can be accessed by the fragment shader)
@@ -29,7 +29,7 @@ void X_TEX::TEX::loadClass()
 }
 
 
-void swap(X_TEX::TEX& t1, X_TEX::TEX& t2)
+void swap(TEX::AspFreeTEX& t1, TEX::AspFreeTEX& t2)
 {
 	using std::swap;
 
@@ -38,7 +38,7 @@ void swap(X_TEX::TEX& t1, X_TEX::TEX& t2)
 }
 
 
-X_TEX::TEX::~TEX()
+TEX::AspFreeTEX::~AspFreeTEX()
 {
 	if (m_textureunitnumber >= 0)
 	{
@@ -49,7 +49,7 @@ X_TEX::TEX::~TEX()
 }
 
 
-X_TEX::TEX::TEX(X_TEX::TEX&& tex) :
+TEX::AspFreeTEX::AspFreeTEX(TEX::AspFreeTEX&& tex) :
 	m_texture_id(tex.m_texture_id),
 	m_textureunitnumber(tex.m_textureunitnumber)
 {
@@ -58,9 +58,9 @@ X_TEX::TEX::TEX(X_TEX::TEX&& tex) :
 }
 
 
-X_TEX::TEX& X_TEX::TEX::operator=(X_TEX::TEX&& T)
+TEX::AspFreeTEX& TEX::AspFreeTEX::operator=(TEX::AspFreeTEX&& T)
 {
-	X_TEX::TEX temp_tex((std::move(T)));
+	TEX::AspFreeTEX temp_tex((std::move(T)));
 
 	swap(*this, temp_tex);
 
@@ -68,7 +68,7 @@ X_TEX::TEX& X_TEX::TEX::operator=(X_TEX::TEX&& T)
 }
 
 
-void X_TEX::TEX::bind() const
+void TEX::AspFreeTEX::bind() const
 {
 	if (!is_class_loaded)
 	{
@@ -84,7 +84,7 @@ void X_TEX::TEX::bind() const
 }
 
 
-void X_TEX::TEX::unBind() const
+void TEX::AspFreeTEX::unBind() const
 {
 	glActiveTexture(GL_TEXTURE0 + m_textureunitnumber);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -94,7 +94,7 @@ void X_TEX::TEX::unBind() const
 }
 
 
-void swap(X_TEX& t1, X_TEX& t2)
+void swap(TEX& t1, TEX& t2)
 {
 	using std::swap;
 
@@ -104,9 +104,9 @@ void swap(X_TEX& t1, X_TEX& t2)
 }
 
 
-X_TEX& X_TEX::operator=(X_TEX&& xtex)
+TEX& TEX::operator=(TEX&& xtex)
 {
-	X_TEX temp_xtex((std::move(xtex)));
+	TEX temp_xtex((std::move(xtex)));
 
 	swap(*this, temp_xtex);
 
