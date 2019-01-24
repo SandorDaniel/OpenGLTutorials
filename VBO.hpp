@@ -37,10 +37,13 @@ public:
 		swap(v1.m_element_count_of_vertexbuffer, v2.m_element_count_of_vertexbuffer);
 	}
 
-	VBO() = default;
+	VBO()
+	{
+		glGenBuffers(1, &m_vbo_id);
+	}
 	~VBO() 
 	{ 
-		unLoad();
+		glDeleteBuffers(1, &m_vbo_id);
 	}
 
 	VBO(const VBO&) = delete;
@@ -55,7 +58,6 @@ public:
 	}
 
 	void load(const std::vector<TVec<CoordType, precision>>& g_vertex_buffer_data);
-	void unLoad();
 
 	GLsizei getElementCount() const
 	{
@@ -103,17 +105,7 @@ void VBO<TVec, CoordType, precision, COORD_COUNT>::load(const std::vector<TVec<C
 		g_vertex_buffer_data.size() : 
 		throw std::domain_error("VBO.hpp: buffer element count is to big to be represented as a GLsizei"));
 
-	glGenBuffers(1, &m_id);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo_id);
 	glBufferData(GL_ARRAY_BUFFER, m_element_count_of_vertexbuffer * sizeof(TVec<CoordType, precision>), &g_vertex_buffer_data[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-
-template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
-void VBO<TVec, CoordType, precision, COORD_COUNT>::unLoad()
-{
-	glDeleteBuffers(1, &m_id);
-	m_id = 0;
-	m_element_count_of_vertexbuffer = 0;
 }

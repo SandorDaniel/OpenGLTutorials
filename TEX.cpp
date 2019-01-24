@@ -44,7 +44,7 @@ TEX::~TEX()
 		unBind();
 	}
 
-	unLoad();
+	glDeleteTextures(1, &m_texture_id);
 }
 
 

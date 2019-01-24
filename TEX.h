@@ -40,7 +40,10 @@ public:
 
 	friend void swap(TEX& t1, TEX& t2);
 
-	TEX() = default;
+	TEX()
+	{
+		glGenTextures(1, &m_texture_id);
+	}
 	~TEX();
 
 	TEX(const TEX&) = delete;
@@ -60,11 +63,6 @@ public:
 	}
 	void loadDDS(const char* const filepath)
 	{
-	}
-	void unLoad()
-	{
-		glDeleteTextures(1, &m_texture);
-		m_texture = 0;
 		::loadDDS(filepath, m_texture_id);
 	}
 

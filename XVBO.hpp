@@ -58,10 +58,6 @@ public:
 	{
 		return (m_loading.turnOn(static_cast<std::function<void(VBO<TVec, CoordType, precision, COORD_COUNT>&, const std::vector<TVec<CoordType, precision>>&)>>(&VBO<TVec, CoordType, precision, COORD_COUNT>::load)))(m_vbo, g_vertex_buffer_data);
 	}
-	void unLoad()
-	{
-		return (m_loading.turnOff(static_cast<std::function<void(VBO<TVec, CoordType, precision, COORD_COUNT>&)>>(&VBO<TVec, CoordType, precision, COORD_COUNT>::unLoad)))(m_vbo);
-	}
 
 	GLsizei getElementCount() const
 	{

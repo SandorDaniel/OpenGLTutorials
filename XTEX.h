@@ -49,11 +49,6 @@ public:
 	{
 		return (m_loading.turnOn(static_cast<std::function<void(TEX&, const char* const)>>(&TEX::loadDDS)))(m_tex, filepath);
 	}
-	void unLoad()
-	{
-		//auto func = m_bindin
-		return (m_loading.turnOff(static_cast<std::function<void(TEX&)>>(&TEX::unLoad)))(m_tex);
-	}
 
 	void bind() const
 	{
