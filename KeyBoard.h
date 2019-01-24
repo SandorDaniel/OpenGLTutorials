@@ -25,7 +25,9 @@ namespace InPut
 
 			public:
 
-				virtual ~Observer() {  }
+				virtual ~Observer() 
+				{  
+				}
 
 				virtual void pressCallBack() = 0;
 				virtual void releaseCallBack() = 0;
@@ -34,18 +36,18 @@ namespace InPut
 
 		private:
 
-			std::set<Observer*> m_set_p_observers{};
+			std::set<Observer*> m_set_of_p_observers{};
 
 		public:
 
 			void regist(Observer& observer) 
 			{ 
-				m_set_p_observers.insert(&observer);
+				m_set_of_p_observers.insert(&observer);
 			}
 			void unRegist(Observer& observer)
 			{
-				auto it = m_set_p_observers.find(&observer);
-				m_set_p_observers.erase(it);
+				auto it = m_set_of_p_observers.find(&observer);
+				m_set_of_p_observers.erase(it);
 			}
 
 			void press();

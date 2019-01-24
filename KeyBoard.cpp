@@ -18,7 +18,7 @@ namespace InPut
 
 	void KeyBoard::Key::press()
 	{
-		for (auto it : m_set_p_observers)
+		for (auto it : m_set_of_p_observers)
 		{
 			it->pressCallBack();
 		}
@@ -27,7 +27,7 @@ namespace InPut
 
 	void KeyBoard::Key::release()
 	{
-		for (auto it : m_set_p_observers)
+		for (auto it : m_set_of_p_observers)
 		{
 			it->releaseCallBack();
 		}
