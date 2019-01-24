@@ -144,6 +144,7 @@ public:
 	{
 		return m_vbo.getCoordGLType();
 	}
+
 };
 
 
