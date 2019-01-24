@@ -24,49 +24,114 @@ GLuint loadDDS(const char * imagepath, GLuint textureID);
 
 
 
-class TEX
+#include "Aspects.hpp"
+
+
+
+class X_TEX
 {
-	
-	static std::priority_queue<GLint, std::vector<GLint>, std::less<typename std::vector<GLint>::value_type>> FreeTextureUnitNumbers;
-	static bool is_class_loaded;
-	static void loadClass();
+
+	class TEX
+	{
+
+		static std::priority_queue<GLint, std::vector<GLint>, std::less<typename std::vector<GLint>::value_type>> FreeTextureUnitNumbers;
+		static bool is_class_loaded;
+		static void loadClass();
+
+	private:
+
+		GLuint m_texture_id;
+		mutable GLint m_textureunitnumber = -1;
+
+	public:
+
+		friend void swap(X_TEX::TEX& t1, X_TEX::TEX& t2);
+
+		TEX()
+		{
+			glGenTextures(1, &m_texture_id);
+		}
+		~TEX();
+
+		TEX(const TEX&) = delete;
+		TEX& operator=(const TEX&) = delete;
+
+		TEX(TEX&& tex);
+		TEX& operator=(TEX&& T);
+
+		operator GLuint() const
+		{
+			return m_textureunitnumber;
+		}
+
+		void loadBMP_custom(const char* const filepath) // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
+		{
+			::loadBMP_custom(filepath, m_texture_id);
+		}
+		void loadDDS(const char* const filepath)
+		{
+			::loadDDS(filepath, m_texture_id);
+		}
+
+		void bind() const;
+		void unBind() const;
+
+	};
+
+	friend void swap(X_TEX::TEX& t1, X_TEX::TEX& t2);
 
 private:
 
-	GLuint m_texture_id = 0;
-	mutable GLint m_textureunitnumber = -1;
+	mutable TwoStatesManager m_loading;
+	mutable TwoStatesManager m_binding;
+
+	TEX m_tex;
 
 public:
 
-	friend void swap(TEX& t1, TEX& t2);
+	friend void swap(X_TEX& t1, X_TEX& t2);
 
-	TEX()
+	X_TEX() = default;
+	~X_TEX() = default;
+
+	X_TEX(const X_TEX&) = delete;
+	X_TEX& operator=(const X_TEX&) = delete;
+
+	X_TEX(X_TEX&& xtex) :
+		m_loading(xtex.m_loading),
+		m_binding(xtex.m_binding),
+		m_tex(std::move(xtex.m_tex))
 	{
-		glGenTextures(1, &m_texture_id);
 	}
-	~TEX();
-
-	TEX(const TEX&) = delete;
-	TEX& operator=(const TEX&) = delete;
-
-	TEX(TEX&& tex);
-	TEX& operator=(TEX&& T);
+	X_TEX& operator=(X_TEX&& T);
 
 	operator GLuint() const
 	{
-		return m_textureunitnumber;
-	}
+		return (m_binding.checkOn(static_cast<std::function<GLuint(const TEX&)>>(&TEX::operator GLuint)))(m_tex);
+	} // returns the number of texture channel wich it is bound to
 
 	void loadBMP_custom(const char* const filepath) // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
 	{
-		::loadBMP_custom(filepath, m_texture_id);
+		return (m_loading.turnOn(static_cast<std::function<void(TEX&, const char* const)>>(&TEX::loadBMP_custom)))(m_tex, filepath);
 	}
 	void loadDDS(const char* const filepath)
 	{
-		::loadDDS(filepath, m_texture_id);
+		return (m_loading.turnOn(static_cast<std::function<void(TEX&, const char* const)>>(&TEX::loadDDS)))(m_tex, filepath);
 	}
 
-	void bind() const;
-	void unBind() const;
+	void bind() const
+	{
+		auto func = m_binding.turnOn(static_cast<std::function<void(const TEX&)>>(&TEX::bind));
+		return (m_loading.checkOn(func))(m_tex);
+	}
+	void unBind() const
+	{
+		std::function<void(const TEX&)> func = m_binding.turnOff(static_cast<std::function<void(const TEX&)>>(&TEX::unBind));
+		return (m_binding.checkOn(func))(m_tex);
+	}
 
-};
+}; 
+
+
+
+

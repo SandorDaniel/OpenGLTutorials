@@ -8,9 +8,9 @@
 #include <glm/detail/type_vec.hpp>
 #include <glm/detail/precision.hpp>
 
-#include "XVBO.hpp"
-#include "XVAO.hpp"
-#include "XTEX.h"
+#include "VBO.hpp"
+#include "VAO.hpp"
+#include "TEX.h"
 
 #include "Camera.h"
 

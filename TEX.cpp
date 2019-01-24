@@ -2,6 +2,7 @@
 #include "Debug.h"
 
 #include <queue>
+#include <utility>
 
 #include <GL/glew.h>
 
@@ -9,13 +10,13 @@
 
 
 
-std::priority_queue<GLint, std::vector<GLint>> TEX::FreeTextureUnitNumbers{};
+std::priority_queue<GLint, std::vector<GLint>> X_TEX::TEX::FreeTextureUnitNumbers{};
 
 
-bool TEX::is_class_loaded = false;
+bool X_TEX::TEX::is_class_loaded = false;
 
 
-void TEX::loadClass()
+void X_TEX::TEX::loadClass()
 {
 	GLint MaxTextureUnitNumber;
 	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &MaxTextureUnitNumber); // A total number of textures that can be used, period (GL_MAX_TEXTURE_IMAGE_UNITS - the number of textures that can be accessed by the fragment shader)
@@ -28,7 +29,7 @@ void TEX::loadClass()
 }
 
 
-void swap(TEX& t1, TEX& t2)
+void swap(X_TEX::TEX& t1, X_TEX::TEX& t2)
 {
 	using std::swap;
 
@@ -37,7 +38,7 @@ void swap(TEX& t1, TEX& t2)
 }
 
 
-TEX::~TEX()
+X_TEX::TEX::~TEX()
 {
 	if (m_textureunitnumber >= 0)
 	{
@@ -48,7 +49,7 @@ TEX::~TEX()
 }
 
 
-TEX::TEX(TEX&& tex) :
+X_TEX::TEX::TEX(X_TEX::TEX&& tex) :
 	m_texture_id(tex.m_texture_id),
 	m_textureunitnumber(tex.m_textureunitnumber)
 {
@@ -57,9 +58,9 @@ TEX::TEX(TEX&& tex) :
 }
 
 
-TEX& TEX::operator=(TEX&& T)
+X_TEX::TEX& X_TEX::TEX::operator=(X_TEX::TEX&& T)
 {
-	TEX temp_tex((std::move(T)));
+	X_TEX::TEX temp_tex((std::move(T)));
 
 	swap(*this, temp_tex);
 
@@ -67,7 +68,7 @@ TEX& TEX::operator=(TEX&& T)
 }
 
 
-void TEX::bind() const
+void X_TEX::TEX::bind() const
 {
 	if (!is_class_loaded)
 	{
@@ -83,13 +84,33 @@ void TEX::bind() const
 }
 
 
-void TEX::unBind() const
+void X_TEX::TEX::unBind() const
 {
 	glActiveTexture(GL_TEXTURE0 + m_textureunitnumber);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	FreeTextureUnitNumbers.push(m_textureunitnumber);
 	m_textureunitnumber = -1;
+}
+
+
+void swap(X_TEX& t1, X_TEX& t2)
+{
+	using std::swap;
+
+	swap(t1.m_loading, t2.m_loading);
+	swap(t1.m_binding, t2.m_binding);
+	swap(t1.m_tex, t2.m_tex);
+}
+
+
+X_TEX& X_TEX::operator=(X_TEX&& xtex)
+{
+	X_TEX temp_xtex((std::move(xtex)));
+
+	swap(*this, temp_xtex);
+
+	return *this;
 }
 
 
