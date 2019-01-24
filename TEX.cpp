@@ -32,7 +32,7 @@ void swap(TEX& t1, TEX& t2)
 {
 	using std::swap;
 
-	swap(t1.m_texture, t2.m_texture);
+	swap(t1.m_texture_id, t2.m_texture_id);
 	swap(t1.m_textureunitnumber, t2.m_textureunitnumber);
 }
 
@@ -49,10 +49,10 @@ TEX::~TEX()
 
 
 TEX::TEX(TEX&& tex) :
-	m_texture(tex.m_texture),
+	m_texture_id(tex.m_texture_id),
 	m_textureunitnumber(tex.m_textureunitnumber)
 {
-	tex.m_texture = 0;
+	tex.m_texture_id = 0;
 	tex.m_textureunitnumber = -1;
 }
 
@@ -79,7 +79,7 @@ void TEX::bind() const
 
 	// Bind our texture in Texture Unit TextureUnitNumber
 	glActiveTexture(GL_TEXTURE0 + m_textureunitnumber);
-	glBindTexture(GL_TEXTURE_2D, m_texture);
+	glBindTexture(GL_TEXTURE_2D, m_texture_id);
 }
 
 

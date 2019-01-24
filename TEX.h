@@ -33,7 +33,7 @@ class TEX
 
 private:
 
-	GLuint m_texture = 0;
+	GLuint m_texture_id = 0;
 	mutable GLint m_textureunitnumber = -1;
 
 public:
@@ -56,16 +56,16 @@ public:
 
 	void loadBMP_custom(const char* const filepath) // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
 	{
-		::loadBMP_custom(filepath, m_texture);
+		::loadBMP_custom(filepath, m_texture_id);
 	}
 	void loadDDS(const char* const filepath)
 	{
-		::loadDDS(filepath, m_texture);
 	}
 	void unLoad()
 	{
 		glDeleteTextures(1, &m_texture);
 		m_texture = 0;
+		::loadDDS(filepath, m_texture_id);
 	}
 
 	void bind() const;

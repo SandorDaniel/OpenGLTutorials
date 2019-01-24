@@ -24,7 +24,7 @@ class VBO final
 
 private:
 
-	GLuint m_id = 0;
+	GLuint m_vbo_id = 0;
 	GLsizei m_element_count_of_vertexbuffer = 0;
 
 public:
@@ -33,7 +33,7 @@ public:
 	{
 		using std::swap;
 
-		swap(v1.m_id, v2.m_id);
+		swap(v1.m_vbo_id, v2.m_vbo_id);
 		swap(v1.m_element_count_of_vertexbuffer, v2.m_element_count_of_vertexbuffer);
 	}
 
@@ -51,7 +51,7 @@ public:
 
 	operator GLuint() const 
 	{
-		return m_id; 
+		return m_vbo_id; 
 	}
 
 	void load(const std::vector<TVec<CoordType, precision>>& g_vertex_buffer_data);
@@ -77,10 +77,10 @@ public:
 
 template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
 VBO<TVec, CoordType, precision, COORD_COUNT>::VBO(VBO<TVec, CoordType, precision, COORD_COUNT>&& vbo) :
-	m_id(vbo.m_id),
+	m_vbo_id(vbo.m_vbo_id),
 	m_element_count_of_vertexbuffer(vbo.m_element_count_of_vertexbuffer)
 {
-	vbo.m_id = 0;
+	vbo.m_vbo_id = 0;
 	m_element_count_of_vertexbuffer = 0;
 }
 
@@ -104,7 +104,7 @@ void VBO<TVec, CoordType, precision, COORD_COUNT>::load(const std::vector<TVec<C
 		throw std::domain_error("VBO.hpp: buffer element count is to big to be represented as a GLsizei"));
 
 	glGenBuffers(1, &m_id);
-	glBindBuffer(GL_ARRAY_BUFFER, m_id);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo_id);
 	glBufferData(GL_ARRAY_BUFFER, m_element_count_of_vertexbuffer * sizeof(TVec<CoordType, precision>), &g_vertex_buffer_data[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
