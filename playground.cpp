@@ -1,4 +1,4 @@
-// TODO: az egységesség jegyében minden OGL object wrapper osztály a konstruktorban generálja és a destruktorban törölje az objectet!
+// TODO: adding aspects to IBO and (depend on IBO) to VAO if it is neccesarry. 
 
 // TODO: FRAGMENT SHADERS LIBRARY (FSL)
 //       In order to avoid fragment shader's code-redundancy (so in order to make our fragment shaders more maintainable)
