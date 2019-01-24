@@ -10,6 +10,7 @@
 #include <glm/detail/precision.hpp>
 
 #include "VBO.hpp"
+#include "IBO.hpp"
 #include "Aspects.hpp"
 
 
@@ -53,6 +54,9 @@ class VAO final
 			glm::precision precision,
 			const int COORD_COUNT>
 		void attach(const VBO<TVec, CoordType, precision, COORD_COUNT>& AspFreeVBO);
+		template<
+			typename ElementType>
+		void attach(const IBO<ElementType>& AspFreeIBO);
 
 		void bind() const;
 		void unBind() const;
@@ -96,9 +100,15 @@ public:
 		typename CoordType,
 		glm::precision precision,
 		const int COORD_COUNT>
-		void attach(const VBO<TVec, CoordType, precision, COORD_COUNT>& AspFreeVBO)
+	void attach(const VBO<TVec, CoordType, precision, COORD_COUNT>& AspFreeVBO)
 	{
 		return (m_attaching.turnOn(static_cast<std::function<void(AspFreeVAO&, const VBO<TVec, CoordType, precision, COORD_COUNT>&)>>(&AspFreeVAO::attach<TVec, CoordType, precision, COORD_COUNT>)))(m_vao, AspFreeVBO);
+	}
+	template<
+		typename ElementType>
+	void attach(const IBO<ElementType>& AspFreeIBO)
+	{
+		return m_vao.attach(AspFreeIBO);
 	}
 
 	void bind() const// FEJL check if has attachment; treat as binding
@@ -146,3 +156,15 @@ void VAO::AspFreeVAO::attach(const VBO<TVec, CoordType, precision, COORD_COUNT>&
 }
 
 
+template<
+	typename ElementType>
+void VAO::AspFreeVAO::attach(const IBO<ElementType>& AspFreeIBO)
+{
+	glBindVertexArray(m_vertexArrayID); // Make the new array active, creating it if necessary.
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, AspFreeIBO);
+
+	glBindVertexArray(0); // !!!VAO (container object) has to get unbound before VBO otherwise VBO would be detached of VAO
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}

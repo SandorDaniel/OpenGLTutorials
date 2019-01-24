@@ -10,6 +10,7 @@
 
 #include "VBO.hpp"
 #include "VAO.hpp"
+#include "IBO.hpp"
 #include "TEX.h"
 
 #include "Camera.h"
@@ -24,9 +25,7 @@ class App
 	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_pos;
 	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_nor;
 	VBO<glm::tvec2, float, glm::highp, 2> m_vbo_tex;
-
-	std::vector<GLushort> m_indices{}; // TODO encapsulation and hiding
-	GLuint m_elementbufferID;
+	IBO<GLushort> m_ibo;
 	
 	TEX m_tex;
 

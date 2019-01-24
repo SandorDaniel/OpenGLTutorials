@@ -42,12 +42,13 @@ void App::init()
 	std::vector<glm::vec3> compressed_v_pos{};
 	std::vector<glm::vec2> compressed_v_tex{};
 	std::vector<glm::vec3> compressed_v_nor{};
+	std::vector<GLushort> indices{};
 
 	indexVBO(
 		original_v_pos,
 		original_v_tex,
 		original_v_nor,
-		m_indices,
+		indices,
 		compressed_v_pos,
 		compressed_v_tex,
 		compressed_v_nor);
@@ -65,19 +66,8 @@ void App::init()
 	m_vbo_tex.load(compressed_v_tex);
 	m_vao.attach(m_vbo_tex);
 
-
-	glGenBuffers(1, &m_elementbufferID);
-
-	glBindVertexArray(m_vao); // Make the new array active, creating it if necessary.
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elementbufferID); // Can not bind an IBO to courrent context, if there is no VAO bounded to the current context.
-
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(GLushort), &m_indices[0], GL_STATIC_DRAW);
-
-	glBindVertexArray(0); // !!!VAO (container object) has to get unbound before IBO (regular object)!!! (???WHY???)
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
+	m_ibo.load(indices);
+	m_vao.attach(m_ibo);
 
 	true ? m_tex.loadDDS("../tutorial08_basic_shading/uvmap.DDS") : m_tex.loadBMP_custom("../tutorial05_textured_cube/uvtemplate.bmp"); // Load the texture using any two methods
 
@@ -168,7 +158,7 @@ void App::render() const
 	// Draw the triangles !
 	glDrawElements(
 		GL_TRIANGLES,      // mode
-		m_indices.size(),    // count
+		m_ibo.getElementCount(),    // count
 		GL_UNSIGNED_SHORT,   // type of indices
 		(void*)0           // element array buffer offset
 	);
@@ -182,7 +172,7 @@ void App::render() const
 	// Draw the triangles !
 	glDrawElements(
 		GL_TRIANGLES,      // mode
-		m_indices.size(),    // count
+		m_ibo.getElementCount(),    // count
 		GL_UNSIGNED_SHORT,   // type of indices
 		(void*)0           // element array buffer offset
 	);
