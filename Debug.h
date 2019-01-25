@@ -57,6 +57,8 @@ namespace sdd // stands for Sandor Daniel's Debugger
 
 		double operator()()
 		{
+			glFinish(); // glFinish does not return until the effects of all previously called GL commands are complete.
+
 			double actual_time = glfwGetTime();
 			double elapsed_time = actual_time - previous_time;
 			previous_time = actual_time;
