@@ -8,12 +8,12 @@
 
 uniform sampler2D myTextureSampler;
 
-uniform float source_light_power = 3000.0f;
-uniform vec4  source_light_posdir = vec4(0.0f, 0.0f, 100.0f, 1.0f);
+uniform float source_light_power = 200.0f;
+uniform vec4  source_light_posdir = vec4(20.0f, 10.0f, 10.0f, 1.0f);
 
-uniform vec3  source_light_diffuse_col = vec3(1.0f, 1.0f, 0.0f);
-uniform vec3  source_light_specular_col = vec3(1.0f, 1.0f, 0.0f);
-uniform vec3  source_light_ambient_col = 0.01 * vec3(1.0f, 1.0f, 0.0f);
+uniform vec3  source_light_diffuse_col  = vec3(1.0f, 1.0f, 1.0f);
+uniform vec3  source_light_specular_col = vec3(1.0f, 1.0f, 1.0f);
+uniform vec3  source_light_ambient_col  = vec3(1.0f, 1.0f, 1.0f);
 
 uniform vec3  cam_pos = vec3(0.0f, 0.0f, 5.0f);
 
@@ -21,9 +21,9 @@ in vec3 out_vert_pos;
 in vec3 out_vert_nor;
 in vec2 out_vert_tex;
 
-vec3  material_diffuse_col = texture(myTextureSampler, out_vert_tex.st).rgb; // col of the texture at the specified st
-vec3  material_ambient_col = 0.01f * material_diffuse_col;
-vec3  material_specular_col = 0.3f * material_diffuse_col;
+vec3  material_diffuse_col  = texture(myTextureSampler, out_vert_tex.st).rgb; // col of the texture at the specified st
+vec3  material_ambient_col  = 0.0005f * material_diffuse_col;
+vec3  material_specular_col = vec3(0.3f, 0.3f, 0.3f);
 
 out vec4 col;
 

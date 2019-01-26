@@ -30,7 +30,9 @@ class App
 	TEX m_tex;
 
 	GLuint m_programID;
-	GLuint m_MVPID;
+	GLuint m_MID;
+	GLuint m_VID;
+	GLuint m_PID;
 	GLuint m_cam_posID;
 	GLuint m_textureID;
 

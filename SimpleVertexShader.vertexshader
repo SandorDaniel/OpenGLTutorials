@@ -12,15 +12,17 @@ out vec3 out_vert_nor;
 out vec2 out_vert_tex;
   
 // Values that stay constant for the whole mesh.
-uniform mat4 MVP;
+uniform mat4 M;
+uniform mat4 V;
+uniform mat4 P;
 
 
 void main()
 {
     // Output position of the vertex, in clip space : MVP * position
-    gl_Position =  MVP * vec4(in_vert_pos, 1.0f);
+    gl_Position =  P * V * M * vec4(in_vert_pos, 1.0f);
 
-	out_vert_pos = in_vert_pos;
-	out_vert_nor = in_vert_nor;
+	out_vert_pos = (M * vec4(in_vert_pos, 1.0f)).xyz;
+	out_vert_nor = (M * vec4(in_vert_nor, 0.0f)).xyz; // A/ Note that the 4th coordinate is 0.0f. B/ Only correct if ModelMatrix does not scale the model ! Use its inverse transpose if not.
 	out_vert_tex = in_vert_tex;
 }

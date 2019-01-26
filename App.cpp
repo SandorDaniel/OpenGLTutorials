@@ -88,7 +88,9 @@ void App::init()
 
 	// Get a handle for our "MVP" uniform
 	// Only during the initialisation
-	m_MVPID = glGetUniformLocation(m_programID, "MVP");
+	m_MID = glGetUniformLocation(m_programID, "M");
+	m_VID = glGetUniformLocation(m_programID, "V");
+	m_PID = glGetUniformLocation(m_programID, "P");
 	m_cam_posID = glGetUniformLocation(m_programID, "cam_pos");
 	// Get a handle for our "myTextureSampler" uniform
 	m_textureID = glGetUniformLocation(m_programID, "myTextureSampler");
@@ -127,7 +129,7 @@ void App::upDate()
 	//M = T * R * S;
 
 	m_M;
-	m_M2 = glm::translate(glm::mat4(), glm::vec3(2.0f, 0.0f, 0.0f));
+	m_M2 = glm::scale(glm::mat4(), glm::vec3(0.5f, 0.5f, 0.5f)) * glm::translate(glm::mat4(), glm::vec3(3.0f, 0.0f, 0.0f));
 
 	#pragma endregion
 }
@@ -149,8 +151,12 @@ void App::render() const
 	int win_width, win_height;
 	glfwGetWindowSize(window, &win_width, &win_height);
 
-	glm::mat4 MVP = getProj(m_camera, win_width, win_height) * getView(m_camera) * m_M;
-	glUniformMatrix4fv(m_MVPID, 1, GL_FALSE, &MVP[0][0]);
+	glm::mat4 V = getView(m_camera);
+	glm::mat4 P = getProj(m_camera, win_width, win_height);
+
+	glUniformMatrix4fv(m_MID, 1, GL_FALSE, &m_M[0][0]);
+	glUniformMatrix4fv(m_VID, 1, GL_FALSE, &V[0][0]);
+	glUniformMatrix4fv(m_PID, 1, GL_FALSE, &P[0][0]);
 
 	//// Draw the triangle !
 	//glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
@@ -163,8 +169,9 @@ void App::render() const
 		(void*)0           // element array buffer offset
 	);
 
-	MVP = getProj(m_camera, win_width, win_height) * getView(m_camera) * m_M2;
-	glUniformMatrix4fv(m_MVPID, 1, GL_FALSE, &MVP[0][0]);
+	glUniformMatrix4fv(m_MID, 1, GL_FALSE, &m_M2[0][0]);
+	glUniformMatrix4fv(m_VID, 1, GL_FALSE, &V[0][0]);
+	glUniformMatrix4fv(m_PID, 1, GL_FALSE, &P[0][0]);
 
 	//// Draw the triangle !
 	//glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
