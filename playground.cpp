@@ -1,3 +1,6 @@
+// TODO: correct lights
+// TODO: https://www.opengl.org/archives/resources/features/KilgardTechniques/oglpitfall/
+// TODO: https://www.khronos.org/opengl/wiki/Common_Mistakes
 // TODO: adding aspects to IBO and (depend on IBO) to VAO if it is neccesarry. 
 
 // TODO: FRAGMENT SHADERS LIBRARY (FSL)
