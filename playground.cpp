@@ -42,6 +42,11 @@
 
 #include <GL/glew.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#include "wglext.h" // TODO...
+#endif
+
 #include <GLFW/glfw3.h>
 
 #include "App.h"
@@ -86,6 +91,35 @@ int main( void )
 		glfwTerminate();
 		return -1;
 	}
+
+	#pragma region VSYNC
+		#ifdef _WIN32
+		{
+			//https://stackoverflow.com/questions/589064/how-to-enable-vertical-sync-in-opengl
+
+			// this is pointer to function which returns pointer to string with list of all wgl extensions
+			PFNWGLGETEXTENSIONSSTRINGEXTPROC wglGetExtensionsStringEXT = nullptr;
+
+			// determine pointer to wglGetExtensionsStringEXT function
+			wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
+
+			if (strstr(wglGetExtensionsStringEXT(), "WGL_EXT_swap_control") == nullptr)
+			{
+				// string was not found ie WGL_EXT_swap_control is not supported
+				throw; // TODO
+			}
+
+			// Declare function pointer
+			PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
+
+			// Extension is supported, init pointer
+			wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+
+			// Enabling VSync
+			wglSwapIntervalEXT(1);
+		}
+		#endif
+	#pragma endregion
 
 	// Ensure we can capture the escape key being pressed below
 	//glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
