@@ -69,7 +69,7 @@ void App::init()
 	m_ibo.load(indices);
 	m_vao.attach(m_ibo);
 
-	true ? m_tex.loadDDS("../tutorial08_basic_shading/uvmap.DDS") : m_tex.loadBMP_custom("../tutorial05_textured_cube/uvtemplate.bmp"); // Load the texture using any two methods
+	true ? m_tex.loadDDS("../tutorial08_basic_shading/uvmap.DDS") : m_tex.loadBMP_custom("../tutorial05_textured_cube/uvtemplate.bmp"); // Load the texture using any two methods // TODO separate loading from mass storage to RAM and loading from RAM to VRAM
 
 	#pragma endregion
 
