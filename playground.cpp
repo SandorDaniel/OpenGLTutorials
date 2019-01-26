@@ -161,6 +161,8 @@ int main( void )
 	while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
 		   glfwWindowShouldClose(window) == 0 );
 
+	app.clean();
+
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
 
