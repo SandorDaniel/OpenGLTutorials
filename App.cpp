@@ -1,4 +1,4 @@
-#define sd_debugger
+//#define sd_debugger
 #include "Debug.h" // TODO rename to sdd
 
 #include <vector>
