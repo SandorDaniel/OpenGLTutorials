@@ -1,6 +1,5 @@
 #pragma once
 
-#define sd_debugger
 #ifdef sd_debugger
 
 #ifndef DEBUG_H
