@@ -94,6 +94,7 @@ void App::init()
 	m_cam_posID = glGetUniformLocation(m_programID, "cam_pos");
 	// Get a handle for our "myTextureSampler" uniform
 	m_textureID = glGetUniformLocation(m_programID, "myTextureSampler");
+	m_does_model_transformation_contain_nonuniform_scalingID = glGetUniformLocation(m_programID, "is_model_nonuniform_scaled");
 
 	#pragma endregion
 }
@@ -129,7 +130,10 @@ void App::upDate()
 	//M = T * R * S;
 
 	m_M;
-	m_M2 = glm::scale(glm::mat4(), glm::vec3(0.5f, 0.5f, 0.5f)) * glm::translate(glm::mat4(), glm::vec3(3.0f, 0.0f, 0.0f));
+	m_does_m_M_contain_nonuniform_scaling = false;
+
+	m_M2 = glm::scale(glm::mat4(), glm::vec3(0.5f, 2.0f, 0.5f)) * glm::translate(glm::mat4(), glm::vec3(3.0f, 0.0f, 0.0f));
+	m_does_m_M2_contain_nonuniform_scaling = true;
 
 	#pragma endregion
 }
@@ -154,6 +158,7 @@ void App::render() const
 	glm::mat4 V = getView(m_camera);
 	glm::mat4 P = getProj(m_camera, win_width, win_height);
 
+	glUniform1i(m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0);
 	glUniformMatrix4fv(m_MID, 1, GL_FALSE, &m_M[0][0]);
 	glUniformMatrix4fv(m_VID, 1, GL_FALSE, &V[0][0]);
 	glUniformMatrix4fv(m_PID, 1, GL_FALSE, &P[0][0]);
@@ -169,6 +174,7 @@ void App::render() const
 		(void*)0           // element array buffer offset
 	);
 
+	glUniform1i(m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
 	glUniformMatrix4fv(m_MID, 1, GL_FALSE, &m_M2[0][0]);
 	glUniformMatrix4fv(m_VID, 1, GL_FALSE, &V[0][0]);
 	glUniformMatrix4fv(m_PID, 1, GL_FALSE, &P[0][0]);

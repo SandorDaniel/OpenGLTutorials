@@ -15,6 +15,7 @@ out vec2 out_vert_tex;
 uniform mat4 M;
 uniform mat4 V;
 uniform mat4 P;
+uniform int is_model_nonuniform_scaled = 0;
 
 
 void main()
@@ -23,6 +24,6 @@ void main()
     gl_Position =  P * V * M * vec4(in_vert_pos, 1.0f);
 
 	out_vert_pos = (M * vec4(in_vert_pos, 1.0f)).xyz;
-	out_vert_nor = (M * vec4(in_vert_nor, 0.0f)).xyz; // A/ Note that the 4th coordinate is 0.0f. B/ Only correct if ModelMatrix does not scale the model ! Use its inverse transpose if not.
+	out_vert_nor = ((is_model_nonuniform_scaled == 0 ? M : transpose(inverse(M))) * vec4(in_vert_nor, 0.0f)).xyz; // A/ Note that the 4th coordinate of vector is 0.0f. B/ https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
 	out_vert_tex = in_vert_tex;
 }

@@ -35,9 +35,12 @@ class App
 	GLuint m_PID;
 	GLuint m_cam_posID;
 	GLuint m_textureID;
+	GLuint m_does_model_transformation_contain_nonuniform_scalingID;
 
 	glm::mat4 m_M = glm::mat4(); // glm::mat4() is the identity matrix
+	bool m_does_m_M_contain_nonuniform_scaling = false;
 	glm::mat4 m_M2 = glm::mat4();
+	bool m_does_m_M2_contain_nonuniform_scaling = false;
 
 	Camera m_camera;
 
