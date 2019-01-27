@@ -39,6 +39,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <cstring>
 
 #include <GL/glew.h>
 
@@ -74,7 +75,7 @@ int main( void )
 
 	// Open a window and create its OpenGL context
 	const int WIDTH = 1024, HEIGHT = 768;
-	window = glfwCreateWindow(WIDTH, HEIGHT, "Tutorial 0 - Keyboard and Mouse", NULL, NULL);
+	window = glfwCreateWindow(WIDTH, HEIGHT, "My Program", NULL, NULL);
 	if( window == NULL ){
 		std::cerr << "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" << std::endl;
 		std::cin.get();
@@ -82,6 +83,16 @@ int main( void )
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
+
+	{
+		char* title = new char[strlen("MyProgram - OGL version ") + strlen(reinterpret_cast<const char*>(glGetString(GL_VERSION))) + 1];
+		title[0] = '\0';
+
+		strcat(title, "MyProgram - OGL version ");
+		strcat(title, reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+
+		glfwSetWindowTitle(window, title);
+	}
 
 	// Initialize GLEW
 	glewExperimental = true; // Needed for core profile
