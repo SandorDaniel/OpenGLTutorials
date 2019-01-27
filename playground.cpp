@@ -95,6 +95,21 @@ int main( void )
 		glfwSetWindowTitle(window, title);
 	}
 
+	// List supported OGL extensions
+	{
+		GLint n = 0;
+		glGetIntegerv(GL_NUM_EXTENSIONS, &n);
+
+		PFNGLGETSTRINGIPROC glGetStringi = 0;
+		glGetStringi = (PFNGLGETSTRINGIPROC)wglGetProcAddress("glGetStringi");
+
+		for (GLint i = 0; i < n; i++)
+		{
+			const char* extension = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i));
+			std::cout << "Ext " << i << ":\t\t" << extension << std::endl;
+		}
+	}
+
 	// Initialize GLEW
 	glewExperimental = true; // Needed for core profile
 	if (glewInit() != GLEW_OK) {
