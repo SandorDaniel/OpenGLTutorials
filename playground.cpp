@@ -84,6 +84,7 @@ int main( void )
 	}
 	glfwMakeContextCurrent(window);
 
+	// Get OGL version
 	{
 		char* title = new char[strlen("MyProgram - OGL version ") + strlen(reinterpret_cast<const char*>(glGetString(GL_VERSION))) + 1];
 		title[0] = '\0';
