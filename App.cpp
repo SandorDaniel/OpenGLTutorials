@@ -148,9 +148,9 @@ void App::render() const
 	glUseProgram(m_programID);
 
 	// Set our "myTextureSampler" sampler to use Texture Unit TextureUnitNumber
-	glUniform1i(m_textureID, m_tex);
+	glUniform1i(m_textureID, m_tex); // DSA version: glProgramUniform1i(m_programID, m_textureID, m_tex);
 	
-	glUniform3fv(m_cam_posID, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos()));
+	glUniform3fv(m_cam_posID, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos())); // DSA version: glProgramUniform3fv(m_programID, m_cam_posID, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos()));
 
 	int win_width, win_height;
 	glfwGetWindowSize(window, &win_width, &win_height);
@@ -158,10 +158,10 @@ void App::render() const
 	glm::mat4 V = getView(m_camera);
 	glm::mat4 P = getProj(m_camera, win_width, win_height);
 
-	glUniform1i(m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0);
-	glUniformMatrix4fv(m_MID, 1, GL_FALSE, &m_M[0][0]);
-	glUniformMatrix4fv(m_VID, 1, GL_FALSE, &V[0][0]);
-	glUniformMatrix4fv(m_PID, 1, GL_FALSE, &P[0][0]);
+	glUniform1i(m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0);
+	glUniformMatrix4fv(m_MID, 1, GL_FALSE, &m_M[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M[0][0]);
+	glUniformMatrix4fv(m_VID, 1, GL_FALSE, &V[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);
+	glUniformMatrix4fv(m_PID, 1, GL_FALSE, &P[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_PID, 1, GL_FALSE, &P[0][0]);
 
 	//// Draw the triangle !
 	//glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
@@ -174,10 +174,10 @@ void App::render() const
 		(void*)0           // element array buffer offset
 	);
 
-	glUniform1i(m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
-	glUniformMatrix4fv(m_MID, 1, GL_FALSE, &m_M2[0][0]);
-	glUniformMatrix4fv(m_VID, 1, GL_FALSE, &V[0][0]);
-	glUniformMatrix4fv(m_PID, 1, GL_FALSE, &P[0][0]);
+	glUniform1i(m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
+	glUniformMatrix4fv(m_MID, 1, GL_FALSE, &m_M2[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M2[0][0]);
+	glUniformMatrix4fv(m_VID, 1, GL_FALSE, &V[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);
+	glUniformMatrix4fv(m_PID, 1, GL_FALSE, &P[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_PID, 1, GL_FALSE, &P[0][0]);
 
 	//// Draw the triangle !
 	//glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
