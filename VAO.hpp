@@ -171,11 +171,19 @@ template<
 	typename ElementType>
 void VAO::AspFreeVAO::attach(const IBO<ElementType>& AspFreeIBO)
 {
-	glBindVertexArray(m_vertexArrayID); // Make the new array active, creating it if necessary.
+	GLuint bound_vao;
+	glGetIntegerv(GL_VERTEX_ARRAY_POINTER, reinterpret_cast<GLint*>(&bound_vao)); // TODO make casting more safety
+	glBindVertexArray(m_vertexArrayID); // !!!bound_vao (container object) has to get unbound before bound_ibo otherwise bound_ibo would be detached of bound_vao
 
+	GLuint bound_ibo; // We want to live every state to be the same...
+	glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, reinterpret_cast<GLint*>(&bound_ibo)); // TODO make casting more safety
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, AspFreeIBO);
 
-	glBindVertexArray(0); // !!!VAO (container object) has to get unbound before VBO otherwise VBO would be detached of VAO
+	glBindVertexArray(0); // !!!VAO (container object) has to get unbound before IBO otherwise IBO would be detached of VAO
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bound_ibo);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bound_vao); // !!!bound_vao (container object) has to get rebound after bound_ibo otherwise bound_ibo would be attached to bound_vao
 }
