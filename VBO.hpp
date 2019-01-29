@@ -43,21 +43,7 @@ class VBO final
 			swap(v1.m_element_count_of_vertexbuffer, v2.m_element_count_of_vertexbuffer);
 		}
 
-		AspFreeVBO()
-		{
-			glGenBuffers(1, &m_vbo_id);
-
-			// Binding is neccesarry because generated names do not initially correspond to an instance of an object,
-			// objects with generated names are created by binding a generated name to the context.
-			// We need an instance of an object in order to use its name with a DSA function.
-			GLuint bound_vbo; // We want to live every state to be the same...
-			glGetIntegerv(GL_ARRAY_BUFFER_BINDING, reinterpret_cast<GLint*>(&bound_vbo)); // TODO make casting more safety
-			glBindBuffer(GL_ARRAY_BUFFER, m_vbo_id);
-			glBindBuffer(GL_ARRAY_BUFFER, bound_vbo);
-
-			//// Instead of the above we can use this, if our OpenGL version number is at least 4.5:
-			//glCreateBuffers(1, &m_vbo_id);
-		}
+		AspFreeVBO();
 		~AspFreeVBO()
 		{
 			glDeleteBuffers(1, &m_vbo_id);
@@ -142,6 +128,24 @@ public:
 	}
 
 };
+
+
+template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
+VBO<TVec, CoordType, precision, COORD_COUNT>::AspFreeVBO::AspFreeVBO()
+{
+	glGenBuffers(1, &m_vbo_id);
+
+	// Binding is neccesarry because generated names do not initially correspond to an instance of an object,
+	// objects with generated names are created by binding a generated name to the context.
+	// We need an instance of an object in order to use its name with a DSA function.
+	GLuint bound_vbo; // We want to live every state to be the same...
+	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, reinterpret_cast<GLint*>(&bound_vbo)); // TODO make casting more safety
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo_id);
+	glBindBuffer(GL_ARRAY_BUFFER, bound_vbo);
+
+	//// Instead of the above we can use this, if our OpenGL version number is at least 4.5:
+	//glCreateBuffers(1, &m_vbo_id);
+}
 
 
 template<template<typename, glm::precision> class TVec, typename CoordType, glm::precision precision, const int COORD_COUNT>
