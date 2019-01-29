@@ -83,17 +83,6 @@ class IBO final
 		{
 			return m_element_count_of_indexbuffer;
 		}
-		GLenum getElementGLType() const
-		{
-			if (typeid(ElementType) == typeid(GLushort))
-			{
-				return GL_UNSIGNED_SHORT;
-			}
-			else
-			{
-				// TODO: ...
-			}
-		}
 
 	};
 
@@ -147,10 +136,6 @@ public:
 	{
 		return (m_loading.checkOn(static_cast<std::function<GLsizei(const IBO<ElementType>::AspFreeIBO&)>>(&IBO<ElementType>::AspFreeIBO::getElementCount)))(m_ibo);
 	}
-	GLenum getElementGLType() const
-	{
-		return m_ibo.getElementGLType();
-	}
 
 };
 
@@ -172,9 +157,7 @@ void IBO<ElementType>::AspFreeIBO::load(const std::vector<ElementType>& g_index_
 		g_index_buffer_data.size() :
 		throw std::domain_error("IBO.hpp: buffer element count is to big to be represented as a GLsizei"));
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo_id);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_element_count_of_indexbuffer * sizeof(ElementType), &g_index_buffer_data[0], GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glNamedBufferData(m_ibo_id, m_element_count_of_indexbuffer * sizeof(ElementType), &g_index_buffer_data[0], GL_STATIC_DRAW);
 }
 
 
