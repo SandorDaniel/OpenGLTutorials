@@ -142,26 +142,44 @@ template<
 	const int COORD_COUNT>
 void VAO::AspFreeVAO::attach(const VBO<TVec, CoordType, precision, COORD_COUNT>& AspFreeVBO)
 {
-	glBindVertexArray(m_vertexArrayID); // Make the new array active, creating it if necessary.
+	//
+	// Not DSA code
+	//
 
-	glBindBuffer(GL_ARRAY_BUFFER, AspFreeVBO);
+	//glBindVertexArray(m_vertexArrayID); // Make the new array active, creating it if necessary.
 
-	glEnableVertexAttribArray(m_channel_number);
+	//glBindBuffer(GL_ARRAY_BUFFER, AspFreeVBO);
 
-	glVertexAttribPointer(
-		m_channel_number,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
-		COORD_COUNT,					// size
-		AspFreeVBO.getCoordGLType(),           // type
-		GL_FALSE,						// normalized?
-		0,								// stride
-		(void*)0						// array buffer offset
+	//glEnableVertexAttribArray(m_channel_number);
+
+	//glVertexAttribPointer(
+	//	m_channel_number,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
+	//	COORD_COUNT,					// size
+	//	typeid(CoordType) == typeid(float) ? GL_FLOAT : 3333,           // type
+	//	GL_FALSE,						// normalized?
+	//	0,								// stride
+	//	(void*)0						// array buffer offset
+	//);
+
+	//glDisableVertexAttribArray(m_channel_number);
+	//
+	//glBindVertexArray(0); // !!!VAO (container object) has to get unbound before VBO otherwise VBO would be detached of VAO
+
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	//++m_channel_number;
+
+	//
+	// DSA code
+	//
+
+	glVertexArrayVertexBuffer(
+		m_vertexArrayID,
+		m_channel_number,
+		AspFreeVBO,
+		reinterpret_cast<GLintptr>(nullptr),
+		COORD_COUNT * sizeof(CoordType)
 	);
-
-	glDisableVertexAttribArray(m_channel_number);
-	
-	glBindVertexArray(0); // !!!VAO (container object) has to get unbound before VBO otherwise VBO would be detached of VAO
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	++m_channel_number;
 }

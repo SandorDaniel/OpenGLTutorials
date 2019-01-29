@@ -87,17 +87,6 @@ class VBO final
 		{
 			return m_element_count_of_vertexbuffer;
 		}
-		GLenum getCoordGLType() const
-		{
-			if (typeid(CoordType) == typeid(float))
-			{
-				return GL_FLOAT;
-			}
-			else
-			{
-				// TODO: ...
-			}
-		}
 
 	};
 
@@ -150,10 +139,6 @@ public:
 	GLsizei getElementCount() const
 	{
 		return (m_loading.checkOn(static_cast<std::function<GLsizei(const VBO<TVec, CoordType, precision, COORD_COUNT>::AspFreeVBO&)>>(&VBO<TVec, CoordType, precision, COORD_COUNT>::AspFreeVBO::getElementCount)))(m_vbo);
-	}
-	GLenum getCoordGLType() const
-	{
-		return m_vbo.getCoordGLType();
 	}
 
 };
