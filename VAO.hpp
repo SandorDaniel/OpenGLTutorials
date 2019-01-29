@@ -79,7 +79,7 @@ class VAO final
 private:
 
 	mutable TwoStatesManager m_attaching;
-	mutable TwoStatesManager m_binding;
+	mutable CaptainAndTeamManager m_binding;
 
 	AspFreeVAO m_vao;
 
@@ -124,13 +124,13 @@ public:
 
 	void bind() const// FEJL check if has attachment; treat as binding
 	{
-		std::function<void(const AspFreeVAO&)> func = m_binding.turnOn(static_cast<std::function<void(const AspFreeVAO&)>>(&AspFreeVAO::bind));
+		std::function<void(const AspFreeVAO&)> func = m_binding.appointIt(static_cast<std::function<void(const AspFreeVAO&)>>(&AspFreeVAO::bind));
 		return (m_attaching.checkOn(func))(m_vao);
 	}
 	void unBind() const // FEJL check if it is bounded; treat as unbinding
 	{
-		std::function<void(const AspFreeVAO&)> func = m_binding.turnOff(static_cast<std::function<void(const AspFreeVAO&)>>(&AspFreeVAO::unBind));
-		return (m_binding.checkOn(func))(m_vao);
+		std::function<void(const AspFreeVAO&)> func = m_binding.dismissIt(static_cast<std::function<void(const AspFreeVAO&)>>(&AspFreeVAO::unBind));
+		return (m_binding.checkAppointed(func))(m_vao);
 	}
 };
 
