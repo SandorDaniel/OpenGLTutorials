@@ -84,6 +84,8 @@ int main( void )
 	}
 	glfwMakeContextCurrent(window);
 
+	#ifdef sd_debugger
+	// TODO: handle the case if OGL version number is lower than 3.3
 	// Get OGL version
 	{
 		char* title = new char[strlen("MyProgram - OGL version ") + strlen(reinterpret_cast<const char*>(glGetString(GL_VERSION))) + 1];
@@ -109,6 +111,7 @@ int main( void )
 			std::cout << "Ext " << i << ":\t\t" << extension << std::endl;
 		}
 	}
+	#endif
 
 	// Initialize GLEW
 	glewExperimental = true; // Needed for core profile
