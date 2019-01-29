@@ -50,6 +50,17 @@ class TEX
 		AspFreeTEX()
 		{
 			glGenTextures(1, &m_texture_id);
+
+			// Binding is neccesarry because generated names do not initially correspond to an instance of an object,
+			// objects with generated names are created by binding a generated name to the context.
+			// We need an instance of an object in order to use its name with a DSA function.
+			GLuint bound_tex; // We want to live every state to be the same...
+			glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_tex)); // TODO make casting more safety
+			glBindTexture(GL_TEXTURE_2D, m_texture_id);
+			glBindTexture(GL_TEXTURE_2D, bound_tex);
+
+			//// Instead of the above we can use this, if our OpenGL version number is at least 4.5:
+			//glCreateTextures(GL_TEXTURE_2D, 1, &m_texture_id);
 		}
 		~AspFreeTEX();
 
