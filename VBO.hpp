@@ -161,9 +161,7 @@ void VBO<TVec, CoordType, precision, COORD_COUNT>::AspFreeVBO::load(const std::v
 		g_vertex_buffer_data.size() : 
 		throw std::domain_error("VBO.hpp: buffer element count is to big to be represented as a GLsizei"));
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo_id);
-	glBufferData(GL_ARRAY_BUFFER, m_element_count_of_vertexbuffer * sizeof(TVec<CoordType, precision>), &g_vertex_buffer_data[0], GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glNamedBufferData(m_vbo_id, m_element_count_of_vertexbuffer * sizeof(TVec<CoordType, precision>), &g_vertex_buffer_data[0], GL_STATIC_DRAW);
 }
 
 
