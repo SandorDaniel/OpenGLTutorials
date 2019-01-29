@@ -1,6 +1,7 @@
 // TODO: Testing specular color on a spehere
 // TODO: Testing inhomogeneous material
 // TODO: uniformization of light datas, CPU-side Light class
+// TODO: material (find out the best practice for this topic)
 // TODO: multiple lights (array)
 
 #version 330 core
