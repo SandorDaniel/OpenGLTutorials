@@ -42,7 +42,10 @@ TEX::AspFreeTEX::~AspFreeTEX()
 {
 	if (m_textureunitnumber >= 0)
 	{
-		unBind();
+		glBindTextureUnit(GL_TEXTURE0 + m_textureunitnumber, 0);
+
+		FreeTextureUnitNumbers.push(m_textureunitnumber);
+		m_textureunitnumber = -1;
 	}
 
 	glDeleteTextures(1, &m_texture_id);
@@ -185,6 +188,9 @@ GLuint loadBMP_custom(const char * imagepath, GLuint textureID) {
 	// Everything is in memory now, the file can be closed.
 	fclose(file);
 
+	GLuint bound_tex; // We want to live every state to be the same...
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_tex)); // TODO make casting more safety
+
 	// "Bind" the newly created texture : all future texture functions will modify this texture
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
@@ -207,6 +213,8 @@ GLuint loadBMP_custom(const char * imagepath, GLuint textureID) {
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBindTexture(GL_TEXTURE_2D, bound_tex);
 }
 
 // Since GLFW 3, glfwLoadTexture2D() has been removed. You have to use another texture loading library, 
@@ -298,6 +306,9 @@ GLuint loadDDS(const char * imagepath, GLuint textureID) {
 		return 0;
 	}
 
+	GLuint bound_tex; // We want to live every state to be the same...
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_tex)); // TODO make casting more safety
+
 	// "Bind" the newly created texture : all future texture functions will modify this texture
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -325,4 +336,6 @@ GLuint loadDDS(const char * imagepath, GLuint textureID) {
 	free(buffer);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBindTexture(GL_TEXTURE_2D, bound_tex);
 }
