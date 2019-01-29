@@ -78,8 +78,15 @@ void TEX::AspFreeTEX::bind() const
 		loadClass();
 	}
 
-	m_textureunitnumber = FreeTextureUnitNumbers.top();
-	FreeTextureUnitNumbers.pop();
+	if (!FreeTextureUnitNumbers.empty())
+	{
+		m_textureunitnumber = FreeTextureUnitNumbers.top();
+		FreeTextureUnitNumbers.pop();
+	}
+	else
+	{
+		throw; // TODO
+	}
 
 	// Bind our texture in Texture Unit TextureUnitNumber
 	glActiveTexture(GL_TEXTURE0 + m_textureunitnumber);
