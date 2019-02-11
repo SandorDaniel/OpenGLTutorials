@@ -1,4 +1,4 @@
-// TODO: correct lights
+// TODO: write or own vbo indexer as a variadic function template (there will be input parameters for comparing, and input parameters only for copying)
 // TODO: https://www.opengl.org/archives/resources/features/KilgardTechniques/oglpitfall/
 // TODO: https://www.khronos.org/opengl/wiki/Common_Mistakes
 // TODO: adding aspects to IBO and (depend on IBO) to VAO if it is neccesarry. 
