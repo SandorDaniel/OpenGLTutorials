@@ -40,7 +40,6 @@ vec3 colFrom(
 	in sampler2D my_tex_diff_sampler,
 	in vec3  out_vert_pos,
 	in vec3  out_vert_nor,
-	in vec2  out_vert_tex,
 	in vec3  material_diffuse_col,
 	in vec3  material_specular_col,
 	in vec3  material_ambient_col)
@@ -103,7 +102,6 @@ void main()
 		               my_tex_diff_sampler,
 		               out_vert_pos,
 		               out_vert_nor,
-		               out_vert_tex,
 		               material_diffuse_col,
 		               material_specular_col,
 		               material_ambient_col),
