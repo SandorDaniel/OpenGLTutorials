@@ -27,14 +27,18 @@ class App
 	VBO<glm::tvec2, float, glm::highp, 2> m_vbo_tex;
 	IBO<GLushort> m_ibo;
 	
-	TEX m_tex;
+	TEX m_tex_diff;
+	TEX m_tex_spec;
+	TEX m_tex_norm;
 
 	GLuint m_programID;
 	GLuint m_MID;
 	GLuint m_VID;
 	GLuint m_PID;
 	GLuint m_cam_posID;
-	GLuint m_textureID;
+	GLuint m_tex_diffID;
+	GLuint m_tex_specID;
+	GLuint m_tex_normID;
 	GLuint m_does_model_transformation_contain_nonuniform_scalingID;
 
 	glm::mat4 m_M = glm::mat4(); // glm::mat4() is the identity matrix

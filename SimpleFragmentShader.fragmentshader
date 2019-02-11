@@ -7,7 +7,9 @@
 #version 330 core
 
 
-uniform sampler2D myTextureSampler;
+uniform sampler2D my_tex_diff_sampler;
+uniform sampler2D my_tex_spec_sampler;
+uniform sampler2D my_tex_norm_sampler;
 
 uniform float source_light_power = 200.0f;
 uniform vec4  source_light_posdir = vec4(20.0f, 10.0f, 10.0f, 1.0f);
@@ -22,9 +24,9 @@ in vec3 out_vert_pos;
 in vec3 out_vert_nor;
 in vec2 out_vert_tex;
 
-vec3  material_diffuse_col  = texture(myTextureSampler, out_vert_tex.st).rgb; // col of the texture at the specified st
+vec3  material_diffuse_col  = texture(my_tex_diff_sampler, out_vert_tex.st).rgb; // col of the texture at the specified st
 vec3  material_ambient_col  = 0.0005f * material_diffuse_col;
-vec3  material_specular_col = vec3(0.3f, 0.3f, 0.3f);
+vec3  material_specular_col = texture(my_tex_spec_sampler, out_vert_tex.st).rgb;
 
 out vec4 col;
 
@@ -35,7 +37,7 @@ vec3 colFrom(
 	in vec3  source_light_diffuse_col,
 	in vec3  source_light_specular_col,
 	in vec3  source_light_ambient_col,
-	in sampler2D myTextureSampler,
+	in sampler2D my_tex_diff_sampler,
 	in vec3  out_vert_pos,
 	in vec3  out_vert_nor,
 	in vec2  out_vert_tex,
@@ -98,7 +100,7 @@ void main()
 		               source_light_diffuse_col,
 		               source_light_specular_col,
 		               source_light_ambient_col,
-		               myTextureSampler,
+		               my_tex_diff_sampler,
 		               out_vert_pos,
 		               out_vert_nor,
 		               out_vert_tex,

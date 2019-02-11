@@ -34,7 +34,7 @@ void App::init()
 	std::vector< glm::vec2 > original_v_tex;
 
 	bool res = loadOBJ(
-		"../tutorial08_basic_shading/suzanne.obj", 
+		"../tutorial13_normal_mapping/cylinder.obj", 
 		original_v_pos, 
 		original_v_tex, 
 		original_v_nor);
@@ -69,7 +69,9 @@ void App::init()
 	m_ibo.load(indices);
 	m_vao.attach(m_ibo);
 
-	true ? m_tex.loadDDS("../tutorial08_basic_shading/uvmap.DDS") : m_tex.loadBMP_custom("../tutorial05_textured_cube/uvtemplate.bmp"); // Load the texture using any two methods // TODO separate loading from mass storage to RAM and loading from RAM to VRAM
+	m_tex_diff.loadDDS("../tutorial13_normal_mapping/diffuse.DDS");
+	m_tex_spec.loadDDS("../tutorial13_normal_mapping/specular.DDS");
+	m_tex_norm.loadBMP_custom("../tutorial13_normal_mapping/normal.bmp");
 
 	#pragma endregion
 
@@ -93,7 +95,9 @@ void App::init()
 	m_PID = glGetUniformLocation(m_programID, "P");
 	m_cam_posID = glGetUniformLocation(m_programID, "cam_pos");
 	// Get a handle for our "myTextureSampler" uniform
-	m_textureID = glGetUniformLocation(m_programID, "myTextureSampler");
+	m_tex_diffID = glGetUniformLocation(m_programID, "my_tex_diff_sampler");
+	m_tex_specID = glGetUniformLocation(m_programID, "my_tex_spec_sampler");
+	m_tex_normID = glGetUniformLocation(m_programID, "my_tex_norm_sampler");
 	m_does_model_transformation_contain_nonuniform_scalingID = glGetUniformLocation(m_programID, "is_model_nonuniform_scaled");
 
 	#pragma endregion
@@ -142,13 +146,17 @@ void App::upDate()
 void App::render() const
 {
 	m_vao.bind();
-	m_tex.bind();
+	m_tex_diff.bind();
+	m_tex_spec.bind();
+	m_tex_norm.bind();
 
 	// Use our shader
 	glUseProgram(m_programID);
 
 	// Set our "myTextureSampler" sampler to use Texture Unit TextureUnitNumber
-	glUniform1i(m_textureID, m_tex); // DSA version: glProgramUniform1i(m_programID, m_textureID, m_tex);
+	glUniform1i(m_tex_diffID, m_tex_diff); // DSA version: glProgramUniform1i(m_programID, m_tex_diffID, m_tex);
+	glUniform1i(m_tex_specID, m_tex_spec);
+	glUniform1i(m_tex_normID, m_tex_norm);
 	
 	glUniform3fv(m_cam_posID, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos())); // DSA version: glProgramUniform3fv(m_programID, m_cam_posID, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos()));
 
@@ -190,7 +198,9 @@ void App::render() const
 		(void*)0           // element array buffer offset
 	);
 
-	m_tex.unBind();
+	m_tex_diff.unBind();
+	m_tex_spec.unBind();
+	m_tex_norm.unBind();
 	m_vao.unBind();
 }
 
