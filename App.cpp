@@ -21,6 +21,7 @@
 #include "VAO.hpp"
 #include "TEX.h"
 #include "Camera.h"
+#include "TangentSpace.hpp"
 
 
 
@@ -53,6 +54,16 @@ void App::init()
 		compressed_v_tex,
 		compressed_v_nor);
 
+	std::vector<glm::vec3> compressed_v_tg{};
+	std::vector<glm::vec3> compressed_v_btg{};
+
+	computeTangentBasis(
+		compressed_v_pos,
+		compressed_v_tex,
+		indices,
+		compressed_v_tg,
+		compressed_v_btg);
+
 	#pragma endregion
 
 	#pragma region OBJ Loading (RAM -> VRAM)
@@ -60,14 +71,20 @@ void App::init()
 	m_vbo_pos.load(compressed_v_pos);
 	m_vao.attach(m_vbo_pos);
 
-	m_vbo_nor.load(compressed_v_nor);
-	m_vao.attach(m_vbo_nor);
+	//m_vbo_nor.load(compressed_v_nor);
+	//m_vao.attach(m_vbo_nor);
 
 	m_vbo_tex.load(compressed_v_tex);
 	m_vao.attach(m_vbo_tex);
 
 	m_ibo.load(indices);
 	m_vao.attach(m_ibo);
+
+	m_vbo_tg.load(compressed_v_tg);
+	m_vao.attach(m_vbo_tg);
+
+	m_vbo_btg.load(compressed_v_btg);
+	m_vao.attach(m_vbo_btg);
 
 	m_tex_diff.loadDDS("../tutorial13_normal_mapping/diffuse.DDS");
 	m_tex_spec.loadDDS("../tutorial13_normal_mapping/specular.DDS");

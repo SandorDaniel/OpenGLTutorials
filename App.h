@@ -23,8 +23,10 @@ class App
 
 	VAO m_vao;
 	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_pos;
-	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_nor;
+	//VBO<glm::tvec3, float, glm::highp, 3> m_vbo_nor;
 	VBO<glm::tvec2, float, glm::highp, 2> m_vbo_tex;
+	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_tg;
+	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_btg;
 	IBO<GLushort> m_ibo;
 	
 	TEX m_tex_diff;

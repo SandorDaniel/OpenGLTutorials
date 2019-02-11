@@ -3,13 +3,16 @@
 
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 in_vert_pos;
-layout(location = 1) in vec3 in_vert_nor;
-layout(location = 2) in vec2 in_vert_tex;
+//layout(location = 1) in vec3 in_vert_nor;
+layout(location = 1) in vec2 in_vert_tex;
+layout(location = 2) in vec3 in_vert_tg;
+layout(location = 3) in vec3 in_vert_btg;
 
 // Output data ; will be interpolated for each fragment.
 out vec3 out_vert_pos;
 out vec3 out_vert_nor;
 out vec2 out_vert_tex;
+out mat3 out_vert_TBN;
   
 // Values that stay constant for the whole mesh.
 uniform mat4 M;
@@ -24,6 +27,11 @@ void main()
     gl_Position =  P * V * M * vec4(in_vert_pos, 1.0f);
 
 	out_vert_pos = (M * vec4(in_vert_pos, 1.0f)).xyz;
-	out_vert_nor = ((is_model_nonuniform_scaled == 0 ? M : transpose(inverse(M))) * vec4(in_vert_nor, 0.0f)).xyz; // A/ Note that the 4th coordinate of vector is 0.0f. B/ https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
+	// TODO: handle the case if non uniform scaling and normal mapping is applied in the same time
+	//out_vert_nor = ((is_model_nonuniform_scaled == 0 ? M : transpose(inverse(M))) * vec4(in_vert_nor, 0.0f)).xyz; // A/ Note that the 4th coordinate of vector is 0.0f. B/ https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
 	out_vert_tex = in_vert_tex;
+
+	out_vert_TBN = mat3(in_vert_tg,
+	                    in_vert_btg,
+						cross(in_vert_tg, in_vert_btg));
 }
