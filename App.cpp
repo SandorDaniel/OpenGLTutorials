@@ -156,7 +156,7 @@ void App::render() const
 	glfwGetWindowSize(window, &win_width, &win_height);
 
 	glm::mat4 V = getView(m_camera);
-	glm::mat4 P = getProj(m_camera, win_width, win_height);
+	glm::mat4 P = getProj(m_camera, win_width, win_height, m_NEAR, m_FAR);
 
 	glUniform1i(m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0);
 	glUniformMatrix4fv(m_MID, 1, GL_FALSE, &m_M[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M[0][0]);

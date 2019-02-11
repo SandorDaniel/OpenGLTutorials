@@ -43,6 +43,8 @@ class App
 	bool m_does_m_M2_contain_nonuniform_scaling = false;
 
 	Camera m_camera;
+	const float m_NEAR = 1.0f;
+	const float m_FAR = 100.0f;
 
 public:
 

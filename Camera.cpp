@@ -214,10 +214,10 @@ glm::mat4 getView(const Camera& CAM)
 	);
 }
 
-glm::mat4 getProj(const Camera& CAM, int win_width, int win_height)
+glm::mat4 getProj(const Camera& CAM, int win_width, int win_height, float near, float far)
 {
 	return glm::perspective(
 		glm::radians(CAM.getFov()),
 		static_cast<float>(win_width) / static_cast<float>(win_height),
-		0.1f, 100.0f);
+		near, far);
 }

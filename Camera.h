@@ -48,6 +48,7 @@ private:
 	glm::vec3 m_position = glm::vec3(0, 0, 5);
 	float m_horizontal_angle = 3.14f;
 	float m_vertical_angle = 0.0f;
+	
 	float m_fov = 45.0f; // filed of view // TODO: tisztazni, hogy milyen szogrol van szo pontosan
 
 	const float m_speed = 3.0f; // 3 units / second
@@ -94,4 +95,4 @@ public:
 
 
 glm::mat4 getView(const Camera&);
-glm::mat4 getProj(const Camera&, int win_width, int win_height);
+glm::mat4 getProj(const Camera&, int win_width, int win_height, float near, float far);
