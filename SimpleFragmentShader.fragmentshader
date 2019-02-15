@@ -46,19 +46,23 @@ vec3 colFrom(
 	in vec3  material_ambient_col)
 {
 	float distance_factor;
-	{
-		float distance = length(source_light_posdir.xyz - out_vert_pos);
-		distance_factor = source_light_posdir.w != 0 ? distance * distance : 1;
-	}
-
 	vec3 source_light_dir;
-	if (source_light_posdir.w != 0) // Positional light source
 	{
-		source_light_dir = normalize((source_light_posdir / source_light_posdir.w).xyz - out_vert_pos);
-	}
-	else // Directional light source
-	{
-		source_light_dir = normalize(source_light_posdir.xyz);
+		if(source_light_posdir.w != 0) // Positional light source
+		{
+			vec3 source_light_pos = (source_light_posdir / source_light_posdir.w).xyz;
+
+			float distance = length(source_light_pos - out_vert_pos);
+			distance_factor = distance * distance;
+
+			source_light_dir = normalize(source_light_pos - out_vert_pos);
+		}
+		else // Directional light source
+		{
+			distance_factor = 1.0f;
+
+			source_light_dir = normalize(source_light_posdir.xyz);
+		}
 	}
 
 	// Normal of the computed fragment, in camera space
