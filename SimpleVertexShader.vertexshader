@@ -33,5 +33,5 @@ void main()
 
 	out_vert_TBN = mat3(in_vert_tg,
 	                    in_vert_btg,
-						cross(in_vert_tg, in_vert_btg));
+						-cross(in_vert_tg, in_vert_btg));
 }
