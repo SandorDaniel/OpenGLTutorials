@@ -31,7 +31,7 @@ void main()
 	//out_vert_nor = ((is_model_nonuniform_scaled == 0 ? M : transpose(inverse(M))) * vec4(in_vert_nor, 0.0f)).xyz; // A/ Note that the 4th coordinate of vector is 0.0f. B/ https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
 	out_vert_tex = in_vert_tex;
 
-	out_vert_TBN = mat3(in_vert_tg,
-	                    in_vert_btg,
-						-cross(in_vert_tg, in_vert_btg));
+	out_vert_TBN = mat3((M * vec4(in_vert_tg, 0.0f)).xyz,
+	                    (M * vec4(in_vert_btg, 0.0f)).xyz,
+						(M * vec4(-cross(in_vert_tg, in_vert_btg), 0.0f)).xyz);
 }
