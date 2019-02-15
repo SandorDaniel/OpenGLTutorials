@@ -13,6 +13,9 @@ void computeTangentBasis(
 	std::vector<glm::vec3>& compressed_tangents,
 	std::vector<glm::vec3>& compressed_bitangents)
 {
+	compressed_tangents.resize(compressed_vertices.size());
+    compressed_bitangents.resize(compressed_vertices.size());
+
 	for (size_t i = 0; i < inds.size(); i += 3)
 	{
 		// Edges of the triangle : postion delta
@@ -30,13 +33,13 @@ void computeTangentBasis(
 
 		// Set the same tangent for all three vertices of the triangle.
 		// They will be merged later, in vboindexer.cpp
-		compressed_tangents.push_back(tangent);
-		compressed_tangents.push_back(tangent);
-		compressed_tangents.push_back(tangent);
+		compressed_tangents[inds[i + 0]] = tangent;
+		compressed_tangents[inds[i + 1]] = tangent;
+		compressed_tangents[inds[i + 2]] = tangent;
 
 		// Same thing for binormals
-		compressed_bitangents.push_back(bitangent);
-		compressed_bitangents.push_back(bitangent);
-		compressed_bitangents.push_back(bitangent);
+		compressed_bitangents[inds[i + 0]] = bitangent;
+		compressed_bitangents[inds[i + 1]] = bitangent;
+		compressed_bitangents[inds[i + 2]] = bitangent;
 	}
 }
