@@ -7,21 +7,22 @@
 #version 330 core
 
 
+
 uniform sampler2D my_tex_diff_sampler;
 uniform sampler2D my_tex_spec_sampler;
 uniform sampler2D my_tex_norm_sampler;
 
 
-uniform float source_light_power = 300.0f;
-uniform float source_light_ambient_power_coefficient = 50.0f;
-uniform vec4  source_light_posdir = vec4(5.0f, 5.0f, 5.0f, 1.0f);
+uniform float source_light_power;
+uniform float source_light_ambient_power_coefficient;
+uniform vec4  source_light_posdir;
 
-uniform float positional_light_angle_in_radians = 3.14f / 30.0f; 
-uniform vec3 positional_source_light_dir = vec3(-1.0f, -1.0f, -1.0f);
+uniform float positional_light_angle_in_radians; 
+uniform vec3 positional_source_light_dir;
 
-uniform vec3  source_light_diffuse_col  = 1.0f * vec3(1.0f, 1.0f, 1.0f);
-uniform vec3  source_light_specular_col = 0.1f * vec3(1.0f, 1.0f, 1.0f);
-uniform vec3  source_light_ambient_col  = vec3(1.0f, 1.0f, 1.0f);
+uniform vec3  source_light_diffuse_col;
+uniform vec3  source_light_specular_col;
+uniform vec3  source_light_ambient_col;
 
 
 uniform vec3  cam_pos = vec3(0.0f, 0.0f, 5.0f);
@@ -39,6 +40,7 @@ vec3  material_specular_col = texture(my_tex_spec_sampler, out_vert_tex.st).rgb;
 
 
 out vec4 col;
+
 
 
 float angleBetweenVectorsInRadians(in vec3 u, in vec3 v)

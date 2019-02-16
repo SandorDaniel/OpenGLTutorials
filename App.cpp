@@ -115,6 +115,14 @@ void App::init()
 	m_tex_specID = glGetUniformLocation(m_programID, "my_tex_spec_sampler");
 	m_tex_normID = glGetUniformLocation(m_programID, "my_tex_norm_sampler");
 	m_does_model_transformation_contain_nonuniform_scalingID = glGetUniformLocation(m_programID, "is_model_nonuniform_scaled");
+	m_source_light_powerID = glGetUniformLocation(m_programID, "source_light_power");
+	m_source_light_ambient_power_coefficientID = glGetUniformLocation(m_programID, "source_light_ambient_power_coefficient");
+	m_source_light_posdirID = glGetUniformLocation(m_programID, "source_light_posdir");
+	m_positional_light_angle_in_radiansID = glGetUniformLocation(m_programID, "positional_light_angle_in_radians");
+	m_positional_source_light_dirID = glGetUniformLocation(m_programID, "positional_source_light_dir");
+	m_source_light_diffuse_colID = glGetUniformLocation(m_programID, "source_light_diffuse_col");
+	m_source_light_specular_colID = glGetUniformLocation(m_programID, "source_light_specular_col");
+	m_source_light_ambient_colID = glGetUniformLocation(m_programID, "source_light_ambient_col");
 
 	#pragma endregion
 }
@@ -186,6 +194,23 @@ void App::render() const
 	glUniformMatrix4fv(m_MID, 1, GL_FALSE, &m_M[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M[0][0]);
 	glUniformMatrix4fv(m_VID, 1, GL_FALSE, &V[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);
 	glUniformMatrix4fv(m_PID, 1, GL_FALSE, &P[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_PID, 1, GL_FALSE, &P[0][0]);
+	
+	GLfloat m_source_light_power = 300.0f;
+	glUniform1fv(m_source_light_powerID, 1, &m_source_light_power);
+	GLfloat m_source_light_ambient_power_coefficient = 50.0f;
+	glUniform1fv(m_source_light_ambient_power_coefficientID, 1, &m_source_light_ambient_power_coefficient);
+	glm::vec4 m_source_light_posdir = glm::vec4(5.0f, 5.0f, 5.0f, 1.0f);
+	glUniform4fv(m_source_light_posdirID, 1, &m_source_light_posdir[0]);
+	GLfloat m_positional_light_angle_in_radians = glm::pi<float>() / 30.0f;
+	glUniform1fv(m_positional_light_angle_in_radiansID, 1, &m_positional_light_angle_in_radians);
+	glm::vec3 m_positional_source_light_dir = glm::vec3(-1.0f, -1.0f, -1.0f);
+	glUniform3fv(m_positional_source_light_dirID, 1, &m_positional_source_light_dir[0]);
+	glm::vec3 m_source_light_diffuse_col = glm::vec3(1.0f, 1.0f, 1.0f);
+	glUniform3fv(m_source_light_diffuse_colID, 1, &m_source_light_diffuse_col[0]);
+	glm::vec3 m_source_light_specular_col = 0.1f * glm::vec3(1.0f, 1.0f, 1.0f);
+	glUniform3fv(m_source_light_specular_colID, 1, &m_source_light_specular_col[0]);
+	glm::vec3 m_source_light_ambient_col = glm::vec3(1.0f, 1.0f, 1.0f);
+	glUniform3fv(m_source_light_ambient_colID, 1, &m_source_light_ambient_col[0]);
 
 	//// Draw the triangle !
 	//glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle

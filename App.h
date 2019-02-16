@@ -42,6 +42,14 @@ class App
 	GLuint m_tex_specID;
 	GLuint m_tex_normID;
 	GLuint m_does_model_transformation_contain_nonuniform_scalingID;
+	GLuint m_source_light_powerID;
+	GLuint m_source_light_ambient_power_coefficientID;
+	GLuint m_source_light_posdirID;
+	GLuint m_positional_light_angle_in_radiansID;
+	GLuint m_positional_source_light_dirID;
+	GLuint m_source_light_diffuse_colID;
+	GLuint m_source_light_specular_colID;
+	GLuint m_source_light_ambient_colID;
 
 	glm::mat4 m_M = glm::mat4(); // glm::mat4() is the identity matrix
 	bool m_does_m_M_contain_nonuniform_scaling = false;
