@@ -46,7 +46,7 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 private:
 
 	glm::vec3 m_position = glm::vec3(0, 0, 5);
-	float m_horizontal_angle = 3.14f;
+	float m_horizontal_angle = glm::pi<float>();
 	float m_vertical_angle = 0.0f;
 	
 	float m_fov = 45.0f; // filed of view // TODO: tisztazni, hogy milyen szogrol van szo pontosan
@@ -75,9 +75,9 @@ public:
 	glm::vec3 getRight() const
 	{
 		return  glm::vec3(
-			sin(m_horizontal_angle - 3.14f / 2.0f),
+			sin(m_horizontal_angle - glm::pi<float>() / 2.0f),
 			0,
-			cos(m_horizontal_angle - 3.14f / 2.0f)
+			cos(m_horizontal_angle - glm::pi<float>() / 2.0f)
 		);
 	}
 	float getFov() const

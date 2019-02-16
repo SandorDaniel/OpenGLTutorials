@@ -115,9 +115,9 @@ void Camera::upDate(GLFWwindow* window)
 
 	//// Right vector
 	//glm::vec3 right = glm::vec3(
-	//	sin(horizontalAngle - 3.14f / 2.0f),
+	//	sin(horizontalAngle - glm::pi<float>() / 2.0f),
 	//	0,
-	//	cos(horizontalAngle - 3.14f / 2.0f)
+	//	cos(horizontalAngle - glm::pi<float>() / 2.0f)
 	//);
 
 	//// Up vector
