@@ -105,13 +105,12 @@ void App::init()
 		std::vector<const char*>{"SimpleVertexShader.vertexshader"},
 		std::vector<const char*>{"SimpleFragmentShader.fragmentshader"});
 
-	// Get a handle for our "MVP" uniform
+	// Get a handle for our uniform variables
 	// Only during the initialisation
 	m_MID = glGetUniformLocation(m_programID, "M");
 	m_VID = glGetUniformLocation(m_programID, "V");
 	m_PID = glGetUniformLocation(m_programID, "P");
 	m_cam_posID = glGetUniformLocation(m_programID, "cam_pos");
-	// Get a handle for our "myTextureSampler" uniform
 	m_tex_diffID = glGetUniformLocation(m_programID, "my_tex_diff_sampler");
 	m_tex_specID = glGetUniformLocation(m_programID, "my_tex_spec_sampler");
 	m_tex_normID = glGetUniformLocation(m_programID, "my_tex_norm_sampler");
