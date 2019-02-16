@@ -11,30 +11,47 @@ uniform sampler2D my_tex_diff_sampler;
 uniform sampler2D my_tex_spec_sampler;
 uniform sampler2D my_tex_norm_sampler;
 
-uniform float source_light_power = 2000.0f;
-uniform vec4  source_light_posdir = vec4(40.0f, 0.0f, 0.0f, 1.0f);
 
-uniform vec3  source_light_diffuse_col  = 1.00f * vec3(1.0f, 1.0f, 1.0f);
-uniform vec3  source_light_specular_col = 0.25f * vec3(1.0f, 1.0f, 1.0f);
-uniform vec3  source_light_ambient_col  = 0.10f * vec3(1.0f, 1.0f, 1.0f);
+uniform float source_light_power = 300.0f;
+uniform float source_light_ambient_power_coefficient = 50.0f;
+uniform vec4  source_light_posdir = vec4(5.0f, 5.0f, 5.0f, 1.0f);
+
+uniform float positional_light_angle_in_radians = 3.14f / 30.0f; 
+uniform vec3 positional_source_light_dir = vec3(-1.0f, -1.0f, -1.0f);
+
+uniform vec3  source_light_diffuse_col  = 1.0f * vec3(1.0f, 1.0f, 1.0f);
+uniform vec3  source_light_specular_col = 0.1f * vec3(1.0f, 1.0f, 1.0f);
+uniform vec3  source_light_ambient_col  = vec3(1.0f, 1.0f, 1.0f);
+
 
 uniform vec3  cam_pos = vec3(0.0f, 0.0f, 5.0f);
+
 
 in vec3 out_vert_pos;
 in vec2 out_vert_tex;
 in mat3 out_vert_TBN;
 vec3 norm = normalize(out_vert_TBN * (2 * texture(my_tex_norm_sampler, out_vert_tex.st).rgb - vec3(1.0f, 1.0f, 1.0f)));
 
+
 vec3  material_diffuse_col  = texture(my_tex_diff_sampler, out_vert_tex.st).rgb; // col of the texture at the specified st
 vec3  material_ambient_col  = 0.0005f * material_diffuse_col;
 vec3  material_specular_col = texture(my_tex_spec_sampler, out_vert_tex.st).rgb;
 
+
 out vec4 col;
+
+
+float angleBetweenVectorsInRadians(in vec3 u, in vec3 v)
+{
+	return acos(dot(u, v) / (length(u) * length(v)));
+}
 
 
 vec3 colFrom(
 	in vec4  source_light_posdir,
+	in vec3  positional_source_light_dir,
 	in float source_light_power,
+	in float source_light_ambient_power_coefficient,
 	in vec3  source_light_diffuse_col,
 	in vec3  source_light_specular_col,
 	in vec3  source_light_ambient_col,
@@ -45,7 +62,10 @@ vec3 colFrom(
 	in vec3  material_specular_col,
 	in vec3  material_ambient_col)
 {
+	float source_light_ambient_power = source_light_ambient_power_coefficient * source_light_power;
+
 	float distance_factor;
+	source_light_power;
 	vec3 source_light_dir;
 	{
 		if(source_light_posdir.w != 0) // Positional light source
@@ -56,6 +76,11 @@ vec3 colFrom(
 			distance_factor = distance * distance;
 
 			source_light_dir = normalize(source_light_pos - out_vert_pos);
+
+			if(angleBetweenVectorsInRadians(-source_light_dir, positional_source_light_dir) > positional_light_angle_in_radians)
+			{
+				source_light_power = 0.0f;
+			}
 		}
 		else // Directional light source
 		{
@@ -88,7 +113,7 @@ vec3 colFrom(
 
 	return
 		// Ambient : simulates indirect lighting
-		material_ambient_col * source_light_ambient_col * source_light_power
+		material_ambient_col * source_light_ambient_col * source_light_ambient_power / distance_factor
 		// Diffuse : "color" of the object
       + material_diffuse_col * source_light_diffuse_col * source_light_power * cosTheta / distance_factor
 		// Specular : reflective highlight, like a mirror
@@ -100,7 +125,9 @@ vec3 colFrom(
 void main()
 {
 	col = vec4(colFrom(source_light_posdir,
+	                   positional_source_light_dir,
 		               source_light_power,
+					   source_light_ambient_power_coefficient,
 		               source_light_diffuse_col,
 		               source_light_specular_col,
 		               source_light_ambient_col,
