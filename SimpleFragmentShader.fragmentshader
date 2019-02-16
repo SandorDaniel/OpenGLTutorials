@@ -12,11 +12,11 @@ uniform sampler2D my_tex_spec_sampler;
 uniform sampler2D my_tex_norm_sampler;
 
 uniform float source_light_power = 2000.0f;
-uniform vec4  source_light_posdir = vec4(20.0f, 10.0f, 10.0f, 1.0f);
+uniform vec4  source_light_posdir = vec4(40.0f, 0.0f, 0.0f, 1.0f);
 
-uniform vec3  source_light_diffuse_col  = vec3(1.0f, 1.0f, 1.0f);
-uniform vec3  source_light_specular_col = vec3(1.0f, 1.0f, 1.0f);
-uniform vec3  source_light_ambient_col  = vec3(1.0f, 1.0f, 1.0f);
+uniform vec3  source_light_diffuse_col  = 1.00f * vec3(1.0f, 1.0f, 1.0f);
+uniform vec3  source_light_specular_col = 0.25f * vec3(1.0f, 1.0f, 1.0f);
+uniform vec3  source_light_ambient_col  = 0.10f * vec3(1.0f, 1.0f, 1.0f);
 
 uniform vec3  cam_pos = vec3(0.0f, 0.0f, 5.0f);
 

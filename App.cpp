@@ -150,10 +150,10 @@ void App::upDate()
 
 	//M = T * R * S;
 
-	m_M = glm::rotate(glm::mat4(), glm::radians<float>(180), glm::vec3(0.0f, 0.1f, 0.0f));
+	m_M = glm::rotate(glm::mat4(), glm::radians<float>(20), glm::vec3(0.0f, 0.1f, 0.0f));
 	m_does_m_M_contain_nonuniform_scaling = false;
 
-	m_M2 = glm::scale(glm::mat4(), glm::vec3(0.5f, 2.0f, 0.5f)) * glm::translate(glm::mat4(), glm::vec3(3.0f, 0.0f, 0.0f));
+	m_M2 = glm::scale(glm::mat4(), glm::vec3(0.5f, 1.0f, 0.5f)) * glm::translate(glm::mat4(), glm::vec3(3.0f, 0.0f, 0.0f));
 	m_does_m_M2_contain_nonuniform_scaling = true;
 
 	#pragma endregion
