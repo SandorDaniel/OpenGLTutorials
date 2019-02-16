@@ -21,8 +21,8 @@ VAO::AspFreeVAO::AspFreeVAO()
 	// Binding is neccesarry because generated names do not initially correspond to an instance of an object,
 	// objects with generated names are created by binding a generated name to the context.
 	// We need an instance of an object in order to use its name with a DSA function.
-	GLuint bound_vao; // We want to live every state to be the same...
-	glGetIntegerv(GL_VERTEX_ARRAY_POINTER, reinterpret_cast<GLint*>(&bound_vao)); // TODO make casting more safety
+	GLint bound_vao; // We want to live every state to be the same...
+	glGetIntegerv(GL_VERTEX_ARRAY_POINTER, &bound_vao); // TODO make casting more safety
 	glBindVertexArray(m_vertexArrayID);
 	glBindVertexArray(bound_vao);
 

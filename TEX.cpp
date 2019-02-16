@@ -59,8 +59,8 @@ TEX::AspFreeTEX::AspFreeTEX()
 	// Binding is neccesarry because generated names do not initially correspond to an instance of an object,
 	// objects with generated names are created by binding a generated name to the context.
 	// We need an instance of an object in order to use its name with a DSA function.
-	GLuint bound_tex; // We want to live every state to be the same...
-	glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_tex)); // TODO make casting more safety
+	GLint bound_tex; // We want to live every state to be the same...
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound_tex); // TODO make casting more safety
 	glBindTexture(GL_TEXTURE_2D, m_texture_id);
 	glBindTexture(GL_TEXTURE_2D, bound_tex);
 
@@ -212,8 +212,8 @@ GLuint loadBMP_custom(const char * imagepath, GLuint textureID) {
 	// Everything is in memory now, the file can be closed.
 	fclose(file);
 
-	GLuint bound_tex; // We want to live every state to be the same...
-	glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_tex)); // TODO make casting more safety
+	GLint bound_tex; // We want to live every state to be the same...
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound_tex); // TODO make casting more safety
 
 	// "Bind" the newly created texture : all future texture functions will modify this texture
 	glBindTexture(GL_TEXTURE_2D, textureID);
@@ -330,8 +330,8 @@ GLuint loadDDS(const char * imagepath, GLuint textureID) {
 		return 0;
 	}
 
-	GLuint bound_tex; // We want to live every state to be the same...
-	glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_tex)); // TODO make casting more safety
+	GLint bound_tex; // We want to live every state to be the same...
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound_tex); // TODO make casting more safety
 
 	// "Bind" the newly created texture : all future texture functions will modify this texture
 	glBindTexture(GL_TEXTURE_2D, textureID);

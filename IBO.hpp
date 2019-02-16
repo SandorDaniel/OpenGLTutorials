@@ -134,8 +134,8 @@ IBO<ElementType>::AspFreeIBO::AspFreeIBO()
 	// Binding is neccesarry because generated names do not initially correspond to an instance of an object,
 	// objects with generated names are created by binding a generated name to the context.
 	// We need an instance of an object in order to use its name with a DSA function.
-	GLuint bound_ibo; // We want to live every state to be the same...
-	glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, reinterpret_cast<GLint*>(&bound_ibo)); // TODO make casting more safety
+	GLint bound_ibo; // We want to live every state to be the same...
+	glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &bound_ibo); // TODO make casting more safety
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo_id);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bound_ibo);
 

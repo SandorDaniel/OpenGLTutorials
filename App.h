@@ -33,22 +33,22 @@ class App
 	TEX m_tex_spec;
 	TEX m_tex_norm;
 
-	GLuint m_programID;
-	GLuint m_MID;
-	GLuint m_VID;
-	GLuint m_PID;
-	GLuint m_cam_posID;
-	GLuint m_tex_diffID;
-	GLuint m_tex_specID;
-	GLuint m_tex_normID;
-	GLuint m_does_model_transformation_contain_nonuniform_scalingID;
-	GLuint m_source_light_powerID;
-	GLuint m_source_light_ambient_power_coefficientID;
-	GLuint m_source_light_posdirID;
-	GLuint m_positional_light_angle_in_radiansID;
-	GLuint m_positional_source_light_dirID;
-	GLuint m_source_light_diffuse_colID;
-	GLuint m_source_light_specular_colID;
+	GLint m_programID;
+	GLint m_MID;
+	GLint m_VID;
+	GLint m_PID;
+	GLint m_cam_posID;
+	GLint m_tex_diffID;
+	GLint m_tex_specID;
+	GLint m_tex_normID;
+	GLint m_does_model_transformation_contain_nonuniform_scalingID;
+	GLint m_source_light_powerID;
+	GLint m_source_light_ambient_power_coefficientID;
+	GLint m_source_light_posdirID;
+	GLint m_positional_light_angle_in_radiansID;
+	GLint m_positional_source_light_dirID;
+	GLint m_source_light_diffuse_colID;
+	GLint m_source_light_specular_colID;
 	GLuint m_source_light_ambient_colID;
 
 	glm::mat4 m_M = glm::mat4(); // glm::mat4() is the identity matrix

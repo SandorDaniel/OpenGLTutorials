@@ -182,7 +182,7 @@ void App::render() const
 	glUniform1i(m_tex_specID, m_tex_spec);
 	glUniform1i(m_tex_normID, m_tex_norm);
 	
-	glUniform3fv(m_cam_posID, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos())); // DSA version: glProgramUniform3fv(m_programID, m_cam_posID, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos()));
+	glUniform3fv(m_cam_posID, 1, &m_camera.getPos()[0]); // DSA version: glProgramUniform3fv(m_programID, m_cam_posID, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos()));
 
 	int win_width, win_height;
 	glfwGetWindowSize(window, &win_width, &win_height);
