@@ -187,14 +187,6 @@ void App::render() const
 	int win_width, win_height;
 	glfwGetWindowSize(window, &win_width, &win_height);
 
-	glm::mat4 V = getView(m_camera);
-	glm::mat4 P = getProj(m_camera, win_width, win_height, m_NEAR, m_FAR);
-
-	glUniform1i(m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0);
-	glUniformMatrix4fv(m_MID, 1, GL_FALSE, &m_M[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M[0][0]);
-	glUniformMatrix4fv(m_VID, 1, GL_FALSE, &V[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);
-	glUniformMatrix4fv(m_PID, 1, GL_FALSE, &P[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_PID, 1, GL_FALSE, &P[0][0]);
-	
 	GLfloat m_source_light_power = 300.0f;
 	glUniform1fv(m_source_light_powerID, 1, &m_source_light_power);
 	GLfloat m_source_light_ambient_power_coefficient = 50.0f;
@@ -212,6 +204,14 @@ void App::render() const
 	glm::vec3 m_source_light_ambient_col = glm::vec3(1.0f, 1.0f, 1.0f);
 	glUniform3fv(m_source_light_ambient_colID, 1, &m_source_light_ambient_col[0]);
 
+	glm::mat4 V = getView(m_camera);
+	glUniformMatrix4fv(m_VID, 1, GL_FALSE, &V[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);
+	glm::mat4 P = getProj(m_camera, win_width, win_height, m_NEAR, m_FAR);
+	glUniformMatrix4fv(m_PID, 1, GL_FALSE, &P[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_PID, 1, GL_FALSE, &P[0][0]);
+
+	glUniform1i(m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0);
+	glUniformMatrix4fv(m_MID, 1, GL_FALSE, &m_M[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M[0][0]);
+
 	//// Draw the triangle !
 	//glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
 
@@ -225,8 +225,6 @@ void App::render() const
 
 	glUniform1i(m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
 	glUniformMatrix4fv(m_MID, 1, GL_FALSE, &m_M2[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M2[0][0]);
-	glUniformMatrix4fv(m_VID, 1, GL_FALSE, &V[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);
-	glUniformMatrix4fv(m_PID, 1, GL_FALSE, &P[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_PID, 1, GL_FALSE, &P[0][0]);
 
 	//// Draw the triangle !
 	//glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
