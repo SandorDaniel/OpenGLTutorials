@@ -21,7 +21,7 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 
 	private:
 
-		Camera* m_P_cam;
+		Camera* m_p_cam;
 
 		Direction m_direction;
 
@@ -31,7 +31,7 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 
 		void set(Camera* cam, Direction dir)
 		{
-			m_P_cam = cam;
+			m_p_cam = cam;
 			m_direction = dir;
 		}
 

@@ -14,23 +14,23 @@
 
 void Camera::KeyObserver::releaseCallBack()
 {
-	glm::vec3 direction = m_P_cam->getDir();
-	glm::vec3 right = m_P_cam->getRight();
+	glm::vec3 direction = m_p_cam->getDir();
+	glm::vec3 right = m_p_cam->getRight();
 	glm::vec3 up = glm::cross(right, direction);
 
 	switch (m_direction)
 	{
 	case Direction::FORWARD:
-		m_P_cam->m_position += static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ? glfwGetTime() - m_time_last_pressed : throw std::domain_error("Camera.cpp: elapsed time is to big to be represented as a float")) * m_P_cam->m_speed * direction;
+		m_p_cam->m_position += static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ? glfwGetTime() - m_time_last_pressed : throw std::domain_error("Camera.cpp: elapsed time is to big to be represented as a float")) * m_p_cam->m_speed * direction;
 		break;
 	case Direction::BACKWARD:
-		m_P_cam->m_position -= static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ? glfwGetTime() - m_time_last_pressed : throw std::domain_error("Camera.cpp: elapsed time is to big to be represented as a float")) * m_P_cam->m_speed * direction;
+		m_p_cam->m_position -= static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ? glfwGetTime() - m_time_last_pressed : throw std::domain_error("Camera.cpp: elapsed time is to big to be represented as a float")) * m_p_cam->m_speed * direction;
 		break;
 	case Direction::RIGHT:
-		m_P_cam->m_position += static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ? glfwGetTime() - m_time_last_pressed : throw std::domain_error("Camera.cpp: elapsed time is to big to be represented as a float")) * m_P_cam->m_speed * right;
+		m_p_cam->m_position += static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ? glfwGetTime() - m_time_last_pressed : throw std::domain_error("Camera.cpp: elapsed time is to big to be represented as a float")) * m_p_cam->m_speed * right;
 		break;
 	case Direction::LEFT:
-		m_P_cam->m_position -= static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ? glfwGetTime() - m_time_last_pressed : throw std::domain_error("Camera.cpp: elapsed time is to big to be represented as a float")) * m_P_cam->m_speed * right;
+		m_p_cam->m_position -= static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ? glfwGetTime() - m_time_last_pressed : throw std::domain_error("Camera.cpp: elapsed time is to big to be represented as a float")) * m_p_cam->m_speed * right;
 		break;
 	}
 }
