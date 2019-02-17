@@ -4,10 +4,34 @@
 #include <glm/gtx/transform.hpp> // after <glm/glm.hpp>
 
 #include "InPuts.h"
+#include "Math.h"
 
 
 
-class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
+class Camera : public PosDirObj
+{
+
+	float m_fov = 45.0f; // filed of view // TODO: tisztazni, hogy milyen szogrol van szo pontosan
+
+public:
+
+	float getFov() const
+	{
+		return m_fov;
+	}
+	void setFov(const float fov)
+	{
+		m_fov = fov;
+	}
+
+};
+
+
+glm::mat4 getView(const Camera&);
+glm::mat4 getProj(const Camera&, int win_width, int win_height, float near, float far);
+
+
+class InPutObserverCamera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 {
 
 	enum class Direction
@@ -19,7 +43,7 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 	class KeyObserver : public InPut::KeyBoard::Key::Observer
 	{
 
-		Camera* m_p_cam;
+		InPutObserverCamera* m_p_cam;
 
 		Direction m_direction;
 
@@ -27,7 +51,7 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 
 	public:
 
-		void set(Camera* cam, Direction dir)
+		void set(InPutObserverCamera* cam, Direction dir)
 		{
 			m_p_cam = cam;
 			m_direction = dir;
@@ -43,11 +67,7 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 
 private:
 
-	glm::vec3 m_position = glm::vec3(0, 0, 5);
-	float m_horizontal_angle = glm::pi<float>();
-	float m_vertical_angle = 0.0f;
-	
-	float m_fov = 45.0f; // filed of view // TODO: tisztazni, hogy milyen szogrol van szo pontosan
+	Camera m_camera;
 
 	const float m_speed = 3.0f; // 3 units / second
 	const float m_mouse_speed = 0.005f;
@@ -56,31 +76,23 @@ private:
 
 public:
 
-	Camera();
+	InPutObserverCamera();
 
 	glm::vec3 getPos() const
 	{
-		return m_position;
+		return m_camera.getPos();
 	}
-	glm::vec3 getDir() const
+	float getHorizontalAngle() const
 	{
-		return glm::vec3(
-			cos(m_vertical_angle) * sin(m_horizontal_angle),
-			sin(m_vertical_angle),
-			cos(m_vertical_angle) * cos(m_horizontal_angle)
-		);
+		return m_camera.getHorizontalAngle();
 	}
-	glm::vec3 getRight() const
+	float getVerticalAngle() const
 	{
-		return  glm::vec3(
-			sin(m_horizontal_angle - glm::pi<float>() / 2.0f),
-			0,
-			cos(m_horizontal_angle - glm::pi<float>() / 2.0f)
-		);
+		return m_camera.getVerticalAngle();
 	}
 	float getFov() const
 	{
-		return m_fov;
+		return m_camera.getFov();
 	}
 
 	void init(GLFWwindow* window);
@@ -92,5 +104,5 @@ public:
 };
 
 
-glm::mat4 getView(const Camera&);
-glm::mat4 getProj(const Camera&, int win_width, int win_height, float near, float far);
+glm::mat4 getView(const InPutObserverCamera&);
+glm::mat4 getProj(const InPutObserverCamera&, int win_width, int win_height, float near, float far);

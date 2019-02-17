@@ -56,7 +56,7 @@ class App
 	glm::mat4 m_M2 = glm::mat4();
 	bool m_does_m_M2_contain_nonuniform_scaling = false;
 
-	Camera m_camera;
+	InPutObserverCamera m_camera;
 	const float m_NEAR = 1.0f;
 	const float m_FAR = 100.0f;
 
