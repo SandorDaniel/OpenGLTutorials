@@ -8,7 +8,7 @@
 
 
 
-class Camera : public PosDirObj
+class Camera : public PosDirObj // Inheritance is not for polimorfism in this case.
 {
 
 	float m_fov = 45.0f; // filed of view // TODO: tisztazni, hogy milyen szogrol van szo pontosan
