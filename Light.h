@@ -1,3 +1,5 @@
+// TODO: add aspects to lights if it is needed
+
 #pragma once
 
 #include <vector>
