@@ -303,7 +303,7 @@ GLuint loadDDS(const char * imagepath, GLuint textureID) {
 	unsigned int fourCC = *(unsigned int*)&(header[80]);
 
 
-	unsigned char * buffer;
+	unsigned char* buffer;
 	unsigned int bufsize;
 	/* how big is it going to be including all mipmaps? */
 	bufsize = mipMapCount > 1 ? linearSize * 2 : linearSize;
