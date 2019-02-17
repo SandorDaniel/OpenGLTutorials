@@ -115,14 +115,7 @@ void App::init()
 	m_tex_specID = glGetUniformLocation(m_programID, "my_tex_spec_sampler");
 	m_tex_normID = glGetUniformLocation(m_programID, "my_tex_norm_sampler");
 	m_does_model_transformation_contain_nonuniform_scalingID = glGetUniformLocation(m_programID, "is_model_nonuniform_scaled");
-	m_source_light_powerID = glGetUniformLocation(m_programID, "source_light_power");
-	m_source_light_ambient_power_coefficientID = glGetUniformLocation(m_programID, "source_light_ambient_power_coefficient");
-	m_source_light_posdirID = glGetUniformLocation(m_programID, "source_light_posdir");
-	m_positional_light_angle_in_radiansID = glGetUniformLocation(m_programID, "positional_light_angle_in_radians");
-	m_positional_source_light_dirID = glGetUniformLocation(m_programID, "positional_source_light_dir");
-	m_source_light_diffuse_colID = glGetUniformLocation(m_programID, "source_light_diffuse_col");
-	m_source_light_specular_colID = glGetUniformLocation(m_programID, "source_light_specular_col");
-	m_source_light_ambient_colID = glGetUniformLocation(m_programID, "source_light_ambient_col");
+	Light::getUniformLocationsForAll(m_programID);
 
 	#pragma endregion
 }
@@ -164,6 +157,30 @@ void App::upDate()
 	m_does_m_M2_contain_nonuniform_scaling = true;
 
 	#pragma endregion
+
+	#pragma region LIGHTS UpDate
+
+	light = new Light();
+	light->setPower(300.0f);
+	light->setAmbientPowerCoefficient(50.0f);
+	light->setPosDir(glm::vec4(5.0f, 5.0f, 5.0f, 1.0f));
+	light->setAngle(glm::pi<float>() / 30.0f);
+	light->setDir(glm::vec3(-1.0f, -1.0f, -1.0f));
+	light->setDiffuseCol(glm::vec3(1.0f, 1.0f, 1.0f));
+	light->setSpecularCol(0.1f * glm::vec3(1.0f, 1.0f, 1.0f));
+	light->setAmbientCol(glm::vec3(1.0f, 1.0f, 1.0f));
+	delete light;
+
+	light2.setPower(300.0f);
+	light2.setAmbientPowerCoefficient(50.0f);
+	light2.setPosDir(glm::vec4(5.0f, 5.0f, -5.0f, 1.0f));
+	light2.setAngle(glm::pi<float>() / 30.0f);
+	light2.setDir(glm::vec3(-1.0f, -1.0f, 1.0f));
+	light2.setDiffuseCol(glm::vec3(1.0f, 1.0f, 1.0f));
+	light2.setSpecularCol(0.1f * glm::vec3(1.0f, 1.0f, 1.0f));
+	light2.setAmbientCol(glm::vec3(1.0f, 1.0f, 1.0f));
+
+	#pragma endregion
 }
 
 
@@ -187,22 +204,7 @@ void App::render() const
 	int win_width, win_height;
 	glfwGetWindowSize(window, &win_width, &win_height);
 
-	GLfloat m_source_light_power = 300.0f;
-	glUniform1fv(m_source_light_powerID, 1, &m_source_light_power);
-	GLfloat m_source_light_ambient_power_coefficient = 50.0f;
-	glUniform1fv(m_source_light_ambient_power_coefficientID, 1, &m_source_light_ambient_power_coefficient);
-	glm::vec4 m_source_light_posdir = glm::vec4(5.0f, 5.0f, 5.0f, 1.0f);
-	glUniform4fv(m_source_light_posdirID, 1, &m_source_light_posdir[0]);
-	GLfloat m_positional_light_angle_in_radians = glm::pi<float>() / 30.0f;
-	glUniform1fv(m_positional_light_angle_in_radiansID, 1, &m_positional_light_angle_in_radians);
-	glm::vec3 m_positional_source_light_dir = glm::vec3(-1.0f, -1.0f, -1.0f);
-	glUniform3fv(m_positional_source_light_dirID, 1, &m_positional_source_light_dir[0]);
-	glm::vec3 m_source_light_diffuse_col = glm::vec3(1.0f, 1.0f, 1.0f);
-	glUniform3fv(m_source_light_diffuse_colID, 1, &m_source_light_diffuse_col[0]);
-	glm::vec3 m_source_light_specular_col = 0.1f * glm::vec3(1.0f, 1.0f, 1.0f);
-	glUniform3fv(m_source_light_specular_colID, 1, &m_source_light_specular_col[0]);
-	glm::vec3 m_source_light_ambient_col = glm::vec3(1.0f, 1.0f, 1.0f);
-	glUniform3fv(m_source_light_ambient_colID, 1, &m_source_light_ambient_col[0]);
+	Light::assignUniformsForAll();
 
 	glm::mat4 V = getView(m_camera);
 	glUniformMatrix4fv(m_VID, 1, GL_FALSE, &V[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);

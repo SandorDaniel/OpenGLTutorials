@@ -12,17 +12,18 @@ uniform sampler2D my_tex_diff_sampler;
 uniform sampler2D my_tex_spec_sampler;
 uniform sampler2D my_tex_norm_sampler;
 
+const int num_of_light_sources = 2; // TODO: get it from cpu somehow
 
-uniform float source_light_power;
-uniform float source_light_ambient_power_coefficient;
-uniform vec4  source_light_posdir;
+uniform float source_light_power[num_of_light_sources];
+uniform float source_light_ambient_power_coefficient[num_of_light_sources];
+uniform vec4  source_light_posdir[num_of_light_sources];
 
-uniform float positional_light_angle_in_radians; 
-uniform vec3 positional_source_light_dir;
+uniform float positional_light_angle_in_radians[num_of_light_sources]; 
+uniform vec3 positional_source_light_dir[num_of_light_sources];
 
-uniform vec3  source_light_diffuse_col;
-uniform vec3  source_light_specular_col;
-uniform vec3  source_light_ambient_col;
+uniform vec3  source_light_diffuse_col[num_of_light_sources];
+uniform vec3  source_light_specular_col[num_of_light_sources];
+uniform vec3  source_light_ambient_col[num_of_light_sources];
 
 
 uniform vec3  cam_pos = vec3(0.0f, 0.0f, 5.0f);
@@ -52,6 +53,7 @@ float angleBetweenVectorsInRadians(in vec3 u, in vec3 v)
 vec3 colFrom(
 	in vec4  source_light_posdir,
 	in vec3  positional_source_light_dir,
+	in float positional_light_angle_in_radians,
 	in float source_light_power,
 	in float source_light_ambient_power_coefficient,
 	in vec3  source_light_diffuse_col,
@@ -126,18 +128,25 @@ vec3 colFrom(
 
 void main()
 {
-	col = vec4(colFrom(source_light_posdir,
-	                   positional_source_light_dir,
-		               source_light_power,
-					   source_light_ambient_power_coefficient,
-		               source_light_diffuse_col,
-		               source_light_specular_col,
-		               source_light_ambient_col,
-		               my_tex_diff_sampler,
-		               out_vert_pos,
-		               norm,
-		               material_diffuse_col,
-		               material_specular_col,
-		               material_ambient_col),
-		       1.0f);
+	vec3 color = vec3(0.0f, 0.0f, 0.0f);
+
+	for(int i = 0; i < num_of_light_sources; ++i)
+	{
+		color += colFrom(source_light_posdir[i],
+	                     positional_source_light_dir[i],
+						 positional_light_angle_in_radians[i],
+		                 source_light_power[i],
+					     source_light_ambient_power_coefficient[i],
+		                 source_light_diffuse_col[i],
+		                 source_light_specular_col[i],
+		                 source_light_ambient_col[i],
+		                 my_tex_diff_sampler,
+		                 out_vert_pos,
+		                 norm,
+		                 material_diffuse_col,
+		                 material_specular_col,
+		                 material_ambient_col);
+	}
+
+	col = vec4(color, 1.0f);
 }
