@@ -19,8 +19,6 @@ class Camera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
 	class KeyObserver : public InPut::KeyBoard::Key::Observer
 	{
 
-	private:
-
 		Camera* m_p_cam;
 
 		Direction m_direction;
