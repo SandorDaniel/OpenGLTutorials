@@ -44,8 +44,8 @@ class App
 	GLint m_tex_normID;
 	GLint m_does_model_transformation_contain_nonuniform_scalingID;
 
-	Light* light;
-	Light light2;
+	Light light;
+	Light* p_light;
 
 	glm::mat4 m_M = glm::mat4(); // glm::mat4() is the identity matrix
 	bool m_does_m_M_contain_nonuniform_scaling = false;
