@@ -2,6 +2,7 @@
 
 #include <queue>
 #include <algorithm>
+#include <vector>
 
 #include <GL/glew.h>
 
@@ -44,19 +45,32 @@ class TEX
 			return m_textureunitnumber;
 		}
 
+		// TODO: separation: mass storage -> RAM -> VRAM
 		void loadBMP_custom(const char* const filepath); // Load a .BMP file using our custom loader // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
 		void loadDDS(const char* const filepath); // Load a .DDS file using GLFW's own loader
 
-		void fetch(unsigned char* const P_texture_data)
+		explicit operator std::vector<unsigned char>() const
 		{
 			GLint bound_tex; // We want to live every state to be the same...
 			glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound_tex);
 			glBindTexture(GL_TEXTURE_2D, m_texture_id);
 
+			unsigned char* const P_texture_data = new unsigned char[m_width * m_height * 3];
 			glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, P_texture_data);
 
 			glBindTexture(GL_TEXTURE_2D, 0);
 			glBindTexture(GL_TEXTURE_2D, bound_tex);
+
+			return std::vector<unsigned char>(P_texture_data, P_texture_data + m_width * m_height * 3);
+		}
+
+		GLsizei getWidth() const
+		{
+			return m_width;
+		}
+		GLsizei getHeight() const
+		{
+			return m_height;
 		}
 
 		void bind() const;
@@ -105,6 +119,20 @@ public:
 		return (m_loading.turnOn(static_cast<std::function<void(AspFreeTEX&, const char* const)>>(&AspFreeTEX::loadDDS)))(m_tex, filepath);
 	}
 
+	explicit operator std::vector<unsigned char>() const
+	{
+		return (m_loading.checkOn(static_cast<std::function<std::vector<unsigned char>(const AspFreeTEX&)>>(&AspFreeTEX::operator std::vector<unsigned char>)))(m_tex);
+	}
+
+	GLsizei getWidth() const
+	{
+		return m_tex.getWidth();
+	}
+	GLsizei getHeight() const
+	{
+		return m_tex.getHeight();
+	}
+
 	void bind() const
 	{
 		auto func = m_binding.turnOn(static_cast<std::function<void(const AspFreeTEX&)>>(&AspFreeTEX::bind));
@@ -117,3 +145,10 @@ public:
 	}
 
 }; 
+
+
+void printImage(
+	const std::string& PPM_FILE_NAME_WITH_EXTENSION,
+	const std::vector<unsigned char>& TEXTURE_DATA,
+	const GLsizei TEXT_WIDTH,
+	const GLsizei TEXT_HEIGHT);

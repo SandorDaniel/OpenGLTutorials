@@ -3,6 +3,8 @@
 
 #include <queue>
 #include <utility>
+#include <fstream>
+#include <iostream>
 
 #include <GL/glew.h>
 
@@ -141,18 +143,13 @@ TEX& TEX::operator=(TEX&& xtex)
 }
 
 
-
 //
-// TODO: make the code below to be a c++-like code, and integrate it to the class above
+// TODO: make the code below to be a c++-like code
 //
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <GL/glew.h>
-
-#include <GLFW/glfw3.h>
 
 
 
@@ -241,6 +238,7 @@ void TEX::AspFreeTEX::loadBMP_custom(const char * imagepath) {
 	glBindTexture(GL_TEXTURE_2D, bound_tex);
 }
 
+
 // Since GLFW 3, glfwLoadTexture2D() has been removed. You have to use another texture loading library, 
 // or do it yourself (just like loadBMP_custom and loadDDS)
 //GLuint loadTGA_glfw(const char * imagepath){
@@ -265,7 +263,6 @@ void TEX::AspFreeTEX::loadBMP_custom(const char * imagepath) {
 //	// Return the ID of the texture we just created
 //	return textureID;
 //}
-
 
 
 #define FOURCC_DXT1 0x31545844 // Equivalent to "DXT1" in ASCII
@@ -364,4 +361,48 @@ void TEX::AspFreeTEX::loadDDS(const char * imagepath) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glBindTexture(GL_TEXTURE_2D, bound_tex);
+}
+
+
+void printImage(
+	const std::string& PPM_FILE_NAME_WITH_EXTENSION,
+	const std::vector<unsigned char>& TEXTURE_DATA,
+	const GLsizei TEXT_WIDTH,
+	const GLsizei TEXT_HEIGHT)
+{
+	// http://netpbm.sourceforge.net/doc/ppm.html
+
+	std::ofstream out;
+	out.open(PPM_FILE_NAME_WITH_EXTENSION);
+	if (!out) {
+		std::cerr << "Cannot open file.";
+		exit(-1);
+	}
+
+	out << "P3" << std::endl;
+
+	out << TEXT_WIDTH << " " << TEXT_HEIGHT << std::endl;
+
+	out << 255 << std::endl;
+
+	for (int i = TEXT_HEIGHT - 1; i >= 0; --i)
+	{
+		for (int j = 0; j < 3 * TEXT_WIDTH; ++j)
+		{
+			if (TEXTURE_DATA[i * 3 * TEXT_WIDTH + j] < 10)
+			{
+				out << ' ';
+			}
+
+			if (TEXTURE_DATA[i * 3 * TEXT_WIDTH + j] < 100)
+			{
+				out << ' ';
+			}
+
+			out << (int)(TEXTURE_DATA[i * 3 * TEXT_WIDTH + j]) << ' ';
+		}
+		out << std::endl;
+	}
+
+	out.close();
 }
