@@ -5,25 +5,6 @@
 
 #include <GL/glew.h>
 
-
-
-//
-// TODO: integrate GLuint loadBMP_custom(const char * imagepath, GLuint textureID); and GLuint loadDDS(const char * imagepath, GLuint textureID); into the class below.
-//
-
-// Load a .BMP file using our custom loader
-GLuint loadBMP_custom(const char * imagepath, GLuint textureID);
-
-//// Since GLFW 3, glfwLoadTexture2D() has been removed. You have to use another texture loading library, 
-//// or do it yourself (just like loadBMP_custom and loadDDS)
-//// Load a .TGA file using GLFW's own loader
-//GLuint loadTGA_glfw(const char * imagepath);
-
-// Load a .DDS file using GLFW's own loader
-GLuint loadDDS(const char * imagepath, GLuint textureID); 
-
-
-
 #include "Aspects.hpp"
 
 
@@ -42,6 +23,8 @@ class TEX
 
 		GLuint m_texture_id;
 		mutable GLint m_textureunitnumber = -1;
+		GLsizei m_width = 0;
+		GLsizei m_height = 0;
 
 	public:
 
@@ -61,13 +44,19 @@ class TEX
 			return m_textureunitnumber;
 		}
 
-		void loadBMP_custom(const char* const filepath) // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
+		void loadBMP_custom(const char* const filepath); // Load a .BMP file using our custom loader // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
+		void loadDDS(const char* const filepath); // Load a .DDS file using GLFW's own loader
+
+		void fetch(unsigned char* const P_texture_data)
 		{
-			::loadBMP_custom(filepath, m_texture_id);
-		}
-		void loadDDS(const char* const filepath)
-		{
-			::loadDDS(filepath, m_texture_id);
+			GLint bound_tex; // We want to live every state to be the same...
+			glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound_tex);
+			glBindTexture(GL_TEXTURE_2D, m_texture_id);
+
+			glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, P_texture_data);
+
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glBindTexture(GL_TEXTURE_2D, bound_tex);
 		}
 
 		void bind() const;

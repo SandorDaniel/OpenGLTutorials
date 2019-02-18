@@ -155,7 +155,8 @@ TEX& TEX::operator=(TEX&& xtex)
 #include <GLFW/glfw3.h>
 
 
-GLuint loadBMP_custom(const char * imagepath, GLuint textureID) {
+
+void TEX::AspFreeTEX::loadBMP_custom(const char * imagepath) {
 
 	printf("Reading image %s\n", imagepath);
 
@@ -163,7 +164,6 @@ GLuint loadBMP_custom(const char * imagepath, GLuint textureID) {
 	unsigned char header[54];
 	unsigned int dataPos;
 	unsigned int imageSize;
-	unsigned int width, height;
 	// Actual RGB data
 	unsigned char * data;
 
@@ -172,7 +172,7 @@ GLuint loadBMP_custom(const char * imagepath, GLuint textureID) {
 	if (!file) {
 		printf("%s could not be opened. Are you in the right directory ? Don't forget to read the FAQ !\n", imagepath);
 		getchar();
-		return 0;
+		return;
 	}
 
 	// Read the header, i.e. the 54 first bytes
@@ -181,26 +181,26 @@ GLuint loadBMP_custom(const char * imagepath, GLuint textureID) {
 	if (fread(header, 1, 54, file) != 54) {
 		printf("Not a correct BMP file\n");
 		fclose(file);
-		return 0;
+		return;
 	}
 	// A BMP files always begins with "BM"
 	if (header[0] != 'B' || header[1] != 'M') {
 		printf("Not a correct BMP file\n");
 		fclose(file);
-		return 0;
+		return;
 	}
 	// Make sure this is a 24bpp file
-	if (*(int*)&(header[0x1E]) != 0) { printf("Not a correct BMP file\n");    fclose(file); return 0; }
-	if (*(int*)&(header[0x1C]) != 24) { printf("Not a correct BMP file\n");    fclose(file); return 0; }
+	if (*(int*)&(header[0x1E]) != 0) { printf("Not a correct BMP file\n");    fclose(file); return; }
+	if (*(int*)&(header[0x1C]) != 24) { printf("Not a correct BMP file\n");    fclose(file); return; }
 
 	// Read the information about the image
 	dataPos = *(int*)&(header[0x0A]);
 	imageSize = *(int*)&(header[0x22]);
-	width = *(int*)&(header[0x12]);
-	height = *(int*)&(header[0x16]);
+	m_width = *(int*)&(header[0x12]);
+	m_height = *(int*)&(header[0x16]);
 
 	// Some BMP files are misformatted, guess missing information
-	if (imageSize == 0)    imageSize = width * height * 3; // 3 : one byte for each Red, Green and Blue component
+	if (imageSize == 0)    imageSize = m_width * m_height * 3; // 3 : one byte for each Red, Green and Blue component
 	if (dataPos == 0)      dataPos = 54; // The BMP header is done that way
 
 	// Create a buffer
@@ -216,10 +216,10 @@ GLuint loadBMP_custom(const char * imagepath, GLuint textureID) {
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound_tex); // TODO make casting more safety
 
 	// "Bind" the newly created texture : all future texture functions will modify this texture
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	glBindTexture(GL_TEXTURE_2D, m_texture_id);
 
 	// Give the image to OpenGL
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
 
 	// OpenGL has now copied the data. Free our own version
 	delete[] data;
@@ -272,7 +272,7 @@ GLuint loadBMP_custom(const char * imagepath, GLuint textureID) {
 #define FOURCC_DXT3 0x33545844 // Equivalent to "DXT3" in ASCII
 #define FOURCC_DXT5 0x35545844 // Equivalent to "DXT5" in ASCII
 
-GLuint loadDDS(const char * imagepath, GLuint textureID) {
+void TEX::AspFreeTEX::loadDDS(const char * imagepath) {
 
 	unsigned char header[124];
 
@@ -282,7 +282,7 @@ GLuint loadDDS(const char * imagepath, GLuint textureID) {
 	fp = fopen(imagepath, "rb");
 	if (fp == NULL) {
 		printf("%s could not be opened. Are you in the right directory ? Don't forget to read the FAQ !\n", imagepath); getchar();
-		return 0;
+		return;
 	}
 
 	/* verify the type of file */
@@ -290,14 +290,14 @@ GLuint loadDDS(const char * imagepath, GLuint textureID) {
 	fread(filecode, 1, 4, fp);
 	if (strncmp(filecode, "DDS ", 4) != 0) {
 		fclose(fp);
-		return 0;
+		return;
 	}
 
 	/* get the surface desc */
 	fread(&header, 124, 1, fp);
 
-	unsigned int height = *(unsigned int*)&(header[8]);
-	unsigned int width = *(unsigned int*)&(header[12]);
+	m_height = *(unsigned int*)&(header[8]);
+	m_width = *(unsigned int*)&(header[12]);
 	unsigned int linearSize = *(unsigned int*)&(header[16]);
 	unsigned int mipMapCount = *(unsigned int*)&(header[24]);
 	unsigned int fourCC = *(unsigned int*)&(header[80]);
@@ -327,20 +327,22 @@ GLuint loadDDS(const char * imagepath, GLuint textureID) {
 		break;
 	default:
 		free(buffer);
-		return 0;
+		return;
 	}
 
 	GLint bound_tex; // We want to live every state to be the same...
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound_tex); // TODO make casting more safety
 
 	// "Bind" the newly created texture : all future texture functions will modify this texture
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	glBindTexture(GL_TEXTURE_2D, m_texture_id);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	unsigned int blockSize = (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ? 8 : 16;
 	unsigned int offset = 0;
 
 	/* load the mipmaps */
+	GLsizei width = m_width;
+	GLsizei height = m_height;
 	for (unsigned int level = 0; level < mipMapCount && (width || height); ++level)
 	{
 		unsigned int size = ((width + 3) / 4)*((height + 3) / 4)*blockSize;
