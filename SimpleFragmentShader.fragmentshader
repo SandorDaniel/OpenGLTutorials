@@ -117,11 +117,11 @@ vec3 colFrom(
 
 	return
 		// Ambient : simulates indirect lighting
-		material_ambient_col * source_light_ambient_col * source_light_ambient_power / distance_factor
+		material_ambient_col  * source_light_ambient_col  * source_light_ambient_power                    / distance_factor
 		// Diffuse : "color" of the object
-      + material_diffuse_col * source_light_diffuse_col * source_light_power * cosTheta / distance_factor
+      + material_diffuse_col  * source_light_diffuse_col  * source_light_power         * cosTheta         / distance_factor
 		// Specular : reflective highlight, like a mirror
-      + material_specular_col * source_light_specular_col * source_light_power * pow(cosAlpha, 5) / distance_factor;
+      + material_specular_col * source_light_specular_col * source_light_power         * pow(cosAlpha, 5) / distance_factor;
 }
 
 
