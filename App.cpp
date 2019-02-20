@@ -149,24 +149,28 @@ void App::upDate()
 	//glm::mat4 T = glm::translate(glm::mat4(), glm::vec3(2.0f, 2.0f, 0.0f));
 
 	//M = T * R * S;
-
-	m_M = glm::rotate(glm::mat4(), glm::radians<float>(20), glm::vec3(0.0f, 0.1f, 0.0f));
+	
+	m_M = 
+		glm::rotate(glm::mat4(), glm::radians<float>(-90), glm::vec3(0.0f, 0.0f, 1.0f));
 	m_does_m_M_contain_nonuniform_scaling = false;
 
-	m_M2 = glm::scale(glm::mat4(), glm::vec3(0.5f, 1.0f, 0.5f)) * glm::translate(glm::mat4(), glm::vec3(3.0f, 0.0f, 0.0f));
+	m_M2 = 
+		glm::scale(glm::mat4(), glm::vec3(0.5f, 1.0f, 0.5f)) * 
+		glm::translate(glm::mat4(), glm::vec3(3.0f, 0.0f, 0.0f)) *
+		glm::rotate(glm::mat4(), glm::radians<float>(-180), glm::vec3(0.0f, 1.0f, 0.0f));
 	m_does_m_M2_contain_nonuniform_scaling = true;
 
 	#pragma endregion
 
 	#pragma region LIGHTS UpDate
 
-	light.setPower(300.0f);
-	light.setAmbientPowerCoefficient(50.0f);
+	light.setPower(100.0f);
+	light.setAmbientPowerCoefficient(100.0f);
 	light.setPosDir(glm::vec4(5.0f, 5.0f, 5.0f, 1.0f));
 	light.setAngle(glm::pi<float>() / 30.0f);
 	light.setDir(glm::vec3(-1.0f, -1.0f, -1.0f));
-	light.setDiffuseCol(glm::vec3(1.0f, 1.0f, 1.0f));
-	light.setSpecularCol(0.1f * glm::vec3(1.0f, 1.0f, 1.0f));
+	light.setDiffuseCol(1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
+	light.setSpecularCol(1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
 	light.setAmbientCol(glm::vec3(1.0f, 1.0f, 1.0f));
 
 	p_light = new Light();
