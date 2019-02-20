@@ -90,7 +90,7 @@ vec3 colFrom(
 		{
 			distance_factor = 1.0f;
 
-			source_light_dir = normalize(source_light_posdir.xyz);
+			source_light_dir = -normalize(source_light_posdir.xyz);
 		}
 	}
 
