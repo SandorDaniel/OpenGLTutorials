@@ -32,6 +32,7 @@ void main()
 	out_vert_tex = in_vert_tex;
 
 	// TODO: find out if we have to handle the case if non uniform scaling was applied
+	// TBN has to be ortonormalized
 	out_vert_TBN = mat3((M * vec4(in_vert_tg, 0.0f)).xyz,
 	                    (M * vec4(in_vert_btg, 0.0f)).xyz,
 						(M * vec4(-cross(in_vert_tg, in_vert_btg), 0.0f)).xyz);
