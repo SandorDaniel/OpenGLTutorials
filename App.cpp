@@ -165,23 +165,21 @@ void App::upDate()
 	#pragma region LIGHTS UpDate
 
 	light.setPower(100.0f);
-	light.setAmbientPowerCoefficient(100.0f);
 	light.setPosDir(glm::vec4(5.0f, 5.0f, 5.0f, 1.0f));
 	light.setAngle(glm::pi<float>() / 30.0f);
 	light.setDir(glm::vec3(-1.0f, -1.0f, -1.0f));
 	light.setDiffuseCol(1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
 	light.setSpecularCol(1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
-	light.setAmbientCol(glm::vec3(1.0f, 1.0f, 1.0f));
+	light.setAmbientCol(10000.0f * glm::vec3(1.0f, 1.0f, 1.0f));
 
 	p_light = new Light();
-	p_light->setPower(300.0f);
-	p_light->setAmbientPowerCoefficient(50.0f);
-	p_light->setPosDir(glm::vec4(5.0f, 5.0f, -5.0f, 1.0f));
+	p_light->setPower(1.0f);
+	p_light->setPosDir(glm::vec4(0.0f, 0.0f, -1.0f, 0.0f));
 	p_light->setAngle(glm::pi<float>() / 30.0f);
 	p_light->setDir(glm::vec3(-1.0f, -1.0f, 1.0f));
-	p_light->setDiffuseCol(glm::vec3(1.0f, 1.0f, 1.0f));
-	p_light->setSpecularCol(0.1f * glm::vec3(1.0f, 1.0f, 1.0f));
-	p_light->setAmbientCol(glm::vec3(1.0f, 1.0f, 1.0f));
+	p_light->setDiffuseCol (  1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
+	p_light->setSpecularCol(  1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
+	p_light->setAmbientCol (100.0f * glm::vec3(1.0f, 1.0f, 1.0f));
 	delete p_light;
 
 	#pragma endregion
