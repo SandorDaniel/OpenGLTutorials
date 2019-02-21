@@ -1,5 +1,4 @@
 #include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
 
 #include "TangentSpace.hpp"
 
@@ -34,10 +33,10 @@ void computeTangentBasis(
 
 		// Set the same tangent for all three vertices of the triangle.
 		compressed_tangents[inds[i + 0]] = compressed_tangents[inds[i + 1]] = compressed_tangents[inds[i + 2]] = 
-			-glm::vec3(glm::rotate(glm::mat4(), glm::radians<float>(90), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(glm::normalize(tangent), 1.0f)); // TODO: Find out why do we have to rotate tangent and bitangent by 90 degrees around y axe and after that multiply tangent by -1.
+			glm::normalize(tangent);
 
 		// Same thing for binormals
 		compressed_bitangents[inds[i + 0]] = compressed_bitangents[inds[i + 1]] = compressed_bitangents[inds[i + 2]] = 
-			glm::vec3(glm::rotate(glm::mat4(), glm::radians<float>(90), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(glm::normalize(bitangent), 1.0f));
+			glm::normalize(bitangent);
 	}
 }
