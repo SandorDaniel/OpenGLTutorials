@@ -183,9 +183,15 @@ int main( void )
 
 		app.render();
 
+		glfwPollEvents();
+
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		{
+			app.lateUpDate();
+		}
+
 		// Swap buffers
 		glfwSwapBuffers(window);
-		glfwPollEvents();
 
 	} // Check if the ESC key was pressed or the window was closed
 	while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&

@@ -25,6 +25,13 @@
 
 
 
+GLuint textureId;
+bool fboUsed;
+GLuint fboId;
+const GLsizei TEXT_WIDTH = 300;
+const GLsizei TEXT_HEIGHT = 200;
+
+
 void App::init()
 {
 	#pragma region OBJ Loading and Compressing (Mass Storage -> RAM)
@@ -118,6 +125,52 @@ void App::init()
 	Light::getUniformLocationsForAll(m_programID);
 
 	#pragma endregion
+
+	// create a texture object
+	//GLuint textureId;
+	glGenTextures(1, &textureId);
+	glBindTexture(GL_TEXTURE_2D, textureId);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, TEXT_WIDTH, TEXT_HEIGHT, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// create a renderbuffer object to store depth info
+	GLuint rboId;
+	glGenRenderbuffers(1, &rboId);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboId);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, TEXT_WIDTH, TEXT_HEIGHT);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	// create a framebuffer object
+	//GLuint fboId;
+	glGenFramebuffers(1, &fboId);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboId);
+
+	// attach the texture to FBO color attachment point
+	glFramebufferTexture2D(GL_FRAMEBUFFER,        // 1. fbo target: GL_FRAMEBUFFER 
+		GL_COLOR_ATTACHMENT0,  // 2. attachment point
+		GL_TEXTURE_2D,         // 3. tex target: GL_TEXTURE_2D
+		textureId,             // 4. tex ID
+		0);                    // 5. mipmap level: 0(base)
+
+	// attach the renderbuffer to depth attachment point
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER,      // 1. fbo target: GL_FRAMEBUFFER
+		GL_DEPTH_ATTACHMENT, // 2. attachment point
+		GL_RENDERBUFFER,     // 3. rbo target: GL_RENDERBUFFER
+		rboId);              // 4. rbo ID
+
+	// check FBO status
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+		fboUsed = false;
+
+	// switch back to window-system-provided framebuffer
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 
@@ -183,6 +236,11 @@ void App::upDate()
 	delete p_light;
 
 	#pragma endregion
+
+	// set rendering destination to FBO
+	glBindFramebuffer(GL_FRAMEBUFFER, fboId);
+
+	glViewport(0, 0, TEXT_WIDTH, TEXT_HEIGHT);
 }
 
 
@@ -245,6 +303,72 @@ void App::render() const
 	m_tex_spec.unBind();
 	m_tex_norm.unBind();
 	m_vao.unBind();
+	
+	// unbind FBO
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// trigger mipmaps generation explicitly
+	// NOTE: If GL_GENERATE_MIPMAP is set to GL_TRUE, then glCopyTexSubImage2D()
+	// triggers mipmap generation automatically. However, the texture attached
+	// onto a FBO should generate mipmaps manually via glGenerateMipmap().
+	glBindTexture(GL_TEXTURE_2D, textureId);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+
+#include <fstream>
+#include <iostream>
+
+void App::lateUpDate()
+{
+	GLint bound_tex; // We want to live every state to be the same...
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound_tex);
+	glBindTexture(GL_TEXTURE_2D, textureId);
+
+	unsigned char* const P_texture_data = new unsigned char[TEXT_WIDTH * TEXT_HEIGHT * 3];
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, P_texture_data);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D, bound_tex);
+
+	std::vector<unsigned char> data(P_texture_data, P_texture_data + TEXT_WIDTH * TEXT_HEIGHT * 3);
+
+	std::vector<unsigned char> TEXTURE_DATA = data;
+
+	std::ofstream out;
+	out.open("printedTex.ppm");
+	if (!out) {
+		std::cerr << "Cannot open file.";
+		exit(-1);
+	}
+
+	out << "P3" << std::endl;
+
+	out << TEXT_WIDTH << " " << TEXT_HEIGHT << std::endl;
+
+	out << 255 << std::endl;
+
+	for (int i = TEXT_HEIGHT - 1; i >= 0; --i)
+	{
+		for (int j = 0; j < 3 * TEXT_WIDTH; ++j)
+		{
+			if (TEXTURE_DATA[i * 3 * TEXT_WIDTH + j] < 10)
+			{
+				out << ' ';
+			}
+
+			if (TEXTURE_DATA[i * 3 * TEXT_WIDTH + j] < 100)
+			{
+				out << ' ';
+			}
+
+			out << (int)(TEXTURE_DATA[i * 3 * TEXT_WIDTH + j]) << ' ';
+		}
+		out << std::endl;
+	}
+
+	out.close();
 }
 
 

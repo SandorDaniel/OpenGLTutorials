@@ -66,4 +66,5 @@ public:
 	void upDate();
 	void render() const;
 	void clean();
+	void lateUpDate();
 };
