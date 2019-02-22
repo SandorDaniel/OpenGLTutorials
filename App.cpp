@@ -98,9 +98,14 @@ void App::init()
 	m_vbo_btg.load(compressed_v_btg);
 	m_vao.attach(m_vbo_btg);
 
-	m_tex_diff.loadDDS("../tutorial13_normal_mapping/diffuse.DDS");
-	m_tex_spec.loadDDS("../tutorial13_normal_mapping/specular.DDS");
-	m_tex_norm.loadBMP_custom("../tutorial13_normal_mapping/normal.bmp");
+	DDSInRAM dds_image;
+	dds_image.load("../tutorial13_normal_mapping/diffuse.DDS");
+	m_tex_diff.loadDDS(dds_image);
+	dds_image.load("../tutorial13_normal_mapping/specular.DDS");
+	m_tex_spec.loadDDS(dds_image);
+	BMPInRAM bmp_image;
+	bmp_image.load("../tutorial13_normal_mapping/normal.bmp");
+	m_tex_norm.loadBMP(bmp_image);
 
 	#pragma endregion
 
@@ -267,10 +272,10 @@ void App::upDate()
 
 	#pragma region FBO
 
-	// set rendering destination to FBO
-	glBindFramebuffer(GL_FRAMEBUFFER, fboId);
+	//// set rendering destination to FBO
+	//glBindFramebuffer(GL_FRAMEBUFFER, fboId);
 
-	glViewport(0, 0, TEXT_WIDTH, TEXT_HEIGHT);
+	//glViewport(0, 0, TEXT_WIDTH, TEXT_HEIGHT);
 
 	#pragma endregion
 }
@@ -346,8 +351,8 @@ void App::render() const
 	//glGenerateMipmap(GL_TEXTURE_2D);
 	//glBindTexture(GL_TEXTURE_2D, 0);
 
-	// unbind FBO
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//// unbind FBO
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	#pragma endregion
 }

@@ -26,6 +26,28 @@ int getAttachment(TexType type);
 int getComponentNumber(TexType type);
 
 
+struct BMPInRAM
+{
+	std::vector<unsigned char> bytes;
+	GLint m_width;
+	GLint m_height;
+
+	void load(const char* const filepath); // TODO changing unsigned char to GLbyte or something like this everywhere where it is appropriate
+};
+
+
+struct DDSInRAM
+{
+	std::vector<unsigned char> bytes;
+	GLint m_width;
+	GLint m_height;
+	unsigned int fourCC;
+	unsigned int mipMapCount;
+
+	void load(const char* const filepath);
+};
+
+
 template<TexType type>
 class TEX
 {
@@ -105,64 +127,9 @@ class TEX
 			return m_texture_id;
 		}
 
-		// TODO: separation: mass storage -> RAM -> VRAM
-		void loadBMP_custom(const char* const filepath) // Load a .BMP file using our custom loader // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
+		void loadBMP(const BMPInRAM& IMAGE)
 		{
 			// TODO: make this code to be C++-like code
-
-			printf("Reading image %s\n", filepath);
-
-			// Data read from the header of the BMP file
-			unsigned char header[54];
-			unsigned int dataPos;
-			unsigned int imageSize;
-			// Actual RGB data
-			unsigned char * data;
-
-			// Open the file
-			FILE * file = fopen(filepath, "rb");
-			if (!file) {
-				printf("%s could not be opened. Are you in the right directory ? Don't forget to read the FAQ !\n", filepath);
-				getchar();
-				return;
-			}
-
-			// Read the header, i.e. the 54 first bytes
-
-			// If less than 54 bytes are read, problem
-			if (fread(header, 1, 54, file) != 54) {
-				printf("Not a correct BMP file\n");
-				fclose(file);
-				return;
-			}
-			// A BMP files always begins with "BM"
-			if (header[0] != 'B' || header[1] != 'M') {
-				printf("Not a correct BMP file\n");
-				fclose(file);
-				return;
-			}
-			// Make sure this is a 24bpp file
-			if (*(int*)&(header[0x1E]) != 0) { printf("Not a correct BMP file\n");    fclose(file); return; }
-			if (*(int*)&(header[0x1C]) != 24) { printf("Not a correct BMP file\n");    fclose(file); return; }
-
-			// Read the information about the image
-			dataPos = *(int*)&(header[0x0A]);
-			imageSize = *(int*)&(header[0x22]);
-			m_width = *(int*)&(header[0x12]);
-			m_height = *(int*)&(header[0x16]);
-
-			// Some BMP files are misformatted, guess missing information
-			if (imageSize == 0)    imageSize = m_width * m_height * 3; // 3 : one byte for each Red, Green and Blue component
-			if (dataPos == 0)      dataPos = 54; // The BMP header is done that way
-
-			// Create a buffer
-			data = new unsigned char[imageSize];
-
-			// Read the actual data from the file into the buffer
-			fread(data, 1, imageSize, file);
-
-			// Everything is in memory now, the file can be closed.
-			fclose(file);
 
 			GLint bound_tex; // We want to live every state to be the same...
 			glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound_tex); // TODO make casting more safety
@@ -171,10 +138,7 @@ class TEX
 			glBindTexture(GL_TEXTURE_2D, m_texture_id);
 
 			// Give the image to OpenGL
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
-
-			// OpenGL has now copied the data. Free our own version
-			delete[] data;
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, IMAGE.m_width, IMAGE.m_height, 0, GL_BGR, GL_UNSIGNED_BYTE, &IMAGE.bytes[0]);
 
 			// Poor filtering, or ...
 			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -192,55 +156,15 @@ class TEX
 
 			glBindTexture(GL_TEXTURE_2D, bound_tex);
 		}
-		void loadDDS(const char* const filepath) // Load a .DDS file using GLFW's own loader
+		void loadDDS(const DDSInRAM& IMAGE) // Load a .DDS file using GLFW's own loader
 		{
-			// TODO: make this code to be C++-like code
-
 			const int FOURCC_DXT1 = 0x31545844; // Equivalent to "DXT1" in ASCII
 			const int FOURCC_DXT3 = 0x33545844; // Equivalent to "DXT3" in ASCII
 			const int FOURCC_DXT5 = 0x35545844; // Equivalent to "DXT5" in ASCII
 
-			unsigned char header[124];
-
-			FILE *fp;
-
-			/* try to open the file */
-			fp = fopen(filepath, "rb");
-			if (fp == NULL) {
-				printf("%s could not be opened. Are you in the right directory ? Don't forget to read the FAQ !\n", filepath); getchar();
-				return;
-			}
-
-			/* verify the type of file */
-			char filecode[4];
-			fread(filecode, 1, 4, fp);
-			if (strncmp(filecode, "DDS ", 4) != 0) {
-				fclose(fp);
-				return;
-			}
-
-			/* get the surface desc */
-			fread(&header, 124, 1, fp);
-
-			m_height = *(unsigned int*)&(header[8]);
-			m_width = *(unsigned int*)&(header[12]);
-			unsigned int linearSize = *(unsigned int*)&(header[16]);
-			unsigned int mipMapCount = *(unsigned int*)&(header[24]);
-			unsigned int fourCC = *(unsigned int*)&(header[80]);
-
-
-			unsigned char* buffer;
-			unsigned int bufsize;
-			/* how big is it going to be including all mipmaps? */
-			bufsize = mipMapCount > 1 ? linearSize * 2 : linearSize;
-			buffer = (unsigned char*)malloc(bufsize * sizeof(unsigned char));
-			fread(buffer, 1, bufsize, fp);
-			/* close the file pointer */
-			fclose(fp);
-
-			unsigned int components = (fourCC == FOURCC_DXT1) ? 3 : 4;
+			unsigned int components = (IMAGE.fourCC == FOURCC_DXT1) ? 3 : 4;
 			unsigned int format;
-			switch (fourCC)
+			switch (IMAGE.fourCC)
 			{
 			case FOURCC_DXT1:
 				format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
@@ -252,7 +176,6 @@ class TEX
 				format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 				break;
 			default:
-				free(buffer);
 				return;
 			}
 
@@ -267,13 +190,13 @@ class TEX
 			unsigned int offset = 0;
 
 			/* load the mipmaps */
-			GLsizei width = m_width;
-			GLsizei height = m_height;
-			for (unsigned int level = 0; level < mipMapCount && (width || height); ++level)
+			GLsizei width = IMAGE.m_width;
+			GLsizei height = IMAGE.m_height;
+			for (unsigned int level = 0; level < IMAGE.mipMapCount && (width || height); ++level)
 			{
 				unsigned int size = ((width + 3) / 4)*((height + 3) / 4)*blockSize;
 				glCompressedTexImage2D(GL_TEXTURE_2D, level, format, width, height,
-					0, size, buffer + offset);
+					0, size, &IMAGE.bytes[offset]);
 
 				offset += size;
 				width /= 2;
@@ -282,10 +205,7 @@ class TEX
 				// Deal with Non-Power-Of-Two textures. This code is not included in the webpage to reduce clutter.
 				if (width < 1) width = 1;
 				if (height < 1) height = 1;
-
 			}
-
-			free(buffer);
 
 			glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -298,13 +218,13 @@ class TEX
 			glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound_tex);
 			glBindTexture(GL_TEXTURE_2D, m_texture_id);
 
-			unsigned char* const P_texture_data = new unsigned char[m_width * m_height * getComponentNumber(type)];
+			unsigned char* const P_texture_data = new unsigned char[IMAGE.m_width * IMAGE.m_height * getComponentNumber(type)];
 			glGetTexImage(GL_TEXTURE_2D, 0, getFormat(type), GL_UNSIGNED_BYTE, P_texture_data);
 
 			glBindTexture(GL_TEXTURE_2D, 0); // TODO: Is this row neccesarry?
 			glBindTexture(GL_TEXTURE_2D, bound_tex);
 
-			return std::vector<unsigned char>(P_texture_data, P_texture_data + m_width * m_height * getComponentNumber(type));
+			return std::vector<unsigned char>(P_texture_data, P_texture_data + IMAGE.m_width * IMAGE.m_height * getComponentNumber(type));
 		}
 
 		GLsizei getWidth() const
@@ -393,13 +313,13 @@ public:
 		return m_tex;
 	} // returns the number of texture channel wich it is bound to
 
-	void loadBMP_custom(const char* const filepath) // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
+	void loadBMP(const BMPInRAM& IMAGE) // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
 	{
-		return (m_loading.turnOn(static_cast<std::function<void(AspFreeTEX&, const char* const)>>(&AspFreeTEX::loadBMP_custom)))(m_tex, filepath);
+		return (m_loading.turnOn(static_cast<std::function<void(AspFreeTEX&, const BMPInRAM&)>>(&AspFreeTEX::loadBMP)))(m_tex, IMAGE);
 	}
-	void loadDDS(const char* const filepath)
+	void loadDDS(const DDSInRAM& IMAGE)
 	{
-		return (m_loading.turnOn(static_cast<std::function<void(AspFreeTEX&, const char* const)>>(&AspFreeTEX::loadDDS)))(m_tex, filepath);
+		return (m_loading.turnOn(static_cast<std::function<void(AspFreeTEX&, const DDSInRAM&)>>(&AspFreeTEX::loadDDS)))(m_tex, IMAGE);
 	}
 
 	explicit operator std::vector<unsigned char>() const
@@ -427,7 +347,7 @@ public:
 		return (m_binding.checkOn(func))(m_tex);
 	}
 
-}; 
+};
 
 
 void printImage(
@@ -435,6 +355,30 @@ void printImage(
 	const std::vector<unsigned char>& TEXTURE_DATA,
 	const GLsizei TEXT_WIDTH,
 	const GLsizei TEXT_HEIGHT);
+
+template<TexType type>
+void swap(typename TEX<type>::AspFreeTEX& t1, typename TEX<type>::AspFreeTEX& t2)
+{
+	using std::swap;
+
+	swap(t1.m_texture_id, t2.m_texture_id);
+	swap(t1.m_textureunitnumber, t2.m_textureunitnumber);
+}
+
+template<TexType type>
+void swap(TEX<type>& t1, TEX<type>& t2)
+{
+	using std::swap;
+
+	swap(t1.m_loading, t2.m_loading);
+	swap(t1.m_binding, t2.m_binding);
+	swap(t1.m_tex, t2.m_tex);
+}
+
+
+//
+// Outline definitions
+//
 
 
 template<TexType type>
@@ -456,27 +400,6 @@ void TEX<type>::AspFreeTEX::loadClass()
 	}
 
 	is_class_loaded = true;
-}
-
-
-template<TexType type>
-void swap(typename TEX<type>::AspFreeTEX& t1, typename TEX<type>::AspFreeTEX& t2)
-{
-	using std::swap;
-
-	swap(t1.m_texture_id, t2.m_texture_id);
-	swap(t1.m_textureunitnumber, t2.m_textureunitnumber);
-}
-
-
-template<TexType type>
-void swap(TEX<type>& t1, TEX<type>& t2)
-{
-	using std::swap;
-
-	swap(t1.m_loading, t2.m_loading);
-	swap(t1.m_binding, t2.m_binding);
-	swap(t1.m_tex, t2.m_tex);
 }
 
 
