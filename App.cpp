@@ -25,11 +25,15 @@
 
 
 
+#pragma region FBO
+
 GLuint textureId;
 bool fboUsed;
 GLuint fboId;
 const GLsizei TEXT_WIDTH = 300;
 const GLsizei TEXT_HEIGHT = 200;
+
+#pragma endregion
 
 
 void App::init()
@@ -126,6 +130,8 @@ void App::init()
 
 	#pragma endregion
 
+	#pragma region FBO
+
 	// create a texture object
 	//GLuint textureId;
 	glGenTextures(1, &textureId);
@@ -170,7 +176,9 @@ void App::init()
 		fboUsed = false;
 
 	// switch back to window-system-provided framebuffer
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	#pragma endregion
 }
 
 
@@ -237,10 +245,14 @@ void App::upDate()
 
 	#pragma endregion
 
+	#pragma region FBO
+
 	// set rendering destination to FBO
 	glBindFramebuffer(GL_FRAMEBUFFER, fboId);
 
 	glViewport(0, 0, TEXT_WIDTH, TEXT_HEIGHT);
+
+	#pragma endregion
 }
 
 
@@ -304,6 +316,8 @@ void App::render() const
 	m_tex_norm.unBind();
 	m_vao.unBind();
 	
+	#pragma region FBO
+
 	// unbind FBO
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -314,8 +328,12 @@ void App::render() const
 	glBindTexture(GL_TEXTURE_2D, textureId);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	#pragma endregion
 }
 
+
+#pragma region FBO
 
 #include <fstream>
 #include <iostream>
@@ -370,6 +388,8 @@ void App::lateUpDate()
 
 	out.close();
 }
+
+#pragma endregion
 
 
 void App::clean()

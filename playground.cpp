@@ -184,12 +184,12 @@ int main( void )
 		app.render();
 
 		glfwPollEvents();
-
+		#pragma region FBO
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		{
 			app.lateUpDate();
 		}
-
+		#pragma endregion
 		// Swap buffers
 		glfwSwapBuffers(window);
 

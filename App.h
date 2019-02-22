@@ -66,5 +66,7 @@ public:
 	void upDate();
 	void render() const;
 	void clean();
+	#pragma region FBO
 	void lateUpDate();
+	#pragma endregion
 };
