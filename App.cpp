@@ -29,7 +29,6 @@
 
 GLuint textureId;
 GLuint depth_texture;
-bool fboUsed;
 GLuint fboId;
 const GLsizei TEXT_WIDTH = 300;
 const GLsizei TEXT_HEIGHT = 200;
@@ -196,9 +195,8 @@ void App::init()
 	//	rboId);              // 4. rbo ID
 
 	// check FBO status
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (status != GL_FRAMEBUFFER_COMPLETE)
-		fboUsed = false;
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		throw; // TODO
 
 	// switch back to window-system-provided framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
