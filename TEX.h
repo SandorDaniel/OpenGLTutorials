@@ -3,6 +3,7 @@
 #include <queue>
 #include <algorithm>
 #include <vector>
+#include <type_traits>
 
 // TODO: After making loadBMP_custom and loadDDS(...) functions to be C++-like codes, change the three headers below to the appropriate C++ headers.
 #include <stdio.h>
@@ -129,6 +130,8 @@ class TEX
 
 		void loadBMP(const BMPInRAM& IMAGE)
 		{
+			static_assert(type == TexType::COLOR, "Loading BMP file data into depth texture is pointless and so is not allowed.");
+
 			// TODO: make this code to be C++-like code
 
 			GLint bound_tex; // We want to live every state to be the same...
@@ -158,6 +161,8 @@ class TEX
 		}
 		void loadDDS(const DDSInRAM& IMAGE) // Load a .DDS file using GLFW's own loader
 		{
+			static_assert(type == TexType::COLOR, "Loading DDS file data into depth texture is pointless and so is not allowed.");
+
 			const int FOURCC_DXT1 = 0x31545844; // Equivalent to "DXT1" in ASCII
 			const int FOURCC_DXT3 = 0x33545844; // Equivalent to "DXT3" in ASCII
 			const int FOURCC_DXT5 = 0x35545844; // Equivalent to "DXT5" in ASCII
