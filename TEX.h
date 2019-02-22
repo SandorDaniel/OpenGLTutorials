@@ -40,9 +40,13 @@ class TEX
 		AspFreeTEX(AspFreeTEX&& tex);
 		AspFreeTEX& operator=(AspFreeTEX&& T);
 
-		operator GLuint() const
+		operator GLint() const
 		{
 			return m_textureunitnumber;
+		}
+		operator GLuint() const
+		{
+			return m_texture_id;
 		}
 
 		// TODO: separation: mass storage -> RAM -> VRAM
@@ -105,9 +109,13 @@ public:
 	}
 	TEX& operator=(TEX&& T);
 
+	operator GLint() const
+	{
+		return (m_binding.checkOn(static_cast<std::function<GLint(const AspFreeTEX&)>>(&AspFreeTEX::operator GLint)))(m_tex);
+	} // returns the number of texture channel wich it is bound to
 	operator GLuint() const
 	{
-		return (m_binding.checkOn(static_cast<std::function<GLuint(const AspFreeTEX&)>>(&AspFreeTEX::operator GLuint)))(m_tex);
+		return m_tex;
 	} // returns the number of texture channel wich it is bound to
 
 	void loadBMP_custom(const char* const filepath) // TODO: a két függvényt regexpes estszétválasztással összevonni egybe 
