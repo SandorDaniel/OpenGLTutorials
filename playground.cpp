@@ -185,20 +185,17 @@ int main( void )
 
 		app.render();
 
-		glfwPollEvents();
-		#pragma region FBO
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		{
-			app.lateUpDate();
-		}
-		#pragma endregion
 		// Swap buffers
 		glfwSwapBuffers(window);
+		glfwPollEvents();
 
 	} // Check if the ESC key was pressed or the window was closed
 	while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
 		   glfwWindowShouldClose(window) == 0 );
 
+	#pragma region FBO
+	app.lateUpDate();
+	#pragma endregion
 	app.clean();
 
 	// Close OpenGL window and terminate GLFW
