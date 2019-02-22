@@ -58,7 +58,7 @@ class TEX
 			unsigned char* const P_texture_data = new unsigned char[m_width * m_height * 3];
 			glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, P_texture_data);
 
-			glBindTexture(GL_TEXTURE_2D, 0);
+			glBindTexture(GL_TEXTURE_2D, 0); // TODO: Is this row neccesarry?
 			glBindTexture(GL_TEXTURE_2D, bound_tex);
 
 			return std::vector<unsigned char>(P_texture_data, P_texture_data + m_width * m_height * 3);
