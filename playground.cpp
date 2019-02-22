@@ -34,6 +34,7 @@
 // - find out which is better, store vertex datas in vec3s or in vec4s
 // - change c-like string to std::string if it is possible
 // - NULL -> nullptr; 0 as null pointer -> nullptr
+// - implement detach member function where attach member functions are implemented 
 
 //#define sd_debugger
 #include "Debug.h"
