@@ -30,9 +30,9 @@ class App
 	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_btg;
 	IBO<GLushort> m_ibo;
 	
-	TEX m_tex_diff;
-	TEX m_tex_spec;
-	TEX m_tex_norm;
+	TEX<TexType::COLOR> m_tex_diff;
+	TEX<TexType::COLOR> m_tex_spec;
+	TEX<TexType::COLOR> m_tex_norm;
 
 	GLint m_programID;
 	GLint m_MID;
