@@ -35,24 +35,24 @@ class App
 	TEX<TexType::COLOR> m_tex_matspec_wall;
 	TEX<TexType::COLOR> m_tex_nor_wall;
 
-	GLint m_program_id; // normapped, matlightmapped, 
+	GLint m_program_nor_matlight_shadow_mapped_id;
 	
-	GLint m_M_id;
-	GLint m_V_id;
-	GLint m_P_id;
-	GLint m_cam_pos_id;
-	GLint m_tex_matdiff_id;
-	GLint m_tex_matspec_id;
-	GLint m_tex_norm_id;
-	GLint m_does_model_transformation_contain_nonuniform_scalingID;
+	GLint m_M_nor_matlight_shadow_mapped_id;
+	GLint m_V_nor_matlight_shadow_mapped_id;
+	GLint m_P_nor_matlight_shadow_mapped_id;
+	GLint m_cam_pos_nor_matlight_shadow_mapped_id;
+	GLint m_tex_matdiff_nor_matlight_shadow_mapped_id;
+	GLint m_tex_matspec_nor_matlight_shadow_mapped_id;
+	GLint m_tex_norm_nor_matlight_shadow_mapped_id;
+	GLint m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id;
 
 	Light light;
 	Light* p_light;
 
-	glm::mat4 m_M = glm::mat4(); // glm::mat4() is the identity matrix
-	bool m_does_m_M_contain_nonuniform_scaling = false;
-	glm::mat4 m_M2 = glm::mat4();
-	bool m_does_m_M2_contain_nonuniform_scaling = false;
+	glm::mat4 m_M_horizontal_cilinder = glm::mat4(); // glm::mat4() is the identity matrix
+	bool m_does_m_M_contain_nonuniform_scaling_horizontal_cilinder = false;
+	glm::mat4 m_M2_horizontal_cilinder = glm::mat4();
+	bool m_does_m_M2_contain_nonuniform_scaling_horizontal_cilinder = false;
 
 	InPutObserverCamera m_camera;
 	const float m_NEAR = 1.0f;
