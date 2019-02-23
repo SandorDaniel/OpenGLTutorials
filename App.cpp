@@ -25,17 +25,6 @@
 
 
 
-#pragma region FBO
-
-GLuint textureId;
-GLuint depth_texture;
-GLuint fboId;
-const GLsizei TEXT_WIDTH = 300;
-const GLsizei TEXT_HEIGHT = 200;
-
-#pragma endregion
-
-
 void App::init()
 {
 	#pragma region OBJ Loading and Compressing (Mass Storage -> RAM)
@@ -137,8 +126,8 @@ void App::init()
 
 	#pragma region FBO
 
-	m_tex_col.alloc(TEXT_WIDTH, TEXT_HEIGHT);
-	m_tex_depth.alloc(TEXT_WIDTH, TEXT_HEIGHT);
+	m_tex_col.alloc(100, 100);
+	m_tex_depth.alloc(100, 100);
 
 	fbo.attach(m_tex_col);
 	fbo.attach(m_tex_depth);
@@ -210,11 +199,7 @@ void App::upDate()
 
 	#pragma endregion
 
-	#pragma region FBO
-
 	fbo.bind(GL_FRAMEBUFFER);
-
-	#pragma endregion
 }
 
 
@@ -278,23 +263,12 @@ void App::render() const
 	m_tex_norm.unBind();
 	m_vao.unBind();
 	
-	#pragma region FBO
-
 	fbo.unBind();
-
-	#pragma endregion
 }
 
 
-#pragma region FBO
-
-#include <fstream>
-#include <iostream>
-
 void App::lateUpDate()
 {
-	#pragma region color texture
-
 	printImage(
 		"printedTex.ppm",
 		static_cast<std::vector<unsigned char>>(m_tex_col),
@@ -302,21 +276,13 @@ void App::lateUpDate()
 		m_tex_col.getHeight(),
 		m_tex_col.getComponentCount());
 
-	#pragma endregion
-
-	#pragma region depth texture
-
 	printImage(
 		"printedDepthTex.ppm",
 		static_cast<std::vector<unsigned char>>(m_tex_depth),
 		m_tex_depth.getWidth(),
 		m_tex_depth.getHeight(),
 		m_tex_depth.getComponentCount());
-
-	#pragma endregion
 }
-
-#pragma endregion
 
 
 void App::clean()
