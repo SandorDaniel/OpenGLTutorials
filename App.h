@@ -12,6 +12,7 @@
 #include "VAO.hpp"
 #include "IBO.hpp"
 #include "TEX.h"
+#include "FBO.h"
 
 #include "Camera.h"
 #include "Light.h"
@@ -33,9 +34,6 @@ class App
 	TEX<TexType::COLOR> m_tex_diff;
 	TEX<TexType::COLOR> m_tex_spec;
 	TEX<TexType::COLOR> m_tex_norm;
-	
-	TEX<TexType::COLOR> m_tex_col;
-	TEX<TexType::DEPTH> m_tex_depth;
 
 	GLint m_programID;
 	GLint m_MID;
@@ -58,6 +56,10 @@ class App
 	InPutObserverCamera m_camera;
 	const float m_NEAR = 1.0f;
 	const float m_FAR = 100.0f;
+
+	TEX<TexType::COLOR> m_tex_col;
+	TEX<TexType::DEPTH> m_tex_depth;
+	FBO fbo;
 
 public:
 

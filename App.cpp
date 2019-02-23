@@ -140,44 +140,8 @@ void App::init()
 	m_tex_col.alloc(TEXT_WIDTH, TEXT_HEIGHT);
 	m_tex_depth.alloc(TEXT_WIDTH, TEXT_HEIGHT);
 
-	//// create a renderbuffer object to store depth info
-	//GLuint rboId;
-	//glGenRenderbuffers(1, &rboId);
-	//glBindRenderbuffer(GL_RENDERBUFFER, rboId);
-	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, TEXT_WIDTH, TEXT_HEIGHT);
-	//glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-	// create a framebuffer object
-	//GLuint fboId;
-	glGenFramebuffers(1, &fboId);
-	glBindFramebuffer(GL_FRAMEBUFFER, fboId);
-
-	// attach the texture to FBO color attachment point
-	glFramebufferTexture2D(GL_FRAMEBUFFER,        // 1. fbo target: GL_FRAMEBUFFER 
-		GL_COLOR_ATTACHMENT0,  // 2. attachment point
-		GL_TEXTURE_2D,         // 3. tex target: GL_TEXTURE_2D
-		m_tex_col,             // 4. tex ID
-		0);                    // 5. mipmap level: 0(base)
-
-	// attach the depth texture to FBO depth attachment point
-	glFramebufferTexture2D(GL_FRAMEBUFFER,        // 1. fbo target: GL_FRAMEBUFFER 
-		GL_DEPTH_ATTACHMENT,  // 2. attachment point
-		GL_TEXTURE_2D,         // 3. tex target: GL_TEXTURE_2D
-		m_tex_depth,             // 4. tex ID
-		0);                    // 5. mipmap level: 0(base)
-
-	//// attach the renderbuffer to depth attachment point
-	//glFramebufferRenderbuffer(GL_FRAMEBUFFER,      // 1. fbo target: GL_FRAMEBUFFER
-	//	GL_DEPTH_ATTACHMENT, // 2. attachment point
-	//	GL_RENDERBUFFER,     // 3. rbo target: GL_RENDERBUFFER
-	//	rboId);              // 4. rbo ID
-
-	// check FBO status
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		throw; // TODO
-
-	// switch back to window-system-provided framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	fbo.attach(m_tex_col);
+	fbo.attach(m_tex_depth);
 
 	#pragma endregion
 }
@@ -248,10 +212,7 @@ void App::upDate()
 
 	#pragma region FBO
 
-	// set rendering destination to FBO
-	glBindFramebuffer(GL_FRAMEBUFFER, fboId);
-
-	glViewport(0, 0, TEXT_WIDTH, TEXT_HEIGHT);
+	fbo.bind(GL_FRAMEBUFFER);
 
 	#pragma endregion
 }
@@ -319,18 +280,7 @@ void App::render() const
 	
 	#pragma region FBO
 
-	//// trigger mipmaps generation explicitly
-	//// NOTE: If GL_GENERATE_MIPMAP is set to GL_TRUE, then glCopyTexSubImage2D()
-	//// triggers mipmap generation automatically. However, the texture attached
-	//// onto a FBO should generate mipmaps manually via glGenerateMipmap().
-	//glBindTexture(GL_TEXTURE_2D, textureId);
-	//glGenerateMipmap(GL_TEXTURE_2D);
-	//glBindTexture(GL_TEXTURE_2D, 0);
-
-	// unbind FBO
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// TODO: set back viewport
+	fbo.unBind();
 
 	#pragma endregion
 }
