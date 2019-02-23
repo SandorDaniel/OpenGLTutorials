@@ -24,7 +24,7 @@ enum class TexType
 
 int getFormat(TexType type);
 int getAttachment(TexType type);
-int getComponentNumber(TexType type);
+int getComponentCount(TexType type);
 
 
 struct BMPInRAM
@@ -216,6 +216,36 @@ class TEX
 
 			glBindTexture(GL_TEXTURE_2D, bound_tex);
 		}
+		void alloc(const GLsizei TEXT_WIDTH, const GLsizei TEXT_HEIGHT)
+		{
+			GLint bound_tex; // We want to live every state to be the same...
+			glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound_tex); // TODO make casting more safety
+
+			glBindTexture(GL_TEXTURE_2D, m_texture_id);
+
+			m_width = TEXT_WIDTH;
+			m_height = TEXT_HEIGHT;
+
+			switch (type)
+			{
+			case TexType::COLOR:
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEXT_WIDTH, TEXT_HEIGHT, 0, GL_BGR, GL_UNSIGNED_BYTE, nullptr); // NULL - we are only allocating memory and not filling it
+				glBindTexture(GL_TEXTURE_2D, 0);
+				break;
+			case TexType::DEPTH:
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, TEXT_WIDTH, TEXT_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr); // NULL - we are only allocating memory and not filling it
+				glBindTexture(GL_TEXTURE_2D, 0);
+				break;
+			}
+
+			glBindTexture(GL_TEXTURE_2D, bound_tex);
+		}
 
 		explicit operator std::vector<unsigned char>() const
 		{
@@ -223,13 +253,13 @@ class TEX
 			glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound_tex);
 			glBindTexture(GL_TEXTURE_2D, m_texture_id);
 
-			unsigned char* const P_texture_data = new unsigned char[IMAGE.m_width * IMAGE.m_height * getComponentNumber(type)];
+			unsigned char* const P_texture_data = new unsigned char[m_width * m_height * ::getComponentCount(type)];
 			glGetTexImage(GL_TEXTURE_2D, 0, getFormat(type), GL_UNSIGNED_BYTE, P_texture_data);
 
 			glBindTexture(GL_TEXTURE_2D, 0); // TODO: Is this row neccesarry?
 			glBindTexture(GL_TEXTURE_2D, bound_tex);
 
-			return std::vector<unsigned char>(P_texture_data, P_texture_data + IMAGE.m_width * IMAGE.m_height * getComponentNumber(type));
+			return std::vector<unsigned char>(P_texture_data, P_texture_data + m_width * m_height * ::getComponentCount(type));
 		}
 
 		GLsizei getWidth() const
@@ -239,6 +269,10 @@ class TEX
 		GLsizei getHeight() const
 		{
 			return m_height;
+		}
+		int getComponentCount() const
+		{
+			return ::getComponentCount(type);
 		}
 
 		void bind() const
@@ -326,6 +360,10 @@ public:
 	{
 		return (m_loading.turnOn(static_cast<std::function<void(AspFreeTEX&, const DDSInRAM&)>>(&AspFreeTEX::loadDDS)))(m_tex, IMAGE);
 	}
+	void alloc(const GLsizei TEXT_WIDTH, const GLsizei TEXT_HEIGHT)
+	{
+		return (m_loading.turnOn(static_cast<std::function<void(AspFreeTEX&, const GLsizei, const GLsizei)>>(&AspFreeTEX::alloc)))(m_tex, TEXT_WIDTH, TEXT_HEIGHT);
+	}
 
 	explicit operator std::vector<unsigned char>() const
 	{
@@ -339,6 +377,10 @@ public:
 	GLsizei getHeight() const
 	{
 		return m_tex.getHeight();
+	}
+	int getComponentCount() const
+	{
+		return m_tex.getComponentCount();
 	}
 
 	void bind() const
@@ -359,7 +401,8 @@ void printImage(
 	const std::string& PPM_FILE_NAME_WITH_EXTENSION,
 	const std::vector<unsigned char>& TEXTURE_DATA,
 	const GLsizei TEXT_WIDTH,
-	const GLsizei TEXT_HEIGHT);
+	const GLsizei TEXT_HEIGHT,
+	const int COMPONENT_COUNT);
 
 template<TexType type>
 void swap(typename TEX<type>::AspFreeTEX& t1, typename TEX<type>::AspFreeTEX& t2)

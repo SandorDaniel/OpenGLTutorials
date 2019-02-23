@@ -40,7 +40,7 @@ int getAttachment(TexType type)
 }
 
 
-int getComponentNumber(TexType type)
+int getComponentCount(TexType type)
 {
 	switch (type)
 	{
@@ -214,7 +214,8 @@ void printImage(
 	const std::string& PPM_FILE_NAME_WITH_EXTENSION,
 	const std::vector<unsigned char>& TEXTURE_DATA,
 	const GLsizei TEXT_WIDTH,
-	const GLsizei TEXT_HEIGHT)
+	const GLsizei TEXT_HEIGHT,
+	const int COMPONENT_COUNT)
 {
 	// http://netpbm.sourceforge.net/doc/ppm.html
 
@@ -233,19 +234,19 @@ void printImage(
 
 	for (int i = TEXT_HEIGHT - 1; i >= 0; --i)
 	{
-		for (int j = 0; j < 3 * TEXT_WIDTH; ++j)
+		for (int j = 0; j < COMPONENT_COUNT * TEXT_WIDTH; ++j)
 		{
-			if (TEXTURE_DATA[i * 3 * TEXT_WIDTH + j] < 10)
+			if (TEXTURE_DATA[i * COMPONENT_COUNT * TEXT_WIDTH + j] < 10)
 			{
 				out << ' ';
 			}
 
-			if (TEXTURE_DATA[i * 3 * TEXT_WIDTH + j] < 100)
+			if (TEXTURE_DATA[i * COMPONENT_COUNT * TEXT_WIDTH + j] < 100)
 			{
 				out << ' ';
 			}
 
-			out << (int)(TEXTURE_DATA[i * 3 * TEXT_WIDTH + j]) << ' ';
+			out << (int)(TEXTURE_DATA[i * COMPONENT_COUNT * TEXT_WIDTH + j]) << ' ';
 		}
 		out << std::endl;
 	}

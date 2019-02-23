@@ -137,30 +137,8 @@ void App::init()
 
 	#pragma region FBO
 
-	// create a texture object
-	//GLuint textureId;
-	glGenTextures(1, &textureId);
-	glBindTexture(GL_TEXTURE_2D, textureId);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	//glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, TEXT_WIDTH, TEXT_HEIGHT, 0,
-	//	GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEXT_WIDTH, TEXT_HEIGHT, 0, GL_BGR, GL_UNSIGNED_BYTE, nullptr); // NULL - we are only allocating memory and not filling it
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	// create a depth texture
-	glGenTextures(1, &depth_texture);
-	glBindTexture(GL_TEXTURE_2D, depth_texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, TEXT_WIDTH, TEXT_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr); // NULL - we are only allocating memory and not filling it
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	m_tex_col.alloc(TEXT_WIDTH, TEXT_HEIGHT);
+	m_tex_depth.alloc(TEXT_WIDTH, TEXT_HEIGHT);
 
 	//// create a renderbuffer object to store depth info
 	//GLuint rboId;
@@ -178,14 +156,14 @@ void App::init()
 	glFramebufferTexture2D(GL_FRAMEBUFFER,        // 1. fbo target: GL_FRAMEBUFFER 
 		GL_COLOR_ATTACHMENT0,  // 2. attachment point
 		GL_TEXTURE_2D,         // 3. tex target: GL_TEXTURE_2D
-		textureId,             // 4. tex ID
+		m_tex_col,             // 4. tex ID
 		0);                    // 5. mipmap level: 0(base)
 
 	// attach the depth texture to FBO depth attachment point
 	glFramebufferTexture2D(GL_FRAMEBUFFER,        // 1. fbo target: GL_FRAMEBUFFER 
 		GL_DEPTH_ATTACHMENT,  // 2. attachment point
 		GL_TEXTURE_2D,         // 3. tex target: GL_TEXTURE_2D
-		depth_texture,             // 4. tex ID
+		m_tex_depth,             // 4. tex ID
 		0);                    // 5. mipmap level: 0(base)
 
 	//// attach the renderbuffer to depth attachment point
@@ -270,10 +248,10 @@ void App::upDate()
 
 	#pragma region FBO
 
-	//// set rendering destination to FBO
-	//glBindFramebuffer(GL_FRAMEBUFFER, fboId);
+	// set rendering destination to FBO
+	glBindFramebuffer(GL_FRAMEBUFFER, fboId);
 
-	//glViewport(0, 0, TEXT_WIDTH, TEXT_HEIGHT);
+	glViewport(0, 0, TEXT_WIDTH, TEXT_HEIGHT);
 
 	#pragma endregion
 }
@@ -349,8 +327,10 @@ void App::render() const
 	//glGenerateMipmap(GL_TEXTURE_2D);
 	//glBindTexture(GL_TEXTURE_2D, 0);
 
-	//// unbind FBO
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// unbind FBO
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// TODO: set back viewport
 
 	#pragma endregion
 }
@@ -365,109 +345,23 @@ void App::lateUpDate()
 {
 	#pragma region color texture
 
-	{
-		GLint bound_tex; // We want to live every state to be the same...
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound_tex);
-		glBindTexture(GL_TEXTURE_2D, textureId);
-
-		unsigned char* const P_texture_data = new unsigned char[TEXT_WIDTH * TEXT_HEIGHT * 3];
-		glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, P_texture_data);
-
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glBindTexture(GL_TEXTURE_2D, bound_tex);
-
-		std::vector<unsigned char> data(P_texture_data, P_texture_data + TEXT_WIDTH * TEXT_HEIGHT * 3);
-
-		std::vector<unsigned char> TEXTURE_DATA = data;
-
-		std::ofstream out;
-		out.open("printedTex.ppm");
-		if (!out) {
-			std::cerr << "Cannot open file.";
-			exit(-1);
-		}
-
-		out << "P3" << std::endl;
-
-		out << TEXT_WIDTH << " " << TEXT_HEIGHT << std::endl;
-
-		out << 255 << std::endl;
-
-		for (int i = TEXT_HEIGHT - 1; i >= 0; --i)
-		{
-			for (int j = 0; j < 3 * TEXT_WIDTH; ++j)
-			{
-				if (TEXTURE_DATA[i * 3 * TEXT_WIDTH + j] < 10)
-				{
-					out << ' ';
-				}
-
-				if (TEXTURE_DATA[i * 3 * TEXT_WIDTH + j] < 100)
-				{
-					out << ' ';
-				}
-
-				out << (int)(TEXTURE_DATA[i * 3 * TEXT_WIDTH + j]) << ' ';
-			}
-			out << std::endl;
-		}
-
-		out.close();
-	}
+	printImage(
+		"printedTex.ppm",
+		static_cast<std::vector<unsigned char>>(m_tex_col),
+		m_tex_col.getWidth(),
+		m_tex_col.getHeight(),
+		m_tex_col.getComponentCount());
 
 	#pragma endregion
 
 	#pragma region depth texture
 
-	{
-		GLint bound_tex; // We want to live every state to be the same...
-		glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound_tex);
-		glBindTexture(GL_TEXTURE_2D, depth_texture);
-
-		unsigned char* const P_texture_data = new unsigned char[TEXT_WIDTH * TEXT_HEIGHT]; // !!!
-		glGetTexImage(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, P_texture_data); // !!!
-
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glBindTexture(GL_TEXTURE_2D, bound_tex);
-
-		std::vector<unsigned char> data(P_texture_data, P_texture_data + TEXT_WIDTH * TEXT_HEIGHT); // !!!
-
-		std::vector<unsigned char> TEXTURE_DATA = data;
-
-		std::ofstream out;
-		out.open("printedDepthTex.ppm");
-		if (!out) {
-			std::cerr << "Cannot open file.";
-			exit(-1);
-		}
-
-		//out << "P3" << std::endl; // !!!
-
-		out << TEXT_WIDTH << " " << TEXT_HEIGHT << std::endl;
-
-		out << 255 << std::endl;
-
-		for (int i = TEXT_HEIGHT - 1; i >= 0; --i)
-		{
-			for (int j = 0; j < TEXT_WIDTH; ++j) // !!!
-			{
-				if (TEXTURE_DATA[i * TEXT_WIDTH + j] < 10) // !!!
-				{
-					out << ' ';
-				}
-
-				if (TEXTURE_DATA[i * TEXT_WIDTH + j] < 100) // !!!
-				{
-					out << ' ';
-				}
-
-				out << (int)(TEXTURE_DATA[i * TEXT_WIDTH + j]) << ' '; // !!!
-			}
-			out << std::endl;
-		}
-
-		out.close();
-	}
+	printImage(
+		"printedDepthTex.ppm",
+		static_cast<std::vector<unsigned char>>(m_tex_depth),
+		m_tex_depth.getWidth(),
+		m_tex_depth.getHeight(),
+		m_tex_depth.getComponentCount());
 
 	#pragma endregion
 }

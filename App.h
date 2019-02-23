@@ -33,6 +33,9 @@ class App
 	TEX<TexType::COLOR> m_tex_diff;
 	TEX<TexType::COLOR> m_tex_spec;
 	TEX<TexType::COLOR> m_tex_norm;
+	
+	TEX<TexType::COLOR> m_tex_col;
+	TEX<TexType::DEPTH> m_tex_depth;
 
 	GLint m_programID;
 	GLint m_MID;
