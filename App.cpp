@@ -267,7 +267,7 @@ void App::render() const
 }
 
 
-void App::lateUpDate()
+void App::afterScreen()
 {
 	printImage(
 		"printedTex.ppm",
