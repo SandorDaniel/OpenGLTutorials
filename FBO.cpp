@@ -57,7 +57,7 @@ FBO& FBO::operator=(FBO&& fbo)
 }
 
 
-void FBO::bind(GLenum target) const
+void FBO::bind(GLenum target = GL_DRAW_FRAMEBUFFER) const
 {
 	if (target != GL_FRAMEBUFFER && target != GL_DRAW_FRAMEBUFFER && target != GL_READ_FRAMEBUFFER)
 	{
@@ -77,5 +77,10 @@ void FBO::bind(GLenum target) const
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
 		throw; // TODO
+	}
+
+	if (target == GL_DRAW_FRAMEBUFFER)
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 }

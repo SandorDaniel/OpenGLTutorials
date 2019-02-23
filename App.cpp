@@ -64,6 +64,15 @@ void App::init()
 		compressed_v_tg,
 		compressed_v_btg);
 
+	DDSInRAM dds_image_diffuse;
+	dds_image_diffuse.load("../tutorial13_normal_mapping/diffuse.DDS");
+
+	DDSInRAM dds_image_specular;
+	dds_image_specular.load("../tutorial13_normal_mapping/specular.DDS");
+
+	BMPInRAM bmp_image_norm;
+	bmp_image_norm.load("../tutorial13_normal_mapping/normal.bmp");
+
 	#pragma endregion
 
 	#pragma region OBJ Loading (RAM -> VRAM)
@@ -86,14 +95,11 @@ void App::init()
 	m_vbo_btg.load(compressed_v_btg);
 	m_vao.attach(m_vbo_btg);
 
-	DDSInRAM dds_image;
-	dds_image.load("../tutorial13_normal_mapping/diffuse.DDS");
-	m_tex_diff.loadDDS(dds_image);
-	dds_image.load("../tutorial13_normal_mapping/specular.DDS");
-	m_tex_spec.loadDDS(dds_image);
-	BMPInRAM bmp_image;
-	bmp_image.load("../tutorial13_normal_mapping/normal.bmp");
-	m_tex_norm.loadBMP(bmp_image);
+	m_tex_diff.loadDDS(dds_image_diffuse);
+	
+	m_tex_spec.loadDDS(dds_image_specular);
+	
+	m_tex_norm.loadBMP(bmp_image_norm);
 
 	#pragma endregion
 
@@ -198,13 +204,13 @@ void App::upDate()
 	delete p_light;
 
 	#pragma endregion
-
-	fbo.bind(GL_FRAMEBUFFER);
 }
 
 
 void App::render() const
 {
+	fbo.bind(GL_DRAW_FRAMEBUFFER);
+
 	m_vao.bind();
 	m_tex_diff.bind();
 	m_tex_spec.bind();
