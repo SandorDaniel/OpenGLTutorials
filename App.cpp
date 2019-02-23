@@ -77,29 +77,29 @@ void App::init()
 
 	#pragma region OBJ Loading (RAM -> VRAM)
 
-	m_vbo_pos.load(compressed_v_pos);
-	m_vao.attach(m_vbo_pos);
+	m_vbo_pos_cilinder.load(compressed_v_pos);
+	m_vao_cilinder.attach(m_vbo_pos_cilinder);
 
 	//m_vbo_nor.load(compressed_v_nor);
 	//m_vao.attach(m_vbo_nor);
 
-	m_vbo_tex.load(compressed_v_tex);
-	m_vao.attach(m_vbo_tex);
+	m_vbo_tex_cilinder.load(compressed_v_tex);
+	m_vao_cilinder.attach(m_vbo_tex_cilinder);
 
-	m_ibo.load(indices);
-	m_vao.attach(m_ibo);
+	m_ibo_cilinder.load(indices);
+	m_vao_cilinder.attach(m_ibo_cilinder);
 
-	m_vbo_tg.load(compressed_v_tg);
-	m_vao.attach(m_vbo_tg);
+	m_vbo_tg_cilinder.load(compressed_v_tg);
+	m_vao_cilinder.attach(m_vbo_tg_cilinder);
 
-	m_vbo_btg.load(compressed_v_btg);
-	m_vao.attach(m_vbo_btg);
+	m_vbo_btg_cilinder.load(compressed_v_btg);
+	m_vao_cilinder.attach(m_vbo_btg_cilinder);
 
-	m_tex_diff.loadDDS(dds_image_diffuse);
+	m_tex_matdiff_wall.loadDDS(dds_image_diffuse);
 	
-	m_tex_spec.loadDDS(dds_image_specular);
+	m_tex_matspec_wall.loadDDS(dds_image_specular);
 	
-	m_tex_norm.loadBMP(bmp_image_norm);
+	m_tex_nor_wall.loadBMP(bmp_image_norm);
 
 	#pragma endregion
 
@@ -112,21 +112,21 @@ void App::init()
 	#pragma region GPU-Side-Program SetUp (loading and compiling sahders, setting up uniform variables)
 
 	// Create and compile our GLSL program from the shaders
-	m_programID = LoadShaders(
+	m_program_id = LoadShaders(
 		std::vector<const char*>{"SimpleVertexShader.vertexshader"},
 		std::vector<const char*>{"SimpleFragmentShader.fragmentshader"});
 
 	// Get a handle for our uniform variables
 	// Only during the initialisation
-	m_MID = glGetUniformLocation(m_programID, "M");
-	m_VID = glGetUniformLocation(m_programID, "V");
-	m_PID = glGetUniformLocation(m_programID, "P");
-	m_cam_posID = glGetUniformLocation(m_programID, "cam_pos");
-	m_tex_diffID = glGetUniformLocation(m_programID, "my_tex_diff_sampler");
-	m_tex_specID = glGetUniformLocation(m_programID, "my_tex_spec_sampler");
-	m_tex_normID = glGetUniformLocation(m_programID, "my_tex_norm_sampler");
-	m_does_model_transformation_contain_nonuniform_scalingID = glGetUniformLocation(m_programID, "is_model_nonuniform_scaled");
-	Light::getUniformLocationsForAll(m_programID);
+	m_M_id = glGetUniformLocation(m_program_id, "M");
+	m_V_id = glGetUniformLocation(m_program_id, "V");
+	m_P_id = glGetUniformLocation(m_program_id, "P");
+	m_cam_pos_id = glGetUniformLocation(m_program_id, "cam_pos");
+	m_tex_matdiff_id = glGetUniformLocation(m_program_id, "tex_matdiff_sampler");
+	m_tex_matspec_id = glGetUniformLocation(m_program_id, "tex_matspec_sampler");
+	m_tex_norm_id = glGetUniformLocation(m_program_id, "tex_norm_sampler");
+	m_does_model_transformation_contain_nonuniform_scalingID = glGetUniformLocation(m_program_id, "is_model_nonuniform_scaled");
+	Light::getUniformLocationsForAll(m_program_id);
 
 	#pragma endregion
 
@@ -209,22 +209,22 @@ void App::upDate()
 
 void App::render() const
 {
-	fbo.bind(GL_DRAW_FRAMEBUFFER);
+	//fbo.bind(GL_DRAW_FRAMEBUFFER);
 
-	m_vao.bind();
-	m_tex_diff.bind();
-	m_tex_spec.bind();
-	m_tex_norm.bind();
+	m_vao_cilinder.bind();
+	m_tex_matdiff_wall.bind();
+	m_tex_matspec_wall.bind();
+	m_tex_nor_wall.bind();
 
 	// Use our shader
-	glUseProgram(m_programID);
+	glUseProgram(m_program_id);
 
 	// Set our "myTextureSampler" sampler to use Texture Unit TextureUnitNumber
-	glUniform1i(m_tex_diffID, m_tex_diff); // DSA version: glProgramUniform1i(m_programID, m_tex_diffID, m_tex);
-	glUniform1i(m_tex_specID, m_tex_spec);
-	glUniform1i(m_tex_normID, m_tex_norm);
+	glUniform1i(m_tex_matdiff_id, m_tex_matdiff_wall); // DSA version: glProgramUniform1i(m_programID, m_tex_diffID, m_tex);
+	glUniform1i(m_tex_matspec_id, m_tex_matspec_wall);
+	glUniform1i(m_tex_norm_id, m_tex_nor_wall);
 	
-	glUniform3fv(m_cam_posID, 1, &m_camera.getPos()[0]); // DSA version: glProgramUniform3fv(m_programID, m_cam_posID, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos()));
+	glUniform3fv(m_cam_pos_id, 1, &m_camera.getPos()[0]); // DSA version: glProgramUniform3fv(m_programID, m_cam_pos_id, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos()));
 
 	int win_width, win_height;
 	glfwGetWindowSize(window, &win_width, &win_height);
@@ -232,12 +232,12 @@ void App::render() const
 	Light::assignUniformsForAll();
 
 	glm::mat4 V = getView(m_camera);
-	glUniformMatrix4fv(m_VID, 1, GL_FALSE, &V[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);
+	glUniformMatrix4fv(m_V_id, 1, GL_FALSE, &V[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);
 	glm::mat4 P = getProj(m_camera, win_width, win_height, m_NEAR, m_FAR);
-	glUniformMatrix4fv(m_PID, 1, GL_FALSE, &P[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_PID, 1, GL_FALSE, &P[0][0]);
+	glUniformMatrix4fv(m_P_id, 1, GL_FALSE, &P[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_PID, 1, GL_FALSE, &P[0][0]);
 
 	glUniform1i(m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0);
-	glUniformMatrix4fv(m_MID, 1, GL_FALSE, &m_M[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M[0][0]);
+	glUniformMatrix4fv(m_M_id, 1, GL_FALSE, &m_M[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M[0][0]);
 
 	//// Draw the triangle !
 	//glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
@@ -245,13 +245,13 @@ void App::render() const
 	// Draw the triangles !
 	glDrawElements(
 		GL_TRIANGLES,      // mode
-		m_ibo.getElementCount(),    // count
+		m_ibo_cilinder.getElementCount(),    // count
 		GL_UNSIGNED_SHORT,   // type of indices
 		(void*)0           // element array buffer offset
 	);
 
 	glUniform1i(m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
-	glUniformMatrix4fv(m_MID, 1, GL_FALSE, &m_M2[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M2[0][0]);
+	glUniformMatrix4fv(m_M_id, 1, GL_FALSE, &m_M2[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M2[0][0]);
 
 	//// Draw the triangle !
 	//glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
@@ -259,17 +259,17 @@ void App::render() const
 	// Draw the triangles !
 	glDrawElements(
 		GL_TRIANGLES,      // mode
-		m_ibo.getElementCount(),    // count
+		m_ibo_cilinder.getElementCount(),    // count
 		GL_UNSIGNED_SHORT,   // type of indices
 		(void*)0           // element array buffer offset
 	);
 
-	m_tex_diff.unBind();
-	m_tex_spec.unBind();
-	m_tex_norm.unBind();
-	m_vao.unBind();
+	m_tex_matdiff_wall.unBind();
+	m_tex_matspec_wall.unBind();
+	m_tex_nor_wall.unBind();
+	m_vao_cilinder.unBind();
 	
-	fbo.unBind();
+	//fbo.unBind();
 }
 
 
@@ -293,5 +293,5 @@ void App::afterScreen()
 
 void App::clean()
 {
-	glDeleteProgram(m_programID);
+	glDeleteProgram(m_program_id);
 }

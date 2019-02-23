@@ -10,7 +10,7 @@ layout(location = 3) in vec3 in_vert_btg;
 
 // Output data ; will be interpolated for each fragment.
 out vec3 out_vert_pos;
-out vec3 out_vert_nor;
+//out vec3 out_vert_nor;
 out vec2 out_vert_tex;
 out mat3 out_vert_TBN;
   

@@ -23,26 +23,27 @@ class App
 {
 	GLFWwindow* window = nullptr; // TODO: rename it properly
 
-	VAO m_vao;
-	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_pos;
+	VAO m_vao_cilinder;
+	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_pos_cilinder;
 	//VBO<glm::tvec3, float, glm::highp, 3> m_vbo_nor;
-	VBO<glm::tvec2, float, glm::highp, 2> m_vbo_tex;
-	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_tg;
-	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_btg;
-	IBO<GLushort> m_ibo;
+	VBO<glm::tvec2, float, glm::highp, 2> m_vbo_tex_cilinder;
+	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_tg_cilinder;
+	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_btg_cilinder;
+	IBO<GLushort> m_ibo_cilinder;
 	
-	TEX<TexType::COLOR> m_tex_diff;
-	TEX<TexType::COLOR> m_tex_spec;
-	TEX<TexType::COLOR> m_tex_norm;
+	TEX<TexType::COLOR> m_tex_matdiff_wall;
+	TEX<TexType::COLOR> m_tex_matspec_wall;
+	TEX<TexType::COLOR> m_tex_nor_wall;
 
-	GLint m_programID;
-	GLint m_MID;
-	GLint m_VID;
-	GLint m_PID;
-	GLint m_cam_posID;
-	GLint m_tex_diffID;
-	GLint m_tex_specID;
-	GLint m_tex_normID;
+	GLint m_program_id; // normapped, matlightmapped, 
+	
+	GLint m_M_id;
+	GLint m_V_id;
+	GLint m_P_id;
+	GLint m_cam_pos_id;
+	GLint m_tex_matdiff_id;
+	GLint m_tex_matspec_id;
+	GLint m_tex_norm_id;
 	GLint m_does_model_transformation_contain_nonuniform_scalingID;
 
 	Light light;

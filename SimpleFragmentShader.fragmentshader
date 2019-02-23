@@ -8,41 +8,6 @@
 
 
 
-uniform sampler2D my_tex_diff_sampler;
-uniform sampler2D my_tex_spec_sampler;
-uniform sampler2D my_tex_norm_sampler;
-
-const int num_of_light_sources = 2; // TODO: get it from cpu somehow
-
-uniform float source_light_power[num_of_light_sources];
-uniform vec4  source_light_posdir[num_of_light_sources];
-
-uniform float positional_light_angle_in_radians[num_of_light_sources]; 
-uniform vec3 positional_source_light_dir[num_of_light_sources];
-
-uniform vec3  source_light_diffuse_col[num_of_light_sources];
-uniform vec3  source_light_specular_col[num_of_light_sources];
-uniform vec3  source_light_ambient_col[num_of_light_sources];
-
-
-uniform vec3  cam_pos = vec3(0.0f, 0.0f, 5.0f);
-
-
-in vec3 out_vert_pos;
-in vec2 out_vert_tex;
-in mat3 out_vert_TBN;
-vec3 norm = normalize(out_vert_TBN * (2 * texture(my_tex_norm_sampler, out_vert_tex.st).rgb - vec3(1.0f, 1.0f, 1.0f)));
-
-
-vec3  material_diffuse_col  = texture(my_tex_diff_sampler, out_vert_tex.st).rgb; // col of the texture at the specified st
-vec3  material_ambient_col  = 0.0005f * material_diffuse_col;
-vec3  material_specular_col = texture(my_tex_spec_sampler, out_vert_tex.st).rgb;
-
-
-out vec4 col;
-
-
-
 float angleBetweenVectorsInRadians(in vec3 u, in vec3 v)
 {
 	return acos(dot(u, v) / (length(u) * length(v)));
@@ -57,12 +22,12 @@ vec3 colFrom(
 	in vec3  source_light_diffuse_col,
 	in vec3  source_light_specular_col,
 	in vec3  source_light_ambient_col,
-	in sampler2D my_tex_diff_sampler,
 	in vec3  out_vert_pos,
 	in vec3  out_vert_nor,
 	in vec3  material_diffuse_col,
 	in vec3  material_specular_col,
-	in vec3  material_ambient_col)
+	in vec3  material_ambient_col,
+	in vec3  cam_pos)
 {
 	float distance_factor;
 	source_light_power;
@@ -122,6 +87,41 @@ vec3 colFrom(
 
 
 
+uniform sampler2D tex_matdiff_sampler;
+uniform sampler2D tex_matspec_sampler;
+uniform sampler2D tex_norm_sampler;
+
+const int num_of_light_sources = 2; // TODO: get it from cpu somehow
+
+uniform float source_light_power[num_of_light_sources];
+uniform vec4  source_light_posdir[num_of_light_sources];
+
+uniform float positional_light_angle_in_radians[num_of_light_sources]; 
+uniform vec3 positional_source_light_dir[num_of_light_sources];
+
+uniform vec3  source_light_diffuse_col[num_of_light_sources];
+uniform vec3  source_light_specular_col[num_of_light_sources];
+uniform vec3  source_light_ambient_col[num_of_light_sources];
+
+
+uniform vec3  cam_pos = vec3(0.0f, 0.0f, 5.0f);
+
+
+in vec3 out_vert_pos;
+in vec2 out_vert_tex;
+in mat3 out_vert_TBN;
+vec3 norm = normalize(out_vert_TBN * (2 * texture(tex_norm_sampler, out_vert_tex.st).rgb - vec3(1.0f, 1.0f, 1.0f)));
+
+
+vec3  material_diffuse_col  = texture(tex_matdiff_sampler, out_vert_tex.st).rgb; // col of the texture at the specified st
+vec3  material_ambient_col  = 0.0005f * material_diffuse_col;
+vec3  material_specular_col = texture(tex_matspec_sampler, out_vert_tex.st).rgb;
+
+
+out vec4 col;
+
+
+
 void main()
 {
 	vec3 color = vec3(0.0f, 0.0f, 0.0f);
@@ -135,12 +135,12 @@ void main()
 		                 source_light_diffuse_col[i],
 		                 source_light_specular_col[i],
 		                 source_light_ambient_col[i],
-		                 my_tex_diff_sampler,
 		                 out_vert_pos,
 		                 norm,
 		                 material_diffuse_col,
 		                 material_specular_col,
-		                 material_ambient_col);
+		                 material_ambient_col,
+						 cam_pos);
 	}
 
 	col = vec4(color, 1.0f);
