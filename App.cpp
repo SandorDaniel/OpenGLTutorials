@@ -41,9 +41,9 @@ void App::init()
 	#pragma region OBJ Loading and Compressing (Mass Storage -> RAM)
 
 	// Read our .obj file
-	std::vector< glm::vec3 > original_v_pos;
-	std::vector< glm::vec3 > original_v_nor;
-	std::vector< glm::vec2 > original_v_tex;
+	std::vector<glm::vec3> original_v_pos;
+	std::vector<glm::vec3> original_v_nor;
+	std::vector<glm::vec2> original_v_tex;
 
 	bool res = loadOBJ(
 		"../tutorial13_normal_mapping/cylinder.obj", 
