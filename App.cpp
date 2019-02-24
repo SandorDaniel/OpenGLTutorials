@@ -245,15 +245,15 @@ void App::upDate()
 	light_positional.setAngle(glm::pi<float>() / 30.0f);
 	light_positional.setDir(glm::vec3(-1.0f, -1.0f, -1.0f));
 	light_positional.setDiffuseCol(100.0f * glm::vec3(1.0f, 1.0f, 1.0f));
-	light_positional.setSpecularCol(1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
-	light_positional.setAmbientCol(100000.0f * glm::vec3(1.0f, 1.0f, 1.0f));
+	light_positional.setSpecularCol(0.0f * glm::vec3(1.0f, 1.0f, 1.0f));
+	light_positional.setAmbientCol(00000.0f * glm::vec3(1.0f, 1.0f, 1.0f));
 
 	light_directional.setPower(1.0f);
 	light_directional.setPosDir(glm::vec4(0.0f, 0.0f, -1.0f, 0.0f));
 	light_directional.setAngle(glm::pi<float>() / 30.0f);
 	light_directional.setDir(glm::vec3(-1.0f, -1.0f, 1.0f));
 	light_directional.setDiffuseCol (  1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
-	light_directional.setSpecularCol(  1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
+	light_directional.setSpecularCol(  0.0f * glm::vec3(1.0f, 1.0f, 1.0f));
 	light_directional.setAmbientCol (000.0f * glm::vec3(1.0f, 1.0f, 1.0f));
 
 	#pragma endregion
@@ -262,7 +262,7 @@ void App::upDate()
 
 void App::render() const
 {
-	//fbo.bind(GL_DRAW_FRAMEBUFFER);
+	fbo.bind(GL_DRAW_FRAMEBUFFER);
 
 	// Use our shader
 	glUseProgram(m_program_nor_matlight_shadow_mapped_id);
@@ -350,25 +350,23 @@ void App::render() const
 	m_tex_matspec_wall.unBind();
 	m_tex_nor_wall.unBind();
 	
-	//fbo.unBind();
+	fbo.unBind();
 }
 
 
 void App::afterScreen()
 {
-	printImage(
+	printImage<ColorTexData>(
 		"printedTex.ppm",
-		static_cast<std::vector<unsigned char>>(m_tex_col),
+		static_cast<std::vector<ColorTexData::type>>(m_tex_col),
 		m_tex_col.getWidth(),
-		m_tex_col.getHeight(),
-		m_tex_col.getComponentCount());
+		m_tex_col.getHeight());
 
-	printImage(
+	printImage<DepthTexData>(
 		"printedDepthTex.ppm",
-		static_cast<std::vector<unsigned char>>(m_tex_depth),
+		static_cast<std::vector<DepthTexData::type>>(m_tex_depth),
 		m_tex_depth.getWidth(),
-		m_tex_depth.getHeight(),
-		m_tex_depth.getComponentCount());
+		m_tex_depth.getHeight());
 }
 
 

@@ -80,15 +80,15 @@ public:
 		glViewport(m_prev_x, m_prev_y, m_prev_width, m_prev_height);
 	}
 
-	template<TexType type>
-	void attach(TEX<type>& tex)
+	template<class TexType>
+	void attach(TEX<TexType>& tex)
 	{
 		GLint bound_fbo; // We want to live every state to be the same...
 		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &bound_fbo);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, m_id);
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER, getAttachment(type), GL_TEXTURE_2D, tex, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, TexType::attachment_id, GL_TEXTURE_2D, tex, 0);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, bound_fbo);
 

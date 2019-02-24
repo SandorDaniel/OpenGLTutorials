@@ -38,9 +38,9 @@ class App final
 	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_btg_plane;
 	IBO<GLushort> m_ibo_plane;
 	
-	TEX<TexType::COLOR> m_tex_matdiff_wall;
-	TEX<TexType::COLOR> m_tex_matspec_wall;
-	TEX<TexType::COLOR> m_tex_nor_wall;
+	TEX<ColorTexData> m_tex_matdiff_wall;
+	TEX<ColorTexData> m_tex_matspec_wall;
+	TEX<ColorTexData> m_tex_nor_wall;
 
 	GLint m_program_nor_matlight_shadow_mapped_id;
 	
@@ -68,8 +68,8 @@ class App final
 
 	InPutObserverCamera m_camera;
 
-	TEX<TexType::COLOR> m_tex_col;
-	TEX<TexType::DEPTH> m_tex_depth;
+	TEX<ColorTexData> m_tex_col;
+	TEX<DepthTexData> m_tex_depth;
 	FBO fbo;
 
 public:
