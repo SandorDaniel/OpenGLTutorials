@@ -30,7 +30,7 @@ glm::mat4 getView(const Camera& CAM)
 glm::mat4 getPerspectiveProj(const Camera& CAM, int win_width, int win_height, float near, float far)
 {
 	return glm::perspective(
-		glm::radians(CAM.getFov()),
+		CAM.getFov(),
 		static_cast<float>(win_width) / static_cast<float>(win_height),
 		near, far);
 }
@@ -236,8 +236,8 @@ void InPutObserverCamera::motionCallBack(GLFWwindow* p_win, double xpos, double 
 
 void InPutObserverCamera::scrollCallBack(double yoffset)
 {
-	float newFoV = getFov() - 5 * static_cast<float>(yoffset <= std::numeric_limits<float>::max() ? yoffset : throw std::domain_error("Camera.cpp: scrollbars yoffset is to big to be represented as a float"));
-	if (20 < newFoV && newFoV < 80)
+	float newFoV = getFov() - (glm::pi<float>() / 36.0f) * static_cast<float>(yoffset <= std::numeric_limits<float>::max() ? yoffset : throw std::domain_error("Camera.cpp: scrollbars yoffset is to big to be represented as a float"));
+	if (glm::pi<float>() / 9.0f < newFoV && newFoV < (4 * glm::pi<float>()) / 9.0f)
 	{
 		setFov(newFoV);
 	}
