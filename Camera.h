@@ -24,7 +24,7 @@ public:
 	{
 		return m_near;
 	}
-	void setNear(const float nearr)
+	void setNear(const float nearr) // TODO: why do we get a syntax error, if the parameter name is not nearr but near?
 	{
 		m_near = nearr;
 	}
@@ -33,7 +33,7 @@ public:
 	{
 		return m_far;
 	}
-	void setFar(const float farr)
+	void setFar(const float farr) // TODO: why do we get a syntax error, if the parameter name is not farr but far?
 	{
 		m_far = farr;
 	}
