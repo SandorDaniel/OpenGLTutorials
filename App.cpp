@@ -149,6 +149,9 @@ void App::init()
 	#pragma region CAMERA SetUp (window, events)
 
 	m_camera.init(window);
+	m_camera.setNear(1.0f);
+	m_camera.setFar(100.0f);
+	m_camera.setFov(glm::pi<float>() / 4.0f);
 
 	#pragma endregion
 
@@ -284,7 +287,7 @@ void App::render() const
 
 	glm::mat4 V = getView(m_camera);
 	glUniformMatrix4fv(m_V_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &V[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);
-	glm::mat4 P = getPerspectiveProj(m_camera, win_width, win_height, m_NEAR, m_FAR);
+	glm::mat4 P = getPerspectiveProj(m_camera, win_width, win_height);
 	glUniformMatrix4fv(m_P_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &P[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_PID, 1, GL_FALSE, &P[0][0]);
 
 	glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_horizontal_cilinder_contain_nonuniform_scaling_horizontal_cilinder ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0);

@@ -13,9 +13,30 @@ class Camera : public PosDirObj // Inheritance is not for polimorfism in this ca
 
 protected:
 
+	float m_near = 1.0f;
+	float m_far  = 100.0f;
+
 	float m_fov = glm::pi<float>() / 4.0f; // filed of view // TODO: tisztazni, hogy milyen szogrol van szo pontosan
 
 public:
+
+	float getNear() const
+	{
+		return m_near;
+	}
+	void setNear(const float nearr)
+	{
+		m_near = nearr;
+	}
+
+	float getFar() const
+	{
+		return m_far;
+	}
+	void setFar(const float farr)
+	{
+		m_far = farr;
+	}
 
 	float getFov() const
 	{
@@ -30,7 +51,7 @@ public:
 
 
 glm::mat4 getView(const Camera&);
-glm::mat4 getPerspectiveProj(const Camera&, int win_width, int win_height, float near, float far);
+glm::mat4 getPerspectiveProj(const Camera&, int win_width, int win_height);
 
 class InPutObserverCamera final : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer, public Camera
 {

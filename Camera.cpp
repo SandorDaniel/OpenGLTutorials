@@ -27,12 +27,12 @@ glm::mat4 getView(const Camera& CAM)
 }
 
 
-glm::mat4 getPerspectiveProj(const Camera& CAM, int win_width, int win_height, float near, float far)
+glm::mat4 getPerspectiveProj(const Camera& CAM, int win_width, int win_height)
 {
 	return glm::perspective(
 		CAM.getFov(),
 		static_cast<float>(win_width) / static_cast<float>(win_height),
-		near, far);
+		CAM.getNear(), CAM.getFar());
 }
 
 

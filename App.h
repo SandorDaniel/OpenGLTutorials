@@ -67,8 +67,6 @@ class App
 	bool m_does_m_M_horizontal_plane_contain_nonuniform_scaling = false;
 
 	InPutObserverCamera m_camera;
-	const float m_NEAR = 1.0f;
-	const float m_FAR = 100.0f;
 
 	TEX<TexType::COLOR> m_tex_col;
 	TEX<TexType::DEPTH> m_tex_depth;
