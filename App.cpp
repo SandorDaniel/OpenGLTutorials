@@ -64,6 +64,34 @@ void App::init()
 		compressed_v_tg_cilinder,
 		compressed_v_btg_cilinder);
 
+	std::vector<glm::vec3> v_pos_plane
+	{
+		glm::vec3(-2.0f, -2.0f, 0.0f),
+		glm::vec3(+2.0f, -2.0f, 0.0f),
+		glm::vec3(+2.0f, +2.0f, 0.0f),
+		glm::vec3(-2.0f, +2.0f, 0.0f)
+	};
+	std::vector<glm::vec2> v_tex_plane
+	{
+		glm::vec2(0.0f, 0.0f),
+		glm::vec2(1.0f, 0.0f),
+		glm::vec2(1.0f, 1.0f),
+		glm::vec2(0.0f, 1.0f)
+	};
+	std::vector<GLushort> v_ind_plane
+	{
+		0, 1, 2, 0, 2, 3
+	};
+	std::vector<glm::vec3> v_tg_plane{};
+	std::vector<glm::vec3> v_btg_plane{};
+
+	computeTangentBasis(
+		v_pos_plane,
+		v_tex_plane,
+		v_ind_plane,
+		v_tg_plane,
+		v_btg_plane);
+
 	DDSInRAM dds_image_matdiff_wall;
 	dds_image_matdiff_wall.load("../tutorial13_normal_mapping/diffuse.DDS");
 
@@ -94,6 +122,21 @@ void App::init()
 
 	m_vbo_btg_cilinder.load(compressed_v_btg_cilinder);
 	m_vao_cilinder.attach(m_vbo_btg_cilinder);
+
+	m_vbo_pos_plane.load(v_pos_plane);
+	m_vao_plane.attach(m_vbo_pos_plane);
+
+	m_vbo_tex_plane.load(v_tex_plane);
+	m_vao_plane.attach(m_vbo_tex_plane);
+
+	m_ibo_plane.load(v_ind_plane);
+	m_vao_plane.attach(m_ibo_plane);
+
+	m_vbo_tg_plane.load(v_tg_plane);
+	m_vao_plane.attach(m_vbo_tg_plane);
+
+	m_vbo_btg_plane.load(v_btg_plane);
+	m_vao_plane.attach(m_vbo_btg_plane);
 
 	m_tex_matdiff_wall.loadDDS(dds_image_matdiff_wall);
 	
@@ -173,35 +216,42 @@ void App::upDate()
 	
 	m_M_horizontal_cilinder = 
 		glm::rotate(glm::mat4(), glm::radians<float>(-90), glm::vec3(0.0f, 0.0f, 1.0f));
-	m_does_m_M_contain_nonuniform_scaling_horizontal_cilinder = false;
+	m_does_m_M_horizontal_cilinder_contain_nonuniform_scaling_horizontal_cilinder = false;
 
-	m_M2_horizontal_cilinder = 
+	m_M_vertical_cilinder = 
 		glm::scale(glm::mat4(), glm::vec3(0.5f, 1.0f, 0.5f)) * 
 		glm::translate(glm::mat4(), glm::vec3(3.0f, 0.0f, 0.0f)) *
 		glm::rotate(glm::mat4(), glm::radians<float>(-180), glm::vec3(0.0f, 1.0f, 0.0f));
-	m_does_m_M2_contain_nonuniform_scaling_horizontal_cilinder = true;
+	m_does_m_M_vertical_cilinder_contain_nonuniform_scaling_horizontal_cilinder = true;
+
+	m_M_vertical_plane =
+		glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, -2.0f));
+	m_does_m_M_vertical_plane_contain_nonuniform_scaling = false;
+
+	m_M_horizontal_plane =
+		glm::translate(glm::mat4(), glm::vec3(0.0f, -2.0f, 0.0f)) *
+		glm::rotate(glm::mat4(), glm::radians<float>(-90), glm::vec3(1.0f, 0.0f, 0.0f));
+	m_does_m_M_horizontal_plane_contain_nonuniform_scaling = false;
 
 	#pragma endregion
 
 	#pragma region LIGHTS UpDate
 
-	light.setPower(100.0f);
-	light.setPosDir(glm::vec4(5.0f, 5.0f, 5.0f, 1.0f));
-	light.setAngle(glm::pi<float>() / 30.0f);
-	light.setDir(glm::vec3(-1.0f, -1.0f, -1.0f));
-	light.setDiffuseCol(1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
-	light.setSpecularCol(1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
-	light.setAmbientCol(10000.0f * glm::vec3(1.0f, 1.0f, 1.0f));
+	light_positional.setPower(0000.0f);
+	light_positional.setPosDir(glm::vec4(5.0f, 5.0f, 5.0f, 1.0f));
+	light_positional.setAngle(glm::pi<float>() / 30.0f);
+	light_positional.setDir(glm::vec3(-1.0f, -1.0f, -1.0f));
+	light_positional.setDiffuseCol(100.0f * glm::vec3(1.0f, 1.0f, 1.0f));
+	light_positional.setSpecularCol(1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
+	light_positional.setAmbientCol(100000.0f * glm::vec3(1.0f, 1.0f, 1.0f));
 
-	p_light = new Light();
-	p_light->setPower(1.0f);
-	p_light->setPosDir(glm::vec4(0.0f, 0.0f, -1.0f, 0.0f));
-	p_light->setAngle(glm::pi<float>() / 30.0f);
-	p_light->setDir(glm::vec3(-1.0f, -1.0f, 1.0f));
-	p_light->setDiffuseCol (  1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
-	p_light->setSpecularCol(  1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
-	p_light->setAmbientCol (100.0f * glm::vec3(1.0f, 1.0f, 1.0f));
-	delete p_light;
+	light_directional.setPower(1.0f);
+	light_directional.setPosDir(glm::vec4(0.0f, 0.0f, -1.0f, 0.0f));
+	light_directional.setAngle(glm::pi<float>() / 30.0f);
+	light_directional.setDir(glm::vec3(-1.0f, -1.0f, 1.0f));
+	light_directional.setDiffuseCol (  1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
+	light_directional.setSpecularCol(  1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
+	light_directional.setAmbientCol (000.0f * glm::vec3(1.0f, 1.0f, 1.0f));
 
 	#pragma endregion
 }
@@ -211,13 +261,14 @@ void App::render() const
 {
 	//fbo.bind(GL_DRAW_FRAMEBUFFER);
 
-	m_vao_cilinder.bind();
+	// Use our shader
+	glUseProgram(m_program_nor_matlight_shadow_mapped_id);
+
 	m_tex_matdiff_wall.bind();
 	m_tex_matspec_wall.bind();
 	m_tex_nor_wall.bind();
 
-	// Use our shader
-	glUseProgram(m_program_nor_matlight_shadow_mapped_id);
+	m_vao_cilinder.bind();
 
 	// Set our "myTextureSampler" sampler to use Texture Unit TextureUnitNumber
 	glUniform1i(m_tex_matdiff_nor_matlight_shadow_mapped_id, m_tex_matdiff_wall); // DSA version: glProgramUniform1i(m_programID, m_tex_diffID, m_tex);
@@ -236,7 +287,7 @@ void App::render() const
 	glm::mat4 P = getProj(m_camera, win_width, win_height, m_NEAR, m_FAR);
 	glUniformMatrix4fv(m_P_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &P[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_PID, 1, GL_FALSE, &P[0][0]);
 
-	glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_contain_nonuniform_scaling_horizontal_cilinder ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0);
+	glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_horizontal_cilinder_contain_nonuniform_scaling_horizontal_cilinder ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0);
 	glUniformMatrix4fv(m_M_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &m_M_horizontal_cilinder[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M[0][0]);
 
 	//// Draw the triangle !
@@ -250,8 +301,8 @@ void App::render() const
 		(void*)0           // element array buffer offset
 	);
 
-	glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M2_contain_nonuniform_scaling_horizontal_cilinder ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
-	glUniformMatrix4fv(m_M_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &m_M2_horizontal_cilinder[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M2[0][0]);
+	glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_vertical_cilinder_contain_nonuniform_scaling_horizontal_cilinder ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
+	glUniformMatrix4fv(m_M_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &m_M_vertical_cilinder[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M2[0][0]);
 
 	//// Draw the triangle !
 	//glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
@@ -264,10 +315,37 @@ void App::render() const
 		(void*)0           // element array buffer offset
 	);
 
+	m_vao_cilinder.unBind();
+
+	m_vao_plane.bind();
+
+	glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_horizontal_plane_contain_nonuniform_scaling ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
+	glUniformMatrix4fv(m_M_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &m_M_horizontal_plane[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M[0][0]);
+
+	// Draw the triangles !
+	glDrawElements(
+		GL_TRIANGLES,      // mode
+		m_ibo_plane.getElementCount(),    // count
+		GL_UNSIGNED_SHORT,   // type of indices
+		(void*)0           // element array buffer offset
+	);
+
+	glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_horizontal_plane_contain_nonuniform_scaling ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
+	glUniformMatrix4fv(m_M_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &m_M_vertical_plane[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M2[0][0]);
+
+	// Draw the triangles !
+	glDrawElements(
+		GL_TRIANGLES,      // mode
+		m_ibo_plane.getElementCount(),    // count
+		GL_UNSIGNED_SHORT,   // type of indices
+		(void*)0           // element array buffer offset
+	);
+
+	m_vao_plane.unBind();
+
 	m_tex_matdiff_wall.unBind();
 	m_tex_matspec_wall.unBind();
 	m_tex_nor_wall.unBind();
-	m_vao_cilinder.unBind();
 	
 	//fbo.unBind();
 }

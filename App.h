@@ -30,6 +30,13 @@ class App
 	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_tg_cilinder;
 	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_btg_cilinder;
 	IBO<GLushort> m_ibo_cilinder;
+
+	VAO m_vao_plane;
+	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_pos_plane;
+	VBO<glm::tvec2, float, glm::highp, 2> m_vbo_tex_plane;
+	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_tg_plane;
+	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_btg_plane;
+	IBO<GLushort> m_ibo_plane;
 	
 	TEX<TexType::COLOR> m_tex_matdiff_wall;
 	TEX<TexType::COLOR> m_tex_matspec_wall;
@@ -46,13 +53,18 @@ class App
 	GLint m_tex_norm_nor_matlight_shadow_mapped_id;
 	GLint m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id;
 
-	Light light;
-	Light* p_light;
+	Light light_positional;
+	Light light_directional;
 
 	glm::mat4 m_M_horizontal_cilinder = glm::mat4(); // glm::mat4() is the identity matrix
-	bool m_does_m_M_contain_nonuniform_scaling_horizontal_cilinder = false;
-	glm::mat4 m_M2_horizontal_cilinder = glm::mat4();
-	bool m_does_m_M2_contain_nonuniform_scaling_horizontal_cilinder = false;
+	bool m_does_m_M_horizontal_cilinder_contain_nonuniform_scaling_horizontal_cilinder = false;
+	glm::mat4 m_M_vertical_cilinder = glm::mat4();
+	bool m_does_m_M_vertical_cilinder_contain_nonuniform_scaling_horizontal_cilinder = false;
+
+	glm::mat4 m_M_vertical_plane = glm::mat4(); // glm::mat4() is the identity matrix
+	bool m_does_m_M_vertical_plane_contain_nonuniform_scaling = false;
+	glm::mat4 m_M_horizontal_plane = glm::mat4();
+	bool m_does_m_M_horizontal_plane_contain_nonuniform_scaling = false;
 
 	InPutObserverCamera m_camera;
 	const float m_NEAR = 1.0f;
