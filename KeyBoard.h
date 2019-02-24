@@ -10,12 +10,12 @@
 namespace InPut
 {
 
-	class KeyBoard
+	class KeyBoard final
 	{
 
 	public:
 
-		class Key
+		class Key final
 		{
 
 		public:

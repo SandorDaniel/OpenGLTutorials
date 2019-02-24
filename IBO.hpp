@@ -74,7 +74,7 @@ class IBO final
 
 public:
 
-	class IBOIsNotLoaded : public std::exception
+	class IBOIsNotLoaded final : public std::exception
 	{
 		const char* what() const noexcept { return "You should have loaded the IBO object befor binding it to the VAO object."; }
 	};

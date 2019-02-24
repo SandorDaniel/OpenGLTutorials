@@ -9,7 +9,7 @@
 namespace InPut
 {
 
-	class Cursor
+	class Cursor final
 	{
 
 	public:
@@ -51,7 +51,7 @@ namespace InPut
 	};
 
 
-	class ScrollBar
+	class ScrollBar final
 	{
 
 	public:

@@ -50,10 +50,10 @@ struct DDSInRAM
 
 
 template<TexType type>
-class TEX
+class TEX final
 {
 
-	class AspFreeTEX
+	class AspFreeTEX final
 	{
 
 		static std::priority_queue<GLint, std::vector<GLint>, std::less<typename std::vector<GLint>::value_type>> FreeTextureUnitNumbers;

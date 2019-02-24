@@ -47,7 +47,7 @@ namespace sdd // stands for Sandor Daniel's Debugger
 	static std::ostream& dout = std::cout;
 
 
-	class Timer
+	class Timer final
 	{
 
 		double previous_time = 0;

@@ -38,7 +38,7 @@
 
 
 
-class FBO
+class FBO final
 {
 
 	GLuint m_id;

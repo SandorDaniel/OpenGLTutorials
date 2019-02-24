@@ -20,6 +20,10 @@ protected:
 
 public:
 
+	virtual ~Camera()
+	{
+	}
+
 	float getNear() const
 	{
 		return m_near;
@@ -62,7 +66,7 @@ class InPutObserverCamera final : public InPut::ScrollBar::Observer, public InPu
 	};
 
 	friend class KeyObserver;
-	class KeyObserver : public InPut::KeyBoard::Key::Observer
+	class KeyObserver final : public InPut::KeyBoard::Key::Observer
 	{
 
 		InPutObserverCamera* m_p_cam;

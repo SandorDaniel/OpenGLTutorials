@@ -12,7 +12,7 @@
 
 
 
-class Light // TODO: : public PosdirObj
+class Light final // TODO: : public PosdirObj
 {
 
 public:

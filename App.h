@@ -19,7 +19,7 @@
 
 
 
-class App
+class App final
 {
 	GLFWwindow* window = nullptr; // TODO: rename it properly
 

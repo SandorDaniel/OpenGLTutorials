@@ -21,7 +21,7 @@ protected:
 
 public:
 
-	~PosDirObj()
+	virtual ~PosDirObj()
 	{
 	}
 
