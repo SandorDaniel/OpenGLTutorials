@@ -37,14 +37,14 @@ glm::mat4 getProj(const Camera& CAM, int win_width, int win_height, float near, 
 
 void InPutObserverCamera::KeyObserver::releaseCallBack()
 {
-	glm::vec3 direction = getDir(m_p_cam->m_camera);
-	glm::vec3 right = getRight(m_p_cam->m_camera);
+	glm::vec3 direction = getDir(*m_p_cam);
+	glm::vec3 right = getRight(*m_p_cam);
 	glm::vec3 up = glm::cross(right, direction);
 
 	switch (m_direction)
 	{
 	case Direction::FORWARD:
-		m_p_cam->m_camera.setPos(
+		m_p_cam->setPos(
 			m_p_cam->getPos()
 			+ static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ?
 				glfwGetTime() - m_time_last_pressed :
@@ -52,7 +52,7 @@ void InPutObserverCamera::KeyObserver::releaseCallBack()
 			* m_p_cam->m_speed * direction);
 		break;
 	case Direction::BACKWARD:
-		m_p_cam->m_camera.setPos(
+		m_p_cam->setPos(
 			m_p_cam->getPos()
 			- static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ?
 				glfwGetTime() - m_time_last_pressed :
@@ -60,7 +60,7 @@ void InPutObserverCamera::KeyObserver::releaseCallBack()
 			* m_p_cam->m_speed * direction);
 		break;
 	case Direction::RIGHT:
-		m_p_cam->m_camera.setPos(
+		m_p_cam->setPos(
 			m_p_cam->getPos()
 			+ static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ?
 				glfwGetTime() - m_time_last_pressed :
@@ -68,7 +68,7 @@ void InPutObserverCamera::KeyObserver::releaseCallBack()
 			* m_p_cam->m_speed * right);
 		break;
 	case Direction::LEFT:
-		m_p_cam->m_camera.setPos(
+		m_p_cam->setPos(
 			m_p_cam->getPos()
 			- static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ? 
 				glfwGetTime() - m_time_last_pressed : 
@@ -229,38 +229,15 @@ void InPutObserverCamera::motionCallBack(GLFWwindow* p_win, double xpos, double 
 	glfwGetWindowSize(p_win, &width, &height);
 
 	// Compute new orientation
-	m_camera.setHorizontalAngle(m_camera.getHorizontalAngle() + m_mouse_speed * static_cast<float>(width / 2 - xpos));
-	m_camera.setVerticalAngle(m_camera.getVerticalAngle() + m_mouse_speed * static_cast<float>(height / 2 - ypos));
+	setHorizontalAngle(getHorizontalAngle() + m_mouse_speed * static_cast<float>(width / 2 - xpos));
+	setVerticalAngle(getVerticalAngle() + m_mouse_speed * static_cast<float>(height / 2 - ypos));
 }
 
 void InPutObserverCamera::scrollCallBack(double yoffset)
 {
-	float newFoV = m_camera.getFov() - 5 * static_cast<float>(yoffset <= std::numeric_limits<float>::max() ? yoffset : throw std::domain_error("Camera.cpp: scrollbars yoffset is to big to be represented as a float"));
+	float newFoV = getFov() - 5 * static_cast<float>(yoffset <= std::numeric_limits<float>::max() ? yoffset : throw std::domain_error("Camera.cpp: scrollbars yoffset is to big to be represented as a float"));
 	if (20 < newFoV && newFoV < 80)
 	{
-		m_camera.setFov(newFoV);
+		setFov(newFoV);
 	}
-}
-
-
-glm::mat4 getView(const InPutObserverCamera& CAM)
-{
-	glm::vec3 position = CAM.getPos();
-	glm::vec3 direction = getDir(CAM);
-	glm::vec3 right = getRight(CAM);
-	glm::vec3 up = glm::cross(right, direction);
-
-	return glm::lookAt(
-		position,           // Camera is here
-		position + direction, // and looks here : at the same position, plus "direction"
-		up                  // Head is up (set to 0,-1,0 to look upside-down)
-	);
-}
-
-glm::mat4 getProj(const InPutObserverCamera& CAM, int win_width, int win_height, float near, float far)
-{
-	return glm::perspective(
-		glm::radians(CAM.getFov()),
-		static_cast<float>(win_width) / static_cast<float>(win_height),
-		near, far);
 }
