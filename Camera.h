@@ -56,6 +56,7 @@ public:
 
 glm::mat4 getView(const Camera&);
 glm::mat4 getPerspectiveProj(const Camera&, int win_width, int win_height);
+glm::mat4 getOrthogonaleProj(const Camera& CAM, const float left, const float right, const float bottom, const float top);
 
 class InPutObserverCamera final : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer, public Camera
 {

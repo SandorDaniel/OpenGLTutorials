@@ -36,6 +36,16 @@ glm::mat4 getPerspectiveProj(const Camera& CAM, int win_width, int win_height)
 }
 
 
+// TODO: set parameters according to camera data
+glm::mat4 getOrthogonaleProj(const Camera& CAM, const float left, const float right, const float bottom, const float top) // TODO find out if float for left, right, bottom and top is appropriate
+{
+	return glm::ortho(
+		left, right,
+		bottom, top,
+		CAM.getNear(), CAM.getFar());
+}
+
+
 void InPutObserverCamera::KeyObserver::releaseCallBack()
 {
 	glm::vec3 direction = getDir(*m_p_cam);
