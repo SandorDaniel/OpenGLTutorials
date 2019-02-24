@@ -1,3 +1,5 @@
+// TODO: dont let the camera turn around
+
 #pragma once
 
 #include <glm/glm.hpp>
