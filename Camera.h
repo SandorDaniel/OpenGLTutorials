@@ -30,8 +30,7 @@ public:
 
 
 glm::mat4 getView(const Camera&);
-glm::mat4 getProj(const Camera&, int win_width, int win_height, float near, float far);
-
+glm::mat4 getPerspectiveProj(const Camera&, int win_width, int win_height, float near, float far);
 
 class InPutObserverCamera final : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer, public Camera
 {

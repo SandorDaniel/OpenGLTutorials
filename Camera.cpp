@@ -26,7 +26,8 @@ glm::mat4 getView(const Camera& CAM)
 	);
 }
 
-glm::mat4 getProj(const Camera& CAM, int win_width, int win_height, float near, float far)
+
+glm::mat4 getPerspectiveProj(const Camera& CAM, int win_width, int win_height, float near, float far)
 {
 	return glm::perspective(
 		glm::radians(CAM.getFov()),
@@ -173,7 +174,7 @@ void InPutObserverCamera::upDate(GLFWwindow* window)
 	//{
 	//	return ViewMatrix;
 	//}
-	//const glm::mat4& getProjectionMatrix() const
+	//const glm::mat4& getPerspectiveProjectionMatrix() const
 	//{
 	//	return ProjectionMatrix;
 	//}
