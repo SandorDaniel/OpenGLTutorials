@@ -82,6 +82,7 @@ void App::init()
 	{
 		0, 1, 2, 0, 2, 3
 	};
+
 	std::vector<glm::vec3> v_tg_plane{};
 	std::vector<glm::vec3> v_btg_plane{};
 
