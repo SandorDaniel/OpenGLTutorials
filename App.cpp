@@ -241,21 +241,21 @@ void App::upDate()
 
 	#pragma region LIGHTS UpDate
 
-	light_positional.setPower(0000.0f);
+	light_positional.setPower(10000000.0f);
 	light_positional.setPosDir(glm::vec4(5.0f, 5.0f, 5.0f, 1.0f));
-	light_positional.setAngle(glm::pi<float>() / 30.0f);
+	light_positional.setAngle(glm::radians<float>(6));
 	light_positional.setDir(glm::vec3(-1.0f, -1.0f, -1.0f));
-	light_positional.setDiffuseCol(100.0f * glm::vec3(1.0f, 1.0f, 1.0f));
-	light_positional.setSpecularCol(0.0f * glm::vec3(1.0f, 1.0f, 1.0f));
-	light_positional.setAmbientCol(00000.0f * glm::vec3(1.0f, 1.0f, 1.0f));
+	light_positional.setDiffuseCol (0.01f   * glm::vec3(1.0f, 1.0f, 1.0f));
+	light_positional.setSpecularCol(0.0001f * glm::vec3(1.0f, 1.0f, 1.0f));
+	light_positional.setAmbientCol (1.0f    * glm::vec3(1.0f, 1.0f, 1.0f));
 
-	light_directional.setPower(1.0f);
+	light_directional.setPower(0.0f * 1.0f);
 	light_directional.setPosDir(glm::vec4(0.0f, 0.0f, -1.0f, 0.0f));
-	light_directional.setAngle(glm::pi<float>() / 30.0f);
+	light_directional.setAngle(glm::radians<float>(6));
 	light_directional.setDir(glm::vec3(-1.0f, -1.0f, 1.0f));
-	light_directional.setDiffuseCol (  1.0f * glm::vec3(1.0f, 1.0f, 1.0f));
-	light_directional.setSpecularCol(  0.0f * glm::vec3(1.0f, 1.0f, 1.0f));
-	light_directional.setAmbientCol (000.0f * glm::vec3(1.0f, 1.0f, 1.0f));
+	light_directional.setDiffuseCol (1.0f   * glm::vec3(1.0f, 1.0f, 1.0f));
+	light_directional.setSpecularCol(1.0f   * glm::vec3(1.0f, 1.0f, 1.0f));
+	light_directional.setAmbientCol (100.0f * glm::vec3(1.0f, 1.0f, 1.0f));
 
 	#pragma endregion
 }
