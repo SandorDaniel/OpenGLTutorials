@@ -71,12 +71,12 @@ void App::init()
 		glm::vec3(+2.0f, +2.0f, 0.0f),
 		glm::vec3(-2.0f, +2.0f, 0.0f)
 	};
-	std::vector<glm::vec2> v_tex_plane
+	std::vector<glm::vec2> v_tex_plane // TODO: find out why did we have to change the two axes
 	{
 		glm::vec2(0.0f, 0.0f),
-		glm::vec2(1.0f, 0.0f),
+		glm::vec2(0.0f, 1.0f),
 		glm::vec2(1.0f, 1.0f),
-		glm::vec2(0.0f, 1.0f)
+		glm::vec2(1.0f, 0.0f)
 	};
 	std::vector<GLushort> v_ind_plane
 	{
