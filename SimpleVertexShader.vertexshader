@@ -35,5 +35,5 @@ void main()
 	// TBN has to be ortonormalized
 	out_vert_TBN = mat3(normalize((M * vec4(in_vert_tg, 0.0f)).xyz),
 	                    normalize((M * vec4(in_vert_btg, 0.0f)).xyz),
-						normalize((M * vec4(cross(in_vert_btg, in_vert_tg), 0.0f)).xyz)); // TODO: Finding out why TBN has to be a left handed system IE finding out why we should cross product btg and tg in this order instead of cross producting tg with btg 
+						normalize((M * vec4(cross(in_vert_tg, in_vert_btg), 0.0f)).xyz));
 }

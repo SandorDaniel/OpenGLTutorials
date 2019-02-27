@@ -64,6 +64,11 @@ void App::init()
 		compressed_v_tg_cilinder,
 		compressed_v_btg_cilinder);
 
+	for (int i = 0; i < compressed_v_tg_cilinder.size(); ++i)
+	{
+		std::swap(compressed_v_tg_cilinder[i], compressed_v_btg_cilinder[i]); // TODO: Find out why it is needed
+	}
+
 	std::vector<glm::vec3> v_pos_plane
 	{
 		glm::vec3(-2.0f, -2.0f, 0.0f),
@@ -74,9 +79,9 @@ void App::init()
 	std::vector<glm::vec2> v_tex_plane // TODO: find out why did we have to change the two axes
 	{
 		glm::vec2(0.0f, 0.0f),
-		glm::vec2(0.0f, 1.0f),
+		glm::vec2(1.0f, 0.0f),
 		glm::vec2(1.0f, 1.0f),
-		glm::vec2(1.0f, 0.0f)
+		glm::vec2(0.0f, 1.0f)
 	};
 	std::vector<GLushort> v_ind_plane
 	{
