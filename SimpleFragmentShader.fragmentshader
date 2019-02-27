@@ -56,7 +56,7 @@ vec3 colFrom(
 		}
 	}
 
-	if(angleBetweenVectorsInRadians(out_vert_nor, source_light_dir) > 3.14f / 1.75f)
+	if(angleBetweenVectorsInRadians(out_vert_nor, source_light_dir) > 3.14f / 1.75f) // TODO: After implementing shadow mapping, rethig the neccesity of this block.
 	{
 		return material_ambient_col * source_light_ambient_col / distance_factor;
 	}
