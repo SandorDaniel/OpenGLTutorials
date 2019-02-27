@@ -28,8 +28,8 @@ void computeTangentBasis(
 
 		// Solving equation system with Cramer's rule
 		float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
-		const glm::vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y)*r;
-		const glm::vec3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x)*r;
+		const glm::vec3 tangent   = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
+		const glm::vec3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r;
 
 		// Set the same tangent for all three vertices of the triangle.
 		compressed_tangents[inds[i + 0]] = compressed_tangents[inds[i + 1]] = compressed_tangents[inds[i + 2]] = 
