@@ -22,6 +22,7 @@ struct ColorTexData
 {
 	static constexpr int internal_format_id = GL_RGB;
 	static constexpr int format_id = GL_BGR;
+	static constexpr int got_format_id = GL_RGB;
 	static constexpr int type_id = GL_UNSIGNED_BYTE;
 	static constexpr int attachment_id = GL_COLOR_ATTACHMENT0;
 	static constexpr int component_count = 3;
@@ -41,6 +42,7 @@ struct DepthTexData
 {
 	static constexpr int internal_format_id = GL_DEPTH_COMPONENT16;
 	static constexpr int format_id = GL_DEPTH_COMPONENT;
+	static constexpr int got_format_id = GL_DEPTH_COMPONENT;
 	static constexpr int type_id = GL_FLOAT;
 	static constexpr int attachment_id = GL_DEPTH_ATTACHMENT;
 	static constexpr int component_count = 1;
@@ -272,7 +274,7 @@ class TEX final
 			glBindTexture(GL_TEXTURE_2D, m_texture_id);
 
 			TexType::type* const P_texture_data = new TexType::type[m_width * m_height * TexType::component_count];
-			glGetTexImage(GL_TEXTURE_2D, 0, TexType::format_id, TexType::type_id, P_texture_data);
+			glGetTexImage(GL_TEXTURE_2D, 0, TexType::got_format_id, TexType::type_id, P_texture_data);
 
 			glBindTexture(GL_TEXTURE_2D, 0); // TODO: Is this row neccesarry?
 			glBindTexture(GL_TEXTURE_2D, bound_tex);
