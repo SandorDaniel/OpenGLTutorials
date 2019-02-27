@@ -24,6 +24,7 @@ vec3 colFrom(
 	in vec3  source_light_ambient_col,
 	in vec3  out_vert_pos,
 	in vec3  out_vert_nor,
+	in vec3  nor,
 	in vec3  material_diffuse_col,
 	in vec3  material_specular_col,
 	in vec3  material_ambient_col,
@@ -55,8 +56,13 @@ vec3 colFrom(
 		}
 	}
 
+	if(angleBetweenVectorsInRadians(out_vert_nor, source_light_dir) > 3.14f / 1.75f)
+	{
+		return material_ambient_col * source_light_ambient_col / distance_factor;
+	}
+
 	// Normal of the computed fragment, in camera space
-	vec3 n = normalize(out_vert_nor);
+	vec3 n = normalize(nor);
 	// Direction of the light (from the fragment to the light)
 	vec3 l = normalize(source_light_dir);
 	// Cosine of the angle between the normal and the light direction, 
@@ -136,6 +142,7 @@ void main()
 		                 source_light_specular_col[i],
 		                 source_light_ambient_col[i],
 		                 out_vert_pos,
+						 out_vert_TBN[2],
 		                 norm,
 		                 material_diffuse_col,
 		                 material_specular_col,
