@@ -178,7 +178,8 @@ void App::init()
 	m_tex_matspec_nor_matlight_shadow_mapped_id = glGetUniformLocation(m_program_nor_matlight_shadow_mapped_id, "tex_matspec_sampler");
 	m_tex_norm_nor_matlight_shadow_mapped_id = glGetUniformLocation(m_program_nor_matlight_shadow_mapped_id, "tex_norm_sampler");
 	m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id = glGetUniformLocation(m_program_nor_matlight_shadow_mapped_id, "is_model_nonuniform_scaled");
-	Light::getUniformLocationsForAll(m_program_nor_matlight_shadow_mapped_id);
+	PositionalLight::getUniformLocationsForAll(m_program_nor_matlight_shadow_mapped_id);
+	DirectionalLight::getUniformLocationsForAll(m_program_nor_matlight_shadow_mapped_id);
 
 	#pragma endregion
 
@@ -247,7 +248,7 @@ void App::upDate()
 	#pragma region LIGHTS UpDate
 
 	light_positional.setPower(10000000.0f);
-	light_positional.setPosDir(glm::vec4(5.0f, 5.0f, 5.0f, 1.0f));
+	light_positional.setPos(glm::vec3(5.0f, 5.0f, 5.0f));
 	light_positional.setAngle(glm::radians<float>(6));
 	light_positional.setDir(glm::vec3(-1.0f, -1.0f, -1.0f));
 	light_positional.setDiffuseCol (0.01f   * glm::vec3(1.0f, 1.0f, 1.0f));
@@ -255,9 +256,7 @@ void App::upDate()
 	light_positional.setAmbientCol (1.0f    * glm::vec3(1.0f, 1.0f, 1.0f));
 
 	light_directional.setPower(0.0f * 1.0f);
-	light_directional.setPosDir(glm::vec4(0.0f, 0.0f, -1.0f, 0.0f));
-	light_directional.setAngle(glm::radians<float>(6));
-	light_directional.setDir(glm::vec3(-1.0f, -1.0f, 1.0f));
+	light_directional.setDir(glm::vec3(-1.0f, 0.0f, 0.0f));
 	light_directional.setDiffuseCol (1.0f   * glm::vec3(1.0f, 1.0f, 1.0f));
 	light_directional.setSpecularCol(1.0f   * glm::vec3(1.0f, 1.0f, 1.0f));
 	light_directional.setAmbientCol (100.0f * glm::vec3(1.0f, 1.0f, 1.0f));
@@ -289,7 +288,8 @@ void App::render() const
 	int win_width, win_height;
 	glfwGetWindowSize(window, &win_width, &win_height);
 
-	Light::assignUniformsForAll();
+	PositionalLight::assignUniformsForAll();
+	DirectionalLight::assignUniformsForAll();
 
 	glm::mat4 V = getView(m_camera);
 	glUniformMatrix4fv(m_V_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &V[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);

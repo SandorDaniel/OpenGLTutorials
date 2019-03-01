@@ -8,63 +8,70 @@
 
 
 
-float angleBetweenVectorsInRadians(in vec3 u, in vec3 v)
+float angleBetweenVectorsInRadians(
+	in vec3 u, 
+	in vec3 v)
 {
 	return acos(dot(u, v) / (length(u) * length(v)));
 }
 
-
-vec3 colFrom(
-	in vec4  source_light_posdir,
-	in vec3  positional_source_light_dir,
-	in float positional_light_angle_in_radians,
-	in float source_light_power,
-	in vec3  source_light_diffuse_col,
-	in vec3  source_light_specular_col,
-	in vec3  source_light_ambient_col,
-	in vec3  out_vert_pos,
-	in vec3  out_vert_nor,
-	in vec3  nor,
-	in vec3  material_diffuse_col,
-	in vec3  material_specular_col,
-	in vec3  material_ambient_col,
-	in vec3  cam_pos)
+void preProcessPositionalLightData(
+	in vec3  positional_light_pos, // in
+	in vec3  positional_light_dir, // in
+	in float positional_light_angle_in_radians, // in
+	in vec3  out_vert_pos, // in
+	out float distance_factor, // out
+	inout float positional_light_power, // inout
+	out vec3 light_dir) // out
 {
-	float distance_factor;
-	source_light_power;
-	vec3 source_light_dir;
+	float distance = length(positional_light_pos - out_vert_pos);
+	distance_factor = distance * distance;
+
+	light_dir = normalize(positional_light_pos - out_vert_pos);
+
+	if(angleBetweenVectorsInRadians(-light_dir, positional_light_dir) > positional_light_angle_in_radians)
+    {
+		positional_light_power = 0.0f;
+    }
+}
+
+
+void preProcessDirectionalLightData(
+	in vec3 directional_light_dir, // in
+	out float distance_factor, // out
+	out vec3 light_dir) // out
+{
+	distance_factor = 1.0f;
+
+	light_dir = -normalize(directional_light_dir);
+}
+
+
+vec3 colFromPreProcessedLightData(
+	in float light_power,
+	in vec3 light_diffuse_col,
+	in vec3 light_specular_col,
+	in vec3 light_ambient_col,
+	in vec3 out_vert_pos,
+	in vec3 out_vert_nor,
+	in vec3 nor,
+	in vec3 material_diffuse_col,
+	in vec3 material_specular_col,
+	in vec3 material_ambient_col,
+	in vec3 cam_pos,
+	in vec3 light_dir,
+	in float distance_factor
+)
+{
+	if (angleBetweenVectorsInRadians(out_vert_nor, light_dir) > 3.14f / 1.75f) // TODO: After implementing shadow mapping, rethig the neccesity of this block.
 	{
-		if(source_light_posdir.w != 0) // Positional light source
-		{
-			vec3 source_light_pos = (source_light_posdir / source_light_posdir.w).xyz;
-
-			float distance = length(source_light_pos - out_vert_pos);
-			distance_factor = distance * distance;
-
-			source_light_dir = normalize(source_light_pos - out_vert_pos);
-
-			if(angleBetweenVectorsInRadians(-source_light_dir, positional_source_light_dir) > positional_light_angle_in_radians)
-			{
-				source_light_power = 0.0f;
-			}
-		}
-		else // Directional light source
-		{
-			distance_factor = 1.0f;
-
-			source_light_dir = -normalize(source_light_posdir.xyz);
-		}
-	}
-
-	if(angleBetweenVectorsInRadians(out_vert_nor, source_light_dir) > 3.14f / 1.75f) // TODO: After implementing shadow mapping, rethig the neccesity of this block.
-	{
-		return material_ambient_col * source_light_ambient_col / distance_factor;
+		return material_ambient_col * light_ambient_col / distance_factor;
 	}
 
 	// Normal of the computed fragment, in camera space
 	vec3 n = normalize(nor);
 	// Direction of the light (from the fragment to the light)
-	vec3 l = normalize(source_light_dir);
+	vec3 l = normalize(light_dir);
 	// Cosine of the angle between the normal and the light direction, 
 	// clamped above 0
 	//  - light is at the vertical of the triangle -> 1
@@ -84,11 +91,95 @@ vec3 colFrom(
 
 	return
 		// Ambient : simulates indirect lighting
-		material_ambient_col  * source_light_ambient_col                                          / distance_factor
+		material_ambient_col * light_ambient_col / distance_factor
 		// Diffuse : "color" of the object
-      + material_diffuse_col  * source_light_diffuse_col  * source_light_power * cosTheta         / distance_factor
+		+ material_diffuse_col * light_diffuse_col  * light_power * cosTheta / distance_factor
 		// Specular : reflective highlight, like a mirror
-      + material_specular_col * source_light_specular_col * source_light_power * pow(cosAlpha, 5) / distance_factor;
+		+ material_specular_col * light_specular_col * light_power * pow(cosAlpha, 5) / distance_factor;
+}
+
+
+vec3 colFromPositionalLightData(
+	in vec3  positional_light_pos,
+	in vec3  positional_light_dir,
+	in float positional_light_angle_in_radians,
+	in float positional_light_power,
+	in vec3  positional_light_diffuse_col,
+	in vec3  positional_light_specular_col,
+	in vec3  positional_light_ambient_col,
+	in vec3  out_vert_pos,
+	in vec3  out_vert_nor,
+	in vec3  nor,
+	in vec3  material_diffuse_col,
+	in vec3  material_specular_col,
+	in vec3  material_ambient_col,
+	in vec3  cam_pos)
+{
+	vec3 light_dir;
+	float distance_factor;
+	preProcessPositionalLightData(
+		positional_light_pos, // in
+		positional_light_dir, // in
+		positional_light_angle_in_radians, // in
+		out_vert_pos, // in
+		distance_factor, // out
+		positional_light_power, // inout
+		light_dir);
+
+	return colFromPreProcessedLightData(
+		positional_light_power,
+		positional_light_diffuse_col,
+		positional_light_specular_col,
+		positional_light_ambient_col,
+		out_vert_pos,
+		out_vert_nor,
+		nor,
+		material_diffuse_col,
+		material_specular_col,
+		material_ambient_col,
+		cam_pos,
+		light_dir,
+		distance_factor
+	);
+}
+
+
+vec3 colFromDirectionalLightData(
+	in vec3  directional_light_dir,
+	in float directional_light_power,
+	in vec3  directional_light_diffuse_col,
+	in vec3  directional_light_specular_col,
+	in vec3  directional_light_ambient_col,
+	in vec3  out_vert_pos,
+	in vec3  out_vert_nor,
+	in vec3  nor,
+	in vec3  material_diffuse_col,
+	in vec3  material_specular_col,
+	in vec3  material_ambient_col,
+	in vec3  cam_pos)
+{
+	vec3 light_dir;
+	float distance_factor;
+	preProcessDirectionalLightData(
+		directional_light_dir, // in
+		distance_factor, // out
+		light_dir);
+
+	return colFromPreProcessedLightData(
+		directional_light_power,
+		directional_light_diffuse_col,
+		directional_light_specular_col,
+		directional_light_ambient_col,
+		out_vert_pos,
+		out_vert_nor,
+		nor,
+		material_diffuse_col,
+		material_specular_col,
+		material_ambient_col,
+		cam_pos,
+		light_dir,
+		distance_factor
+	);
 }
 
 
@@ -97,20 +188,31 @@ uniform sampler2D tex_matdiff_sampler;
 uniform sampler2D tex_matspec_sampler;
 uniform sampler2D tex_norm_sampler;
 
-const int num_of_light_sources = 2; // TODO: get it from cpu somehow
 
-uniform float source_light_power[num_of_light_sources];
-uniform vec4  source_light_posdir[num_of_light_sources];
+const int num_of_positional_lights = 1; // TODO: get it from cpu somehow
 
-uniform float positional_light_angle_in_radians[num_of_light_sources]; 
-uniform vec3 positional_source_light_dir[num_of_light_sources];
+uniform float positional_light_power[num_of_positional_lights];
+uniform vec3  positional_light_pos[num_of_positional_lights];
 
-uniform vec3  source_light_diffuse_col[num_of_light_sources];
-uniform vec3  source_light_specular_col[num_of_light_sources];
-uniform vec3  source_light_ambient_col[num_of_light_sources];
+uniform float positional_light_angle_in_radians[num_of_positional_lights]; 
+uniform vec3 positional_light_dir[num_of_positional_lights];
+
+uniform vec3  positional_light_diffuse_col[num_of_positional_lights];
+uniform vec3  positional_light_specular_col[num_of_positional_lights];
+uniform vec3  positional_light_ambient_col[num_of_positional_lights];
 
 
-uniform vec3  cam_pos = vec3(0.0f, 0.0f, 5.0f);
+const int num_of_directional_lights = 1; // TODO: get it from cpu somehow
+
+uniform float directional_light_power[num_of_directional_lights]; 
+uniform vec3  directional_light_dir[num_of_directional_lights];
+
+uniform vec3  directional_light_diffuse_col[num_of_directional_lights];
+uniform vec3  directional_light_specular_col[num_of_directional_lights];
+uniform vec3  directional_light_ambient_col[num_of_directional_lights];
+
+
+uniform vec3  cam_pos;
 
 
 in vec3 out_vert_pos;
@@ -132,22 +234,40 @@ void main()
 {
 	vec3 color = vec3(0.0f, 0.0f, 0.0f);
 
-	for(int i = 0; i < num_of_light_sources; ++i)
+	for(int i = 0; i < num_of_positional_lights; ++i)
 	{
-		color += colFrom(source_light_posdir[i],
-	                     positional_source_light_dir[i],
-						 positional_light_angle_in_radians[i],
-		                 source_light_power[i],
-		                 source_light_diffuse_col[i],
-		                 source_light_specular_col[i],
-		                 source_light_ambient_col[i],
-		                 out_vert_pos,
-						 out_vert_TBN[2],
-		                 norm,
-		                 material_diffuse_col,
-		                 material_specular_col,
-		                 material_ambient_col,
-						 cam_pos);
+		color += colFromPositionalLightData(
+					positional_light_pos[i],
+					positional_light_dir[i],
+					positional_light_angle_in_radians[i],
+					positional_light_power[i],
+					positional_light_diffuse_col[i],
+					positional_light_specular_col[i],
+					positional_light_ambient_col[i],
+					out_vert_pos,
+					out_vert_TBN[2],
+					norm,
+					material_diffuse_col,
+					material_specular_col,
+					material_ambient_col,
+					cam_pos);
+	}
+
+	for(int i = 0; i < num_of_directional_lights; ++i)
+	{
+		color += colFromDirectionalLightData(
+					directional_light_dir[i],
+					directional_light_power[i],
+					directional_light_diffuse_col[i],
+					directional_light_specular_col[i],
+					directional_light_ambient_col[i],
+					out_vert_pos,
+					out_vert_TBN[2],
+					norm,
+					material_diffuse_col,
+					material_specular_col,
+					material_ambient_col,
+					cam_pos);
 	}
 
 	col = vec4(color, 1.0f);

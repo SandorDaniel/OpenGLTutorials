@@ -1,24 +1,42 @@
 #include "Light.h"
 
 
-std::vector < Light* >    Light::lights{};
 
-std::vector < GLfloat >   Light::m_source_light_power{};
-std::vector < glm::vec4 > Light::m_source_light_posdir{};
+std::vector<PositionalLight*> PositionalLight::lights{};
 
-std::vector < GLfloat >   Light::m_positional_light_angle_in_radians{};
-std::vector < glm::vec3 > Light::m_positional_source_light_dir{};
+std::vector<GLfloat>          PositionalLight::powers{};
+std::vector<glm::vec3>        PositionalLight::positions{};
 
-std::vector < glm::vec3 > Light::m_source_light_diffuse_col{};
-std::vector < glm::vec3 > Light::m_source_light_specular_col{};
-std::vector < glm::vec3 > Light::m_source_light_ambient_col{};
+std::vector<GLfloat>          PositionalLight::angles_in_radians{};
+std::vector<glm::vec3>        PositionalLight::dirs{};
 
-GLint Light::m_source_light_powerID;
-GLint Light::m_source_light_posdirID;
+std::vector<glm::vec3>        PositionalLight::diffuse_cols{};
+std::vector<glm::vec3>        PositionalLight::specular_cols{};
+std::vector<glm::vec3>        PositionalLight::ambient_cols{};
 
-GLint Light::m_positional_light_angle_in_radiansID;
-GLint Light::m_positional_source_light_dirID;
+GLint PositionalLight::power_id;
+GLint PositionalLight::pos_id;
 
-GLint Light::m_source_light_diffuse_colID;
-GLint Light::m_source_light_specular_colID;
-GLint Light::m_source_light_ambient_colID;
+GLint PositionalLight::angle_in_radians_id;
+GLint PositionalLight::dir_id;
+
+GLint PositionalLight::diffuse_col_id;
+GLint PositionalLight::specular_col_id;
+GLint PositionalLight::ambient_col_id;
+
+
+std::vector<DirectionalLight*> DirectionalLight::lights{};
+
+std::vector<GLfloat>           DirectionalLight::powers{};
+std::vector<glm::vec3>         DirectionalLight::dirs{};
+
+std::vector<glm::vec3>         DirectionalLight::diffuse_cols{};
+std::vector<glm::vec3>         DirectionalLight::specular_cols{};
+std::vector<glm::vec3>         DirectionalLight::ambient_cols{};
+
+GLint DirectionalLight::power_id;
+GLint DirectionalLight::dir_id;
+
+GLint DirectionalLight::diffuse_col_id;
+GLint DirectionalLight::specular_col_id;
+GLint DirectionalLight::ambient_col_id;

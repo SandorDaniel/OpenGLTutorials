@@ -53,8 +53,8 @@ class App final
 	GLint m_tex_norm_nor_matlight_shadow_mapped_id;
 	GLint m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id;
 
-	Light light_positional;
-	Light light_directional;
+	PositionalLight  light_positional;
+	DirectionalLight light_directional;
 
 	glm::mat4 m_M_horizontal_cilinder = glm::mat4(); // glm::mat4() is the identity matrix
 	bool m_does_m_M_horizontal_cilinder_contain_nonuniform_scaling_horizontal_cilinder = false;
