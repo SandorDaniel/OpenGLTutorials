@@ -268,7 +268,7 @@ void App::upDate()
 
 void App::render() const
 {
-	fbo.bind(GL_DRAW_FRAMEBUFFER);
+	//fbo.bind(GL_DRAW_FRAMEBUFFER);
 
 	// Use our shader
 	glUseProgram(m_program_nor_matlight_shadow_mapped_id);
@@ -294,6 +294,7 @@ void App::render() const
 	glm::mat4 V = getView(m_camera);
 	glUniformMatrix4fv(m_V_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &V[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);
 	glm::mat4 P = getPerspectiveProj(m_camera, win_width, win_height);
+	//P = getOrthogonaleProj(m_camera, -2, 2, -2, 2);
 	glUniformMatrix4fv(m_P_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &P[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_PID, 1, GL_FALSE, &P[0][0]);
 
 	glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_horizontal_cilinder_contain_nonuniform_scaling_horizontal_cilinder ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0);
@@ -356,7 +357,7 @@ void App::render() const
 	m_tex_matspec_wall.unBind();
 	m_tex_nor_wall.unBind();
 	
-	fbo.unBind();
+	//fbo.unBind();
 }
 
 
