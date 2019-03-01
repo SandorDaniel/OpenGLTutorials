@@ -1,4 +1,5 @@
 // TODO: add aspects to lights if it is needed
+// TODO: outlining
 
 #pragma once
 
