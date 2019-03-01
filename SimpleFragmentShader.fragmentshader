@@ -223,7 +223,7 @@ vec3 norm = normalize(out_vert_TBN * (2 * texture(tex_norm_sampler, out_vert_tex
 
 
 vec3  material_diffuse_col  = texture(tex_matdiff_sampler, out_vert_tex.st).rgb; // col of the texture at the specified st
-vec3  material_ambient_col  = 0.0005f * material_diffuse_col;
+vec3  material_ambient_col  = 0.005f * material_diffuse_col;
 vec3  material_specular_col = texture(tex_matspec_sampler, out_vert_tex.st).rgb;
 
 
