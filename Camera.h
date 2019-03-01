@@ -19,7 +19,7 @@ protected:
 	float m_near = 1.0f;
 	float m_far  = 100.0f;
 
-	float m_fov = glm::pi<float>() / 4.0f; // filed of view // TODO: tisztazni, hogy milyen szogrol van szo pontosan
+	float m_fov = glm::radians(45.0f); // filed of view (the whole horizontal angle, not the half of it)
 
 public:
 
