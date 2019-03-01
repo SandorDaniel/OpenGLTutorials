@@ -15,14 +15,15 @@ float angleBetweenVectorsInRadians(
 	return acos(dot(u, v) / (length(u) * length(v)));
 }
 
+
 void preProcessPositionalLightData(
-	in vec3  positional_light_pos, // in
-	in vec3  positional_light_dir, // in
-	in float positional_light_angle_in_radians, // in
-	in vec3  out_vert_pos, // in
-	out float distance_factor, // out
-	inout float positional_light_power, // inout
-	out vec3 light_dir) // out
+	in    vec3  positional_light_pos,
+	in    vec3  positional_light_dir,
+	in    float positional_light_angle_in_radians,
+	in    vec3  out_vert_pos,
+	out   float distance_factor,
+	inout float positional_light_power,
+	out   vec3 light_dir)
 {
 	float distance = length(positional_light_pos - out_vert_pos);
 	distance_factor = distance * distance;
@@ -37,9 +38,9 @@ void preProcessPositionalLightData(
 
 
 void preProcessDirectionalLightData(
-	in vec3 directional_light_dir, // in
-	out float distance_factor, // out
-	out vec3 light_dir) // out
+	in  vec3 directional_light_dir,
+	out float distance_factor,
+	out vec3 light_dir)
 {
 	distance_factor = 1.0f;
 
@@ -195,7 +196,7 @@ uniform float positional_light_power[num_of_positional_lights];
 uniform vec3  positional_light_pos[num_of_positional_lights];
 
 uniform float positional_light_angle_in_radians[num_of_positional_lights]; 
-uniform vec3 positional_light_dir[num_of_positional_lights];
+uniform vec3  positional_light_dir[num_of_positional_lights];
 
 uniform vec3  positional_light_diffuse_col[num_of_positional_lights];
 uniform vec3  positional_light_specular_col[num_of_positional_lights];
