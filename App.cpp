@@ -154,6 +154,9 @@ void App::init()
 
 	#pragma region CAMERA SetUp (window, events)
 
+	m_camera.setPos(glm::vec3(0.0f, 0.0f, 5.0f));
+	m_camera.setHorizontalAngle(glm::radians(180.0f));
+	m_camera.setVerticalAngle(0);
 	m_camera.init(window);
 	m_camera.setNear(1.0f);
 	m_camera.setFar(100.0f);
