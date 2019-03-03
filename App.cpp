@@ -157,7 +157,7 @@ void App::init()
 	m_camera.init(window);
 	m_camera.setNear(1.0f);
 	m_camera.setFar(100.0f);
-	m_camera.setFov(glm::pi<float>() / 4.0f);
+	m_camera.setFov(glm::radians(45.0f));
 
 	#pragma endregion
 

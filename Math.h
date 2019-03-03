@@ -16,7 +16,7 @@ protected:
 
 	glm::vec3 m_position = glm::vec3(0, 0, 5);
 
-	float m_horizontal_angle = glm::pi<float>();
+	float m_horizontal_angle = glm::radians(180.0f);
 	float m_vertical_angle = 0.0f;
 
 public:
