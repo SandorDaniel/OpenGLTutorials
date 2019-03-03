@@ -305,10 +305,10 @@ void App::render() const
 
 	// Draw the triangles !
 	glDrawElements(
-		GL_TRIANGLES,      // mode
+		GL_TRIANGLES,                        // mode
 		m_ibo_cilinder.getElementCount(),    // count
-		GL_UNSIGNED_SHORT,   // type of indices
-		(void*)0           // element array buffer offset
+		GL_UNSIGNED_SHORT,                   // type of indices
+		(void*)0                             // element array buffer offset
 	);
 
 	glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_vertical_cilinder_contain_nonuniform_scaling_horizontal_cilinder ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
@@ -319,10 +319,10 @@ void App::render() const
 
 	// Draw the triangles !
 	glDrawElements(
-		GL_TRIANGLES,      // mode
+		GL_TRIANGLES,                        // mode
 		m_ibo_cilinder.getElementCount(),    // count
-		GL_UNSIGNED_SHORT,   // type of indices
-		(void*)0           // element array buffer offset
+		GL_UNSIGNED_SHORT,                   // type of indices
+		(void*)0                             // element array buffer offset
 	);
 
 	m_vao_cilinder.unBind();
@@ -334,10 +334,10 @@ void App::render() const
 
 	// Draw the triangles !
 	glDrawElements(
-		GL_TRIANGLES,      // mode
+		GL_TRIANGLES,                     // mode
 		m_ibo_plane.getElementCount(),    // count
-		GL_UNSIGNED_SHORT,   // type of indices
-		(void*)0           // element array buffer offset
+		GL_UNSIGNED_SHORT,                // type of indices
+		(void*)0                          // element array buffer offset
 	);
 
 	glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_horizontal_plane_contain_nonuniform_scaling ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
@@ -345,10 +345,10 @@ void App::render() const
 
 	// Draw the triangles !
 	glDrawElements(
-		GL_TRIANGLES,      // mode
+		GL_TRIANGLES,                     // mode
 		m_ibo_plane.getElementCount(),    // count
-		GL_UNSIGNED_SHORT,   // type of indices
-		(void*)0           // element array buffer offset
+		GL_UNSIGNED_SHORT,                // type of indices
+		(void*)0                          // element array buffer offset
 	);
 
 	m_vao_plane.unBind();
