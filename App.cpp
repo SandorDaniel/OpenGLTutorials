@@ -252,7 +252,7 @@ void App::upDate()
 
 	light_positional.setPower(10000000.0f);
 	light_positional.setPos(glm::vec3(5.0f, 5.0f, 5.0f));
-	light_positional.setAngle(glm::radians<float>(6));
+	light_positional.setAngleInRadians(glm::radians<float>(6));
 	light_positional.setDir(glm::vec3(-1.0f, -1.0f, -1.0f));
 	light_positional.setDiffuseCol (0.01f   * glm::vec3(1.0f, 1.0f, 1.0f));
 	light_positional.setSpecularCol(0.0001f * glm::vec3(1.0f, 1.0f, 1.0f));

@@ -127,7 +127,7 @@ public:
 	{
 		positions[id] = a;
 	}
-	void setAngle(const GLfloat a)
+	void setAngleInRadians(const GLfloat a)
 	{
 		angles_in_radians[id] = a;
 	}
