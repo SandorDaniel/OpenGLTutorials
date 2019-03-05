@@ -1,4 +1,4 @@
-//#define sd_debugger
+#define sd_debugger
 #include "Debug.h" // TODO rename to sdd
 
 #include <vector>
@@ -159,7 +159,7 @@ void App::init()
 	m_camera.setVerticalAngle(0);
 	m_camera.init(window);
 	m_camera.setNear(1.0f);
-	m_camera.setFar(100.0f);
+	m_camera.setFar(10.0f);
 	m_camera.setFov(glm::radians(45.0f));
 
 	#pragma endregion
@@ -188,13 +188,19 @@ void App::init()
 
 	#pragma region FBO
 
-	m_tex_col.alloc(100, 100);
 	m_tex_depth.alloc(100, 100);
 
-	fbo.attach(m_tex_col);
 	fbo.attach(m_tex_depth);
 
 	#pragma endregion
+
+	m_program_shadow_id = LoadShaders(
+		std::vector<const char*>{"ShadowVertexShader.vertexshader"},
+		std::vector<const char*>{"ShadowFragmentShader.fragmentshader"});
+
+	m_M_shadow_id = glGetUniformLocation(m_program_shadow_id, "M");
+	m_V_shadow_id = glGetUniformLocation(m_program_shadow_id, "V");
+	m_P_shadow_id = glGetUniformLocation(m_program_shadow_id, "P");
 }
 
 
@@ -259,7 +265,7 @@ void App::upDate()
 	light_positional.setAmbientCol (1.0f    * glm::vec3(1.0f, 1.0f, 1.0f));
 
 	light_directional.setPower(0.0f * 1.0f);
-	light_directional.setDir(glm::vec3(-1.0f, 0.0f, 0.0f));
+	light_directional.setDir(glm::vec3(1.0f, -1.0f, -1.0f));
 	light_directional.setDiffuseCol (1.0f   * glm::vec3(1.0f, 1.0f, 1.0f));
 	light_directional.setSpecularCol(1.0f   * glm::vec3(1.0f, 1.0f, 1.0f));
 	light_directional.setAmbientCol (100.0f * glm::vec3(1.0f, 1.0f, 1.0f));
@@ -272,7 +278,6 @@ void App::render() const
 {
 	//fbo.bind(GL_DRAW_FRAMEBUFFER);
 
-	// Use our shader
 	glUseProgram(m_program_nor_matlight_shadow_mapped_id);
 
 	m_tex_matdiff_wall.bind();
@@ -285,20 +290,108 @@ void App::render() const
 	glUniform1i(m_tex_matdiff_nor_matlight_shadow_mapped_id, m_tex_matdiff_wall); // DSA version: glProgramUniform1i(m_programID, m_tex_diffID, m_tex);
 	glUniform1i(m_tex_matspec_nor_matlight_shadow_mapped_id, m_tex_matspec_wall);
 	glUniform1i(m_tex_norm_nor_matlight_shadow_mapped_id, m_tex_nor_wall);
-	
-	glUniform3fv(m_cam_pos_nor_matlight_shadow_mapped_id, 1, &m_camera.getPos()[0]); // DSA version: glProgramUniform3fv(m_programID, m_cam_pos_id, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos()));
 
-	int win_width, win_height;
-	glfwGetWindowSize(window, &win_width, &win_height);
+	glUniform3fv(m_cam_pos_nor_matlight_shadow_mapped_id, 1, &m_camera.getPos()[0]); // DSA version: glProgramUniform3fv(m_programID, m_cam_pos_id, 1, reinterpret_cast<GLfloat*>(&m_camera.getPos()));
 
 	PositionalLight::assignUniformsForAll();
 	DirectionalLight::assignUniformsForAll();
 
+	int win_width, win_height;
+	glfwGetWindowSize(window, &win_width, &win_height);
+
 	glm::mat4 V = getView(m_camera);
 	glUniformMatrix4fv(m_V_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &V[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);
 	glm::mat4 P = getPerspectiveProj(m_camera, win_width, win_height);
-	//P = getOrthogonaleProj(m_camera, -2, 2, -2, 2);
 	glUniformMatrix4fv(m_P_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &P[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_PID, 1, GL_FALSE, &P[0][0]);
+
+	glm::mat4 SV;
+	glm::mat4 SP;
+	{
+		Camera cam(light_directional);
+		cam.setPos(glm::vec3(0, 0, 0));
+
+		float thickness;
+		glm::vec3 position;
+		float width;
+		float height;
+		{
+			std::vector<glm::vec3> v = getFrustum(m_camera, win_width, win_height);
+
+			glm::mat4 CV = getView(cam);
+			for (int i = 0; i < v.size(); ++i)
+			{
+				v[i] = glm::vec3(CV * glm::vec4(v[i], 1.0f));
+			}
+
+			float left = v[0].x;
+			for (int i = 1; i < v.size(); ++i)
+			{
+				if (v[i].x < left)
+				{
+					left = v[i].x;
+				}
+			}
+
+			float right = v[0].x;
+			for (int i = 1; i < v.size(); ++i)
+			{
+				if (v[i].x > right)
+				{
+					right = v[i].x;
+				}
+			}
+
+			float bottom = v[0].y;
+			for (int i = 1; i < v.size(); ++i)
+			{
+				if (v[i].y < bottom)
+				{
+					bottom = v[i].y;
+				}
+			}
+
+			float top = v[0].y;
+			for (int i = 1; i < v.size(); ++i)
+			{
+				if (v[i].y > top)
+				{
+					top = v[i].y;
+				}
+			}
+
+			float near = v[0].z;
+			for (int i = 1; i < v.size(); ++i)
+			{
+				if (v[i].z > near)
+				{
+					near = v[i].z;
+				}
+			}
+
+			float far = v[0].z;
+			for (int i = 1; i < v.size(); ++i)
+			{
+				if (v[i].z < far)
+				{
+					far = v[i].z;
+				}
+			}
+
+			width = right - left;
+			height = top - bottom;
+			thickness = near - far;
+
+			position = glm::vec3(glm::inverse(CV) * glm::vec4((right + left) / 2.0f, (top + bottom) / 2.0f, near, 1.0f));
+			sdd::dout << glm::vec4((right + left) / 2.0f, (top + bottom) / 2.0f, near, 1.0f) << std::endl;
+		}
+
+		cam.setPos(position);
+		cam.setNear(0.0f);
+		cam.setFar(thickness);
+
+		glm::mat4 SV = getView(cam);
+		glm::mat4 SP = getOrthogonaleProj(cam, -width / 2.0f, width / 2.0f, -height / 2.0f, height / 2.0f);
+	}
 
 	glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_horizontal_cilinder_contain_nonuniform_scaling_horizontal_cilinder ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0);
 	glUniformMatrix4fv(m_M_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &m_M_horizontal_cilinder[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M[0][0]);
@@ -366,17 +459,11 @@ void App::render() const
 
 void App::afterScreen()
 {
-	printImage<ColorTexData>(
-		"printedTex.ppm",
-		static_cast<std::vector<ColorTexData::type>>(m_tex_col),
-		m_tex_col.getWidth(),
-		m_tex_col.getHeight());
-
-	printImage<DepthTexData>(
-		"printedDepthTex.ppm",
-		static_cast<std::vector<DepthTexData::type>>(m_tex_depth),
-		m_tex_depth.getWidth(),
-		m_tex_depth.getHeight());
+	//printImage<DepthTexData>(
+	//	"printedDepthTex.ppm",
+	//	static_cast<std::vector<DepthTexData::type>>(m_tex_depth),
+	//	m_tex_depth.getWidth(),
+	//	m_tex_depth.getHeight());
 }
 
 

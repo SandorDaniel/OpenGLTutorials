@@ -68,9 +68,14 @@ class App final
 
 	InPutObserverCamera m_camera;
 
-	TEX<ColorTexData> m_tex_col;
 	TEX<DepthTexData> m_tex_depth;
 	FBO fbo;
+
+	GLint m_program_shadow_id;
+
+	GLint m_M_shadow_id;
+	GLint m_V_shadow_id;
+	GLint m_P_shadow_id;
 
 public:
 
