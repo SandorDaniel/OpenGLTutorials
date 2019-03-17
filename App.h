@@ -52,6 +52,9 @@ class App final
 	GLint m_tex_matspec_nor_matlight_shadow_mapped_id;
 	GLint m_tex_norm_nor_matlight_shadow_mapped_id;
 	GLint m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id;
+	GLint m_shadow_V_nor_matlight_shadow_mapped_id;
+	GLint m_tex_shadow_nor_matlight_shadow_mapped_id;
+	GLint m_shadow_P_nor_matlight_shadow_mapped_id;
 
 	PositionalLight  light_positional;
 	DirectionalLight light_directional;
@@ -68,9 +71,17 @@ class App final
 
 	InPutObserverCamera m_camera;
 
-	TEX<ColorTexData> m_tex_col;
 	TEX<DepthTexData> m_tex_depth;
 	FBO fbo;
+
+	GLint m_program_shadow_id;
+
+	GLint m_shadow_M_shadow_id;
+	GLint m_shadow_V_shadow_id;
+	GLint m_shadow_P_shadow_id;
+
+	glm::mat4 SV;
+	glm::mat4 SP;
 
 public:
 
@@ -80,7 +91,7 @@ public:
 
 	void init();
 	void upDate();
-	void render() const;
+	void render();
 	void clean();
 	void afterScreen();
 };

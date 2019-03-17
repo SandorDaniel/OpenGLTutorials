@@ -1,8 +1,10 @@
-//#define sd_debugger
+#define sd_debugger
 #include "Debug.h"
 
 #include <limits>
 #include <exception>
+
+#include <GL/glew.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp> // after <glm/glm.hpp>
@@ -10,6 +12,15 @@
 #include "InPuts.h"
 #include "Camera.h"
 
+
+
+
+Camera::Camera(const DirectionalLight& LIGHT)
+{
+	const glm::vec2 HOR_VER = getVerticalAndHorizontalAngles(LIGHT.getDir());
+	setHorizontalAngle(HOR_VER.x);
+	setVerticalAngle(HOR_VER.y);
+}
 
 
 glm::mat4 getView(const Camera& CAM)
@@ -33,6 +44,32 @@ glm::mat4 getPerspectiveProj(const Camera& CAM, int win_width, int win_height)
 		CAM.getFov(),
 		static_cast<float>(win_width) / static_cast<float>(win_height),
 		CAM.getNear(), CAM.getFar());
+}
+
+
+std::vector<glm::vec3> getFrustum(const Camera& CAM, int win_width, int win_height)
+{
+	float near = CAM.getNear();
+	float far  = CAM.getFar();
+
+	float half_far_width  = far  * glm::tan(CAM.getFov() / 2.0f);
+	float half_near_width = near * glm::tan(CAM.getFov() / 2.0f);
+
+	float half_far_height  = (half_far_width  * win_height) / win_width;
+	float half_near_height = (half_near_width * win_height) / win_width;
+
+	glm::mat4 inv_V = glm::inverse(getView(CAM));
+
+	return std::vector<glm::vec3>{
+		glm::vec3(inv_V * glm::vec4(-half_near_width, -half_near_height, -near, 1.0f)),
+		glm::vec3(inv_V * glm::vec4(+half_near_width, -half_near_height, -near, 1.0f)),
+		glm::vec3(inv_V * glm::vec4(+half_near_width, +half_near_height, -near, 1.0f)),
+		glm::vec3(inv_V * glm::vec4(-half_near_width, +half_near_height, -near, 1.0f)),
+		glm::vec3(inv_V * glm::vec4(-half_far_width,  -half_far_height,  -far,  1.0f)),
+		glm::vec3(inv_V * glm::vec4(+half_far_width,  -half_far_height,  -far,  1.0f)),
+		glm::vec3(inv_V * glm::vec4(+half_far_width,  +half_far_height,  -far,  1.0f)),
+		glm::vec3(inv_V * glm::vec4(-half_far_width,  +half_far_height,  -far,  1.0f))
+	};
 }
 
 

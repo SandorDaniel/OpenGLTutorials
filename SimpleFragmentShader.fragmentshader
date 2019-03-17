@@ -184,13 +184,22 @@ vec3 colFromDirectionalLightData(
 }
 
 
+const int num_of_positional_lights = 1; // TODO: get it from cpu somehow
+
+const int num_of_directional_lights = 1; // TODO: get it from cpu somehow
+
+
+in vec3 out_vert_pos;
+in vec2 out_vert_tex;
+in mat3 out_vert_TBN;
+
+in vec4 out_vert_shadow;
+
 
 uniform sampler2D tex_matdiff_sampler;
 uniform sampler2D tex_matspec_sampler;
 uniform sampler2D tex_norm_sampler;
-
-
-const int num_of_positional_lights = 1; // TODO: get it from cpu somehow
+uniform sampler2D shadowMap;
 
 uniform float positional_light_power[num_of_positional_lights];
 uniform vec3  positional_light_pos[num_of_positional_lights];
@@ -202,9 +211,6 @@ uniform vec3  positional_light_diffuse_col[num_of_positional_lights];
 uniform vec3  positional_light_specular_col[num_of_positional_lights];
 uniform vec3  positional_light_ambient_col[num_of_positional_lights];
 
-
-const int num_of_directional_lights = 1; // TODO: get it from cpu somehow
-
 uniform float directional_light_power[num_of_directional_lights]; 
 uniform vec3  directional_light_dir[num_of_directional_lights];
 
@@ -212,13 +218,9 @@ uniform vec3  directional_light_diffuse_col[num_of_directional_lights];
 uniform vec3  directional_light_specular_col[num_of_directional_lights];
 uniform vec3  directional_light_ambient_col[num_of_directional_lights];
 
-
 uniform vec3  cam_pos;
 
 
-in vec3 out_vert_pos;
-in vec2 out_vert_tex;
-in mat3 out_vert_TBN;
 vec3 norm = normalize(out_vert_TBN * (2 * texture(tex_norm_sampler, out_vert_tex.st).rgb - vec3(1.0f, 1.0f, 1.0f)));
 
 
@@ -227,7 +229,7 @@ vec3  material_ambient_col  = 0.005f * material_diffuse_col;
 vec3  material_specular_col = texture(tex_matspec_sampler, out_vert_tex.st).rgb;
 
 
-out vec4 col;
+layout(location = 0) out vec4 col;
 
 
 
@@ -254,13 +256,23 @@ void main()
 					cam_pos);
 	}
 
+	//float visibility = texture(shadowMap, vec3(out_vert_shadow.xy, out_vert_shadow.z / out_vert_shadow.w));
+
+	float visibility = 1.0;
+	if((out_vert_shadow.z)/out_vert_shadow.w >= texture(shadowMap, out_vert_shadow.xy).r + 0.01f)
+	{
+	   visibility = 0.1f;
+	}
+
+	//float visibility = texture( shadowMap, vec3(out_vert_shadow.xy, (out_vert_shadow.z)/out_vert_shadow.w) );
+
 	for(int i = 0; i < num_of_directional_lights; ++i)
 	{
 		color += colFromDirectionalLightData(
 					directional_light_dir[i],
 					directional_light_power[i],
-					directional_light_diffuse_col[i],
-					directional_light_specular_col[i],
+					visibility * directional_light_diffuse_col[i],
+					visibility * directional_light_specular_col[i],
 					directional_light_ambient_col[i],
 					out_vert_pos,
 					out_vert_TBN[2],

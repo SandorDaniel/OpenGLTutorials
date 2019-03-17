@@ -95,5 +95,20 @@ public:
 		m_width = tex.getWidth();
 		m_height = tex.getHeight();
 	}
+	//template<class TexType>
+	//void detach(TEX<TexType>& tex)
+	//{
+	//	GLint bound_fbo; // We want to live every state to be the same...
+	//	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &bound_fbo);
+
+	//	glBindFramebuffer(GL_FRAMEBUFFER, m_id);
+
+	//	glFramebufferTexture2D(GL_FRAMEBUFFER, TexType::attachment_id, GL_TEXTURE_2D, 0, 0);
+
+	//	glBindFramebuffer(GL_FRAMEBUFFER, bound_fbo);
+
+	//	m_width = tex.getWidth();
+	//	m_height = tex.getHeight();
+	//}
 
 };

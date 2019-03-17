@@ -79,7 +79,7 @@ void FBO::bind(GLenum target = GL_DRAW_FRAMEBUFFER) const
 		throw; // TODO
 	}
 
-	if (target == GL_DRAW_FRAMEBUFFER)
+	if (target == GL_DRAW_FRAMEBUFFER || target == GL_FRAMEBUFFER)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}

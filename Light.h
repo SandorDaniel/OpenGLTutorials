@@ -22,11 +22,17 @@ public:
 	{
 	}
 
-	virtual void setPower(const GLfloat a) = 0;
-	virtual void setDir(const glm::vec3& a) = 0;
-	virtual void setDiffuseCol(const glm::vec3& a) = 0;
+	virtual void setPower(const GLfloat a)          = 0;
+	virtual void setDir(const glm::vec3& a)         = 0;
+	virtual void setDiffuseCol(const glm::vec3& a)  = 0;
 	virtual void setSpecularCol(const glm::vec3& a) = 0;
-	virtual void setAmbientCol(const glm::vec3& a) = 0;
+	virtual void setAmbientCol(const glm::vec3& a)  = 0;
+
+	virtual GLfloat   getPower()       const = 0;
+	virtual glm::vec3 getDir()         const = 0;
+	virtual glm::vec3 getDiffuseCol()  const = 0;
+	virtual glm::vec3 getSpecularCol() const = 0;
+	virtual glm::vec3 getAmbientCol()  const = 0;
 
 };
 
@@ -148,6 +154,35 @@ public:
 		ambient_cols[id] = a;
 	}
 
+	GLfloat   getPower() const
+	{
+		return powers[id];
+	}
+	glm::vec3 getPos() const
+	{
+		return positions[id];
+	}
+	GLfloat   getAngleInRadians() const
+	{
+		return angles_in_radians[id];
+	}
+	glm::vec3 getDir() const
+	{
+		return dirs[id];
+	}
+	glm::vec3 getDiffuseCol() const
+	{
+		return diffuse_cols[id];
+	}
+	glm::vec3 getSpecularCol() const
+	{
+		return specular_cols[id];
+	}
+	glm::vec3 getAmbientCol() const
+	{
+		return ambient_cols[id];
+	}
+
 };
 
 
@@ -242,6 +277,27 @@ public:
 	void setAmbientCol(const glm::vec3& a)
 	{
 		ambient_cols[id] = a;
+	}
+
+	GLfloat   getPower() const
+	{
+		return powers[id];
+	}
+	glm::vec3 getDir() const
+	{
+		return dirs[id];
+	}
+	glm::vec3 getDiffuseCol() const
+	{
+		return diffuse_cols[id];
+	}
+	glm::vec3 getSpecularCol() const
+	{
+		return specular_cols[id];
+	}
+	glm::vec3 getAmbientCol() const
+	{
+		return ambient_cols[id];
 	}
 
 };

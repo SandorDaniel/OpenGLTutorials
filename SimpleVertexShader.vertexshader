@@ -1,6 +1,13 @@
 #version 330 core
 
 
+const mat4 biasMatrix = mat4( // Multiplying the vertex’ position by depthMVP will give homogeneous coordinates, which are in [-1,1]; but texture sampling must be done in [0,1].
+	0.5, 0.0, 0.0, 0.0,
+	0.0, 0.5, 0.0, 0.0,
+	0.0, 0.0, 0.5, 0.0,
+	0.5, 0.5, 0.5, 1.0
+);
+
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 in_vert_pos;
 //layout(location = 1) in vec3 in_vert_nor;
@@ -13,12 +20,16 @@ out vec3 out_vert_pos;
 //out vec3 out_vert_nor;
 out vec2 out_vert_tex;
 out mat3 out_vert_TBN;
+out vec4 out_vert_shadow;
   
 // Values that stay constant for the whole mesh.
-uniform mat4 M;
 uniform mat4 V;
 uniform mat4 P;
 uniform int is_model_nonuniform_scaled = 0;
+uniform mat4 M;
+
+uniform mat4 shadow_V;
+uniform mat4 shadow_P;
 
 
 void main()
@@ -36,4 +47,6 @@ void main()
 	out_vert_TBN = mat3(normalize((M * vec4(in_vert_tg, 0.0f)).xyz),
 	                    normalize((M * vec4(in_vert_btg, 0.0f)).xyz),
 						normalize((M * vec4(cross(in_vert_tg, in_vert_btg), 0.0f)).xyz));
+
+	out_vert_shadow = biasMatrix * shadow_P * shadow_V * M * vec4(in_vert_pos, 1.0f);
 }

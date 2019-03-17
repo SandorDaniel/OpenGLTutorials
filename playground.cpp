@@ -37,7 +37,7 @@
 // - implement detach member function where attach member functions are implemented
 // - making unBind member functions to rebind the OGL object that was bound before invocation of the bind member function
 
-//#define sd_debugger
+#define sd_debugger
 #include "Debug.h"
 
 #include <iostream>
@@ -91,13 +91,26 @@ int main( void )
 	// TODO: handle the case if OGL version number is lower than 3.3
 	// Get OGL version
 	{
-		char* title = new char[strlen("MyProgram - OGL version ") + strlen(reinterpret_cast<const char*>(glGetString(GL_VERSION))) + 1];
+		char* title = new char[strlen("MyProgram - OGL version:\t") + strlen(reinterpret_cast<const char*>(glGetString(GL_VERSION))) + 1];
 		title[0] = '\0';
 
-		strcat(title, "MyProgram - OGL version ");
+		strcat(title, "OGL version:\t");
 		strcat(title, reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 
 		glfwSetWindowTitle(window, title);
+
+		sdd::dout << title << std::endl;
+	}
+
+	// Get GLSL version
+	{
+		char* title = new char[strlen("GLSL version:\t") + strlen(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION))) + 1];
+		title[0] = '\0';
+
+		strcat(title, "GLSL version:\t");
+		strcat(title, reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+
+		sdd::dout << title << std::endl;
 	}
 
 	// List supported OGL extensions
@@ -111,7 +124,7 @@ int main( void )
 		for (GLint i = 0; i < n; i++)
 		{
 			const char* extension = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i));
-			std::cout << "Ext " << i << ":\t\t" << extension << std::endl;
+			sdd::dout << "Ext " << i << ":\t\t" << extension << std::endl;
 		}
 	}
 	#endif

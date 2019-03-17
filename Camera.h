@@ -3,11 +3,16 @@
 
 #pragma once
 
+#include <vector>
+
+#include <GL/glew.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp> // after <glm/glm.hpp>
 
 #include "InPuts.h"
 #include "Math.h"
+#include "Light.h"
 
 
 
@@ -26,6 +31,8 @@ public:
 	virtual ~Camera()
 	{
 	}
+	Camera() = default;
+	Camera(const DirectionalLight& LIGHT);
 
 	float getNear() const
 	{
@@ -59,6 +66,7 @@ public:
 
 glm::mat4 getView(const Camera&);
 glm::mat4 getPerspectiveProj(const Camera&, int win_width, int win_height);
+std::vector<glm::vec3> getFrustum(const Camera& CAM, int win_width, int win_height);
 glm::mat4 getOrthogonaleProj(const Camera& CAM, const float left, const float right, const float bottom, const float top);
 
 class InPutObserverCamera final : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer, public Camera
