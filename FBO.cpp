@@ -73,6 +73,7 @@ void FBO::bind(GLenum target = GL_DRAW_FRAMEBUFFER) const
 	glViewport(0, 0, m_width, m_height);
 
 	glBindFramebuffer(target, m_id);
+	glDrawBuffer(GL_NONE);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{

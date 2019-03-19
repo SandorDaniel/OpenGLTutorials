@@ -1,4 +1,4 @@
-#define sd_debugger
+//#define sd_debugger
 #include "Debug.h" // TODO rename to sdd
 
 #include <vector>
@@ -196,7 +196,7 @@ void App::init()
 	m_tex_depth.alloc(win_width, win_height);
 	//m_tex_depth.alloc(40, 40);
 
-	fbo.attach(m_tex_depth);
+	//fbo.attach(m_tex_depth);
 
 	#pragma endregion
 
@@ -284,11 +284,12 @@ void App::render()
 {
 	#pragma region shadow rendering
 
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	{
+		fbo.attach(m_tex_depth);
 		fbo.bind(GL_FRAMEBUFFER);
 
 		glUseProgram(m_program_shadow_id);
@@ -455,6 +456,7 @@ void App::render()
 		m_vao_plane.unBind();
 
 		fbo.unBind();
+		fbo.detach(m_tex_depth);
 	}
 
 	#pragma endregion

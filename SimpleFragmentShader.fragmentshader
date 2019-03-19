@@ -64,10 +64,10 @@ vec3 colFromPreProcessedLightData(
 	in float distance_factor
 )
 {
-	if (angleBetweenVectorsInRadians(out_vert_nor, light_dir) > 3.14f / 1.75f) // TODO: After implementing shadow mapping, rethig the neccesity of this block.
+	/*if (angleBetweenVectorsInRadians(out_vert_nor, light_dir) > 3.14f / 1.75f) // TODO: After implementing shadow mapping, rethig the neccesity of this block.
 	{
 		return material_ambient_col * light_ambient_col / distance_factor;
-	}
+	}*/
 
 	// Normal of the computed fragment, in camera space
 	vec3 n = normalize(nor);

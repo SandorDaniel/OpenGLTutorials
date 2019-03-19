@@ -40,7 +40,7 @@ struct ColorTexData
 
 struct DepthTexData
 {
-	static constexpr int internal_format_id = GL_DEPTH_COMPONENT16;
+	static constexpr int internal_format_id = GL_DEPTH_COMPONENT;
 	static constexpr int format_id = GL_DEPTH_COMPONENT;
 	static constexpr int got_format_id = GL_DEPTH_COMPONENT;
 	static constexpr int type_id = GL_FLOAT;

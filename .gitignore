@@ -1,1 +1,4 @@
 *.exe
+printedTex.ppm
+printedDepthTex.ppm
+editor.h
