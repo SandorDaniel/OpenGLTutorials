@@ -9,6 +9,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp> // after <glm/glm.hpp>
 
+#include <GLFW/glfw3.h>
+
 #include "InPuts.h"
 #include "Camera.h"
 
@@ -38,8 +40,16 @@ glm::mat4 getView(const Camera& CAM)
 }
 
 
-glm::mat4 getPerspectiveProj(const Camera& CAM, int win_width, int win_height)
+glm::mat4 getPerspectiveProj(const Camera& CAM)
 {
+	if (!CAM.getWin())
+	{
+		throw; // TODO
+	}
+
+	int win_width, win_height;
+	glfwGetWindowSize(CAM.getWin(), &win_width, &win_height);
+
 	return glm::perspective(
 		CAM.getFov(),
 		static_cast<float>(win_width) / static_cast<float>(win_height),
@@ -47,8 +57,16 @@ glm::mat4 getPerspectiveProj(const Camera& CAM, int win_width, int win_height)
 }
 
 
-std::vector<glm::vec3> getFrustum(const Camera& CAM, int win_width, int win_height)
+std::vector<glm::vec3> getFrustum(const Camera& CAM)
 {
+	if (!CAM.getWin())
+	{
+		throw; // TODO
+	}
+
+	int win_width, win_height;
+	glfwGetWindowSize(CAM.getWin(), &win_width, &win_height);
+
 	float near = CAM.getNear();
 	float far  = CAM.getFar();
 
@@ -76,6 +94,19 @@ std::vector<glm::vec3> getFrustum(const Camera& CAM, int win_width, int win_heig
 // TODO: set parameters according to camera data
 glm::mat4 getOrthogonaleProj(const Camera& CAM, const float left, const float right, const float bottom, const float top) // TODO find out if float for left, right, bottom and top is appropriate
 {
+	if (!CAM.getWin())
+	{
+		throw; // TODO
+	}
+
+	int win_width, win_height;
+	glfwGetWindowSize(CAM.getWin(), &win_width, &win_height);
+
+	if (right - left > win_width || top - bottom > win_height)
+	{
+		throw; // TODO
+	}
+
 	return glm::ortho(
 		left, right,
 		bottom, top,

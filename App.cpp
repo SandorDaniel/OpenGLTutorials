@@ -154,6 +154,7 @@ void App::init()
 
 	#pragma region CAMERA SetUp (window, events)
 
+	m_camera.setWin(window);
 	m_camera.setPos(glm::vec3(0.0f, 0.0f, 5.0f));
 	m_camera.setHorizontalAngle(glm::radians(180.0f));
 	m_camera.setVerticalAngle(0);
@@ -281,11 +282,10 @@ void App::render()
 
 	glUseProgram(m_program_shadow_id);
 
-	int win_width, win_height;
-	glfwGetWindowSize(window, &win_width, &win_height);
-
+	// shadow of directional light
 	{
 		Camera cam(light_directional);
+		cam.setWin(window);
 		cam.setPos(glm::vec3(0, 0, 0));
 
 		float thickness;
@@ -293,7 +293,7 @@ void App::render()
 		float width;
 		float height;
 		{
-			std::vector<glm::vec3> v = getFrustum(m_camera, win_width, win_height);
+			std::vector<glm::vec3> v = getFrustum(m_camera);
 
 			glm::mat4 CV = getView(cam);
 			for (int i = 0; i < v.size(); ++i)
@@ -429,10 +429,9 @@ void App::render()
 
 	glUseProgram(m_program_nor_matlight_shadow_mapped_id);
 
-	glfwGetWindowSize(window, &win_width, &win_height);
 	glm::mat4 V = getView(m_camera);
 	glUniformMatrix4fv(m_V_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &V[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);
-	glm::mat4 P = getPerspectiveProj(m_camera, win_width, win_height);
+	glm::mat4 P = getPerspectiveProj(m_camera);
 	glUniformMatrix4fv(m_P_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &P[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_PID, 1, GL_FALSE, &P[0][0]);
 
 	glUniformMatrix4fv(m_shadow_V_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &SV[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_PID, 1, GL_FALSE, &P[0][0]);

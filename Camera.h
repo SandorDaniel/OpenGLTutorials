@@ -10,6 +10,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp> // after <glm/glm.hpp>
 
+class GLFWwindow;
+
 #include "InPuts.h"
 #include "Math.h"
 #include "Light.h"
@@ -20,6 +22,8 @@ class Camera : public PosDirObj // Inheritance is not for polimorfism in this ca
 {
 
 protected:
+
+	GLFWwindow* m_p_win = nullptr;
 
 	float m_near = 1.0f;
 	float m_far  = 100.0f;
@@ -33,6 +37,15 @@ public:
 	}
 	Camera() = default;
 	Camera(const DirectionalLight& LIGHT);
+
+	GLFWwindow* getWin() const
+	{
+		return m_p_win;
+	}
+	void setWin(GLFWwindow* const p_win) // TODO: why do we get a syntax error, if the parameter name is not nearr but near?
+	{
+		m_p_win = p_win;
+	}
 
 	float getNear() const
 	{
@@ -65,9 +78,10 @@ public:
 
 
 glm::mat4 getView(const Camera&);
-glm::mat4 getPerspectiveProj(const Camera&, int win_width, int win_height);
-std::vector<glm::vec3> getFrustum(const Camera& CAM, int win_width, int win_height);
+glm::mat4 getPerspectiveProj(const Camera&);
+std::vector<glm::vec3> getFrustum(const Camera& CAM);
 glm::mat4 getOrthogonaleProj(const Camera& CAM, const float left, const float right, const float bottom, const float top);
+
 
 class InPutObserverCamera final : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer, public InPut::MouseButtons::Observer, public Camera
 {
