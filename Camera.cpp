@@ -144,6 +144,9 @@ void InPutObserverCamera::init(GLFWwindow* window)
 	InPut::Cursor::regist(*this);
 	InPut::Cursor::motionCallback(window, width / 2, height / 2);
 
+	glfwSetMouseButtonCallback(window, InPut::MouseButtons::actionCallback);
+	InPut::MouseButtons::regist(*this);
+
 	glfwSetKeyCallback(window, InPut::KeyBoard::press_or_release_callback);
 	InPut::KeyBoard::getKey(GLFW_KEY_UP).regist(m_observer_up);
 	InPut::KeyBoard::getKey(GLFW_KEY_DOWN).regist(m_observer_down);
@@ -273,13 +276,36 @@ void InPutObserverCamera::upDate(GLFWwindow* window)
 
 void InPutObserverCamera::motionCallBack(GLFWwindow* p_win, double xpos, double ypos)
 {
+	if (m_direction_is_under_controll)
+	{
+		int width, height;
+		glfwGetWindowSize(p_win, &width, &height);
+
+		// Compute new orientation
+		setHorizontalAngle(getHorizontalAngle() + m_mouse_speed * static_cast<float>(width / 2 - xpos));
+		setVerticalAngle(getVerticalAngle() + m_mouse_speed * static_cast<float>(height / 2 - ypos));
+
+		glfwSetCursorPos(p_win, width / 2, height / 2); // Enable unlimited movement, if camera direction is under control.
+	}
+}
+
+void InPutObserverCamera::pressCallBack(GLFWwindow* p_win)
+{
+	glfwSetInputMode(p_win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	int width, height;
 	glfwGetWindowSize(p_win, &width, &height);
+	glfwSetCursorPos(p_win, width / 2, height / 2); // Don't let the camera direction be changed with Dirac-delta
 
-	// Compute new orientation
-	setHorizontalAngle(getHorizontalAngle() + m_mouse_speed * static_cast<float>(width / 2 - xpos));
-	setVerticalAngle(getVerticalAngle() + m_mouse_speed * static_cast<float>(height / 2 - ypos));
+	m_direction_is_under_controll = true;
 }
+
+void InPutObserverCamera::releaseCallBack(GLFWwindow* p_win)
+{
+	glfwSetInputMode(p_win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+	m_direction_is_under_controll = false;
+};
 
 void InPutObserverCamera::scrollCallBack(double yoffset)
 {

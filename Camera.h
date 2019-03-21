@@ -69,7 +69,7 @@ glm::mat4 getPerspectiveProj(const Camera&, int win_width, int win_height);
 std::vector<glm::vec3> getFrustum(const Camera& CAM, int win_width, int win_height);
 glm::mat4 getOrthogonaleProj(const Camera& CAM, const float left, const float right, const float bottom, const float top);
 
-class InPutObserverCamera final : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer, public Camera
+class InPutObserverCamera final : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer, public InPut::MouseButtons::Observer, public Camera
 {
 
 	enum class Direction
@@ -107,6 +107,8 @@ private:
 
 	const float m_speed = 3.0f; // 3 units / second
 	const float m_mouse_speed = 0.005f;
+
+	bool m_direction_is_under_controll = false;
 	
 	KeyObserver m_observer_up, m_observer_down, m_observer_right, m_observer_left;
 
@@ -118,6 +120,8 @@ public:
 	void upDate(GLFWwindow* window);
 
 	virtual void motionCallBack(GLFWwindow* p_win, double xpos, double ypos);
+	virtual void pressCallBack(GLFWwindow* p_win);
+	virtual void releaseCallBack(GLFWwindow* p_win);
 	virtual void scrollCallBack(double yoffset);
 
 };

@@ -13,6 +13,9 @@ namespace InPut
 	std::set<Cursor::Observer*> Cursor::m_set_p_observer{};
 
 
+	std::set<MouseButtons::Observer*> MouseButtons::m_set_p_observer{};
+
+
 	std::set<ScrollBar::Observer*> ScrollBar::m_set_p_observer{};
 
 };

@@ -220,10 +220,6 @@ void App::upDate()
 		}
 	}
 
-	int width, height;
-	glfwGetWindowSize(window, &width, &height);
-	glfwSetCursorPos(window, width / 2, height / 2);
-
 	#pragma endregion
 
 	//camera.upDate(window);
