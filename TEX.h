@@ -122,6 +122,7 @@ class TEX final
 
 		GLuint m_texture_id;
 		mutable GLint m_textureunitnumber = -1;
+		mutable GLint m_textureunitnumber_owned = -1;
 		GLsizei m_width = 0;
 		GLsizei m_height = 0;
 
@@ -153,6 +154,7 @@ class TEX final
 
 				FreeTextureUnitNumbers.push(m_textureunitnumber);
 				m_textureunitnumber = -1;
+				m_textureunitnumber_owned = -1;
 			}
 
 			glDeleteTextures(1, &m_texture_id);
@@ -163,10 +165,12 @@ class TEX final
 
 		AspFreeTEX(AspFreeTEX&& tex) :
 			m_texture_id(tex.m_texture_id),
-			m_textureunitnumber(tex.m_textureunitnumber)
+			m_textureunitnumber(tex.m_textureunitnumber),
+			m_textureunitnumber_owned(tex.m_textureunitnumber_owned)
 		{
 			tex.m_texture_id = 0;
 			tex.m_textureunitnumber = -1;
+			tex.m_textureunitnumber_owned = -1;
 		}
 		AspFreeTEX& operator=(AspFreeTEX&& T)
 		{
@@ -349,6 +353,36 @@ class TEX final
 			m_textureunitnumber = -1;
 		}
 
+		void ownerBind() const
+		{
+			if (!is_class_loaded)
+			{
+				loadClass();
+			}
+
+			if (m_textureunitnumber_owned == -1)
+			{
+				if (!FreeTextureUnitNumbers.empty())
+				{
+					m_textureunitnumber_owned = 0;
+					FreeTextureUnitNumbers.pop();
+				}
+				else
+				{
+					throw; // TODO
+				}
+			}
+
+			// Bind our texture in Texture Unit TextureUnitNumber
+			glActiveTexture(GL_TEXTURE0 + m_textureunitnumber_owned);
+			glBindTexture(GL_TEXTURE_2D, m_texture_id);
+		}
+		void ownerUnBind() const
+		{
+			glActiveTexture(GL_TEXTURE0 + m_textureunitnumber_owned);
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+
 	};
 
 	template<class TexType>
@@ -438,6 +472,17 @@ public:
 		return (m_binding.checkOn(func))(m_tex);
 	}
 
+	void ownerBind() const
+	{
+		auto func = m_binding.turnOn(static_cast<std::function<void(const AspFreeTEX&)>>(&AspFreeTEX::ownerBind));
+		return (m_loading.checkOn(func))(m_tex);
+	}
+	void ownerUnBind() const
+	{
+		std::function<void(const AspFreeTEX&)> func = m_binding.turnOff(static_cast<std::function<void(const AspFreeTEX&)>>(&AspFreeTEX::ownerUnBind));
+		return (m_binding.checkOn(func))(m_tex);
+	}
+
 };
 
 
@@ -492,6 +537,7 @@ void swap(typename TEX<TexType>::AspFreeTEX& t1, typename TEX<TexType>::AspFreeT
 
 	swap(t1.m_texture_id, t2.m_texture_id);
 	swap(t1.m_textureunitnumber, t2.m_textureunitnumber);
+	swap(t1.m_textureunitnumber_owned, t2.m_textureunitnumber_owned);
 }
 
 template<class TexType>
