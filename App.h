@@ -73,7 +73,6 @@ class App final
 
 	TEX<DepthTexData> m_tex_depth;
 	FBO fbo;
-
 	GLint m_program_shadow_id;
 
 	GLint m_shadow_M_shadow_id;

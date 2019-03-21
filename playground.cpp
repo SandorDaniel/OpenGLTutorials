@@ -175,10 +175,6 @@ int main( void )
 	// Set the mouse at the center of the screen
 	//glfwPollEvents(); // TODO: Is it really necessary?
 	glfwSetCursorPos(window, WIDTH / 2, HEIGHT / 2);
-
-	App app(window);
-
-	app.init();
 	 
 	glEnable(GL_DEPTH_TEST); // Enable depth test
 	glDepthFunc(GL_LESS); // Accept fragment if it closer to the camera than the former one
@@ -187,6 +183,10 @@ int main( void )
 	glCullFace(GL_BACK); // ... ie let the GPU check if the camera is behind => 2 times less triangles on average
 	
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f); // Dark blue background
+
+	App app(window);
+
+	app.init();
 
 	do{
 		#ifdef sd_debugger

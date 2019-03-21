@@ -353,7 +353,7 @@ class TEX final
 			m_textureunitnumber = -1;
 		}
 
-		void ownerBind() const
+		void ownerBind(GLint channel_number) const
 		{
 			if (!is_class_loaded)
 			{
@@ -364,7 +364,7 @@ class TEX final
 			{
 				if (!FreeTextureUnitNumbers.empty())
 				{
-					m_textureunitnumber_owned = 0;
+					m_textureunitnumber_owned = channel_number;//FreeTextureUnitNumbers.top();
 					FreeTextureUnitNumbers.pop();
 				}
 				else
@@ -381,6 +381,10 @@ class TEX final
 		{
 			glActiveTexture(GL_TEXTURE0 + m_textureunitnumber_owned);
 			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+		GLint getOwnedChannel() const
+		{
+			return m_textureunitnumber_owned;
 		}
 
 	};
@@ -472,15 +476,17 @@ public:
 		return (m_binding.checkOn(func))(m_tex);
 	}
 
-	void ownerBind() const
+	void ownerBind(GLint channel_number) const // TODO: aspects...
 	{
-		auto func = m_binding.turnOn(static_cast<std::function<void(const AspFreeTEX&)>>(&AspFreeTEX::ownerBind));
-		return (m_loading.checkOn(func))(m_tex);
+		m_tex.ownerBind(channel_number);
 	}
-	void ownerUnBind() const
+	void ownerUnBind() const // TODO: aspects...
 	{
-		std::function<void(const AspFreeTEX&)> func = m_binding.turnOff(static_cast<std::function<void(const AspFreeTEX&)>>(&AspFreeTEX::ownerUnBind));
-		return (m_binding.checkOn(func))(m_tex);
+		m_tex.ownerUnBind();
+	}
+	GLint getOwnedChannel() const // TODO: aspects...
+	{
+		return m_tex.getOwnedChannel();
 	}
 
 };

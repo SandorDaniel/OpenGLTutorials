@@ -57,7 +57,7 @@ FBO& FBO::operator=(FBO&& fbo)
 }
 
 
-void FBO::bind(GLenum target = GL_DRAW_FRAMEBUFFER) const
+void FBO::bind(GLenum target) const
 {
 	if (target != GL_FRAMEBUFFER && target != GL_DRAW_FRAMEBUFFER && target != GL_READ_FRAMEBUFFER)
 	{
@@ -73,7 +73,9 @@ void FBO::bind(GLenum target = GL_DRAW_FRAMEBUFFER) const
 	glViewport(0, 0, m_width, m_height);
 
 	glBindFramebuffer(target, m_id);
-	glDrawBuffer(GL_NONE);
+
+	glDrawBuffer(GL_NONE); // TODO let it be attacment-dependent
+	glReadBuffer(GL_NONE); // TODO let it be attacment-dependent
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{

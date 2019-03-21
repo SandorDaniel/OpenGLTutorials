@@ -176,29 +176,20 @@ void App::init()
 	m_M_nor_matlight_shadow_mapped_id = glGetUniformLocation(m_program_nor_matlight_shadow_mapped_id, "M");
 	m_V_nor_matlight_shadow_mapped_id = glGetUniformLocation(m_program_nor_matlight_shadow_mapped_id, "V");
 	m_P_nor_matlight_shadow_mapped_id = glGetUniformLocation(m_program_nor_matlight_shadow_mapped_id, "P");
-	m_cam_pos_nor_matlight_shadow_mapped_id = glGetUniformLocation(m_program_nor_matlight_shadow_mapped_id, "cam_pos");
 	m_tex_matdiff_nor_matlight_shadow_mapped_id = glGetUniformLocation(m_program_nor_matlight_shadow_mapped_id, "tex_matdiff_sampler");
 	m_tex_matspec_nor_matlight_shadow_mapped_id = glGetUniformLocation(m_program_nor_matlight_shadow_mapped_id, "tex_matspec_sampler");
 	m_tex_norm_nor_matlight_shadow_mapped_id = glGetUniformLocation(m_program_nor_matlight_shadow_mapped_id, "tex_norm_sampler");
+	m_tex_shadow_nor_matlight_shadow_mapped_id = glGetUniformLocation(m_program_nor_matlight_shadow_mapped_id, "shadowMap");
 	m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id = glGetUniformLocation(m_program_nor_matlight_shadow_mapped_id, "is_model_nonuniform_scaled");
 	PositionalLight::getUniformLocationsForAll(m_program_nor_matlight_shadow_mapped_id);
 	DirectionalLight::getUniformLocationsForAll(m_program_nor_matlight_shadow_mapped_id);
 	m_shadow_V_nor_matlight_shadow_mapped_id = glGetUniformLocation(m_program_nor_matlight_shadow_mapped_id, "shadow_V");
 	m_shadow_P_nor_matlight_shadow_mapped_id = glGetUniformLocation(m_program_nor_matlight_shadow_mapped_id, "shadow_P");
-	m_tex_shadow_nor_matlight_shadow_mapped_id = glGetUniformLocation(m_program_nor_matlight_shadow_mapped_id, "shadowMap");
+	m_cam_pos_nor_matlight_shadow_mapped_id = glGetUniformLocation(m_program_nor_matlight_shadow_mapped_id, "cam_pos");
 
 	#pragma endregion
 
-	#pragma region FBO
-
-	int win_width, win_height;
-	glfwGetWindowSize(window, &win_width, &win_height);
-	m_tex_depth.alloc(win_width, win_height);
-	//m_tex_depth.alloc(40, 40);
-
-	//fbo.attach(m_tex_depth);
-
-	#pragma endregion
+	#pragma region Shadow And FBO
 
 	m_program_shadow_id = LoadShaders(
 		std::vector<const char*>{"ShadowVertexShader.vertexshader"},
@@ -207,6 +198,12 @@ void App::init()
 	m_shadow_M_shadow_id = glGetUniformLocation(m_program_shadow_id, "M");
 	m_shadow_V_shadow_id = glGetUniformLocation(m_program_shadow_id, "V");
 	m_shadow_P_shadow_id = glGetUniformLocation(m_program_shadow_id, "P");
+	
+	m_tex_depth.alloc(1024, 1024);
+
+	fbo.attach(m_tex_depth);
+
+	#pragma endregion
 }
 
 
@@ -270,11 +267,11 @@ void App::upDate()
 	light_positional.setSpecularCol(0.0001f * glm::vec3(1.0f, 1.0f, 1.0f));
 	light_positional.setAmbientCol (1.0f    * glm::vec3(1.0f, 1.0f, 1.0f));
 
-	light_directional.setPower(1.0f);
+	light_directional.setPower(3.0f);
 	light_directional.setDir(glm::vec3(-1.0f, -1.0f, -1.0f));
-	light_directional.setDiffuseCol (1.0f   * glm::vec3(1.0f, 1.0f, 1.0f));
-	light_directional.setSpecularCol(1.0f   * glm::vec3(1.0f, 1.0f, 1.0f));
-	light_directional.setAmbientCol (100.0f * glm::vec3(1.0f, 1.0f, 1.0f));
+	light_directional.setDiffuseCol (1.0f   * glm::vec3(1.0f, 1.0f, 0.8f));
+	light_directional.setSpecularCol(0.7f   * glm::vec3(1.0f, 1.0f, 0.8f));
+	light_directional.setAmbientCol (20.0f  * glm::vec3(1.0f, 1.0f, 0.8f));
 
 	#pragma endregion
 }
@@ -284,180 +281,151 @@ void App::render()
 {
 	#pragma region shadow rendering
 
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	fbo.bind();
+
+	glUseProgram(m_program_shadow_id);
+
+	int win_width, win_height;
+	glfwGetWindowSize(window, &win_width, &win_height);
 
 	{
-		fbo.attach(m_tex_depth);
-		fbo.bind(GL_FRAMEBUFFER);
+		Camera cam(light_directional);
+		cam.setPos(glm::vec3(0, 0, 0));
 
-		glUseProgram(m_program_shadow_id);
-
-		int win_width, win_height;
-		glfwGetWindowSize(window, &win_width, &win_height);
-
+		float thickness;
+		glm::vec3 position;
+		float width;
+		float height;
 		{
-			//Camera cam(light_directional);
-			//cam.setPos(glm::vec3(0, 0, 0));
+			std::vector<glm::vec3> v = getFrustum(m_camera, win_width, win_height);
 
-			//float thickness;
-			//glm::vec3 position;
-			//float width;
-			//float height;
-			//{
-			//	std::vector<glm::vec3> v = getFrustum(m_camera, win_width, win_height);
+			glm::mat4 CV = getView(cam);
+			for (int i = 0; i < v.size(); ++i)
+			{
+				v[i] = glm::vec3(CV * glm::vec4(v[i], 1.0f));
+			}
 
-			//	glm::mat4 CV = getView(cam);
-			//	for (int i = 0; i < v.size(); ++i)
-			//	{
-			//		v[i] = glm::vec3(CV * glm::vec4(v[i], 1.0f));
-			//	}
+			float left = v[0].x;
+			for (int i = 1; i < v.size(); ++i)
+			{
+				if (v[i].x < left)
+				{
+					left = v[i].x;
+				}
+			}
 
-			//	float left = v[0].x;
-			//	for (int i = 1; i < v.size(); ++i)
-			//	{
-			//		if (v[i].x < left)
-			//		{
-			//			left = v[i].x;
-			//		}
-			//	}
+			float right = v[0].x;
+			for (int i = 1; i < v.size(); ++i)
+			{
+				if (v[i].x > right)
+				{
+					right = v[i].x;
+				}
+			}
 
-			//	float right = v[0].x;
-			//	for (int i = 1; i < v.size(); ++i)
-			//	{
-			//		if (v[i].x > right)
-			//		{
-			//			right = v[i].x;
-			//		}
-			//	}
+			float bottom = v[0].y;
+			for (int i = 1; i < v.size(); ++i)
+			{
+				if (v[i].y < bottom)
+				{
+					bottom = v[i].y;
+				}
+			}
 
-			//	float bottom = v[0].y;
-			//	for (int i = 1; i < v.size(); ++i)
-			//	{
-			//		if (v[i].y < bottom)
-			//		{
-			//			bottom = v[i].y;
-			//		}
-			//	}
+			float top = v[0].y;
+			for (int i = 1; i < v.size(); ++i)
+			{
+				if (v[i].y > top)
+				{
+					top = v[i].y;
+				}
+			}
 
-			//	float top = v[0].y;
-			//	for (int i = 1; i < v.size(); ++i)
-			//	{
-			//		if (v[i].y > top)
-			//		{
-			//			top = v[i].y;
-			//		}
-			//	}
+			float near = v[0].z;
+			for (int i = 1; i < v.size(); ++i)
+			{
+				if (v[i].z > near)
+				{
+					near = v[i].z;
+				}
+			}
 
-			//	float near = v[0].z;
-			//	for (int i = 1; i < v.size(); ++i)
-			//	{
-			//		if (v[i].z > near)
-			//		{
-			//			near = v[i].z;
-			//		}
-			//	}
+			float far = v[0].z;
+			for (int i = 1; i < v.size(); ++i)
+			{
+				if (v[i].z < far)
+				{
+					far = v[i].z;
+				}
+			}
 
-			//	float far = v[0].z;
-			//	for (int i = 1; i < v.size(); ++i)
-			//	{
-			//		if (v[i].z < far)
-			//		{
-			//			far = v[i].z;
-			//		}
-			//	}
+			width = right - left;
+			height = top - bottom;
+			thickness = near - far;
 
-			//	width = right - left;
-			//	height = top - bottom;
-			//	thickness = near - far;
-
-			//	position = glm::vec3(glm::inverse(CV) * glm::vec4((right + left) / 2.0f, (top + bottom) / 2.0f, near, 1.0f));
-			//	sdd::dout << glm::vec4((right + left) / 2.0f, (top + bottom) / 2.0f, near, 1.0f) << std::endl;
-			//}
-
-			//cam.setPos(position);
-			//cam.setNear(0.0f);
-			//cam.setFar(thickness);
-
-			//SV = getView(cam);
-			//SP = getOrthogonaleProj(cam, -width / 2.0f, width / 2.0f, -height / 2.0f, height / 2.0f);
-
-			SV = glm::lookAt(
-				glm::vec3(5, 5, 5),           // Camera is here
-				glm::vec3(0, 0, 0), // and looks here : at the same position, plus "direction"
-				glm::vec3(0, 1, 0)                  // Head is up (set to 0,-1,0 to look upside-down)
-			);
-			SP = glm::ortho(
-				-10.0f,   10.0f,
-				-10.0f,   10.0f,
-				 -20.0f, 20.0f);
+			position = glm::vec3(glm::inverse(CV) * glm::vec4((right + left) / 2.0f, (top + bottom) / 2.0f, near, 1.0f));
 		}
 
-		m_vao_cilinder.bind();
+		cam.setPos(position);
+		cam.setNear(-10.0f);
+		cam.setFar(thickness);
 
-		glUniformMatrix4fv(m_shadow_V_shadow_id, 1, GL_FALSE, &SV[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);
-		glUniformMatrix4fv(m_shadow_P_shadow_id, 1, GL_FALSE, &SP[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_PID, 1, GL_FALSE, &P[0][0]);
-
-		glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_horizontal_cilinder_contain_nonuniform_scaling_horizontal_cilinder ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0);
-		glUniformMatrix4fv(m_shadow_M_shadow_id, 1, GL_FALSE, &m_M_horizontal_cilinder[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M[0][0]);
-
-		//// Draw the triangle !
-		//glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
-
-		// Draw the triangles !
-		glDrawElements(
-			GL_TRIANGLES,                        // mode
-			m_ibo_cilinder.getElementCount(),    // count
-			GL_UNSIGNED_SHORT,                   // type of indices
-			(void*)0                             // element array buffer offset
-		);
-
-		glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_vertical_cilinder_contain_nonuniform_scaling_horizontal_cilinder ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
-		glUniformMatrix4fv(m_shadow_M_shadow_id, 1, GL_FALSE, &m_M_vertical_cilinder[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M2[0][0]);
-
-		//// Draw the triangle !
-		//glDrawArrays(GL_TRIANGLES, 0, m_vbo_pos.getElementCount()); // Starting from vertex 0; 3 vertices total -> 1 triangle
-
-		// Draw the triangles !
-		glDrawElements(
-			GL_TRIANGLES,                        // mode
-			m_ibo_cilinder.getElementCount(),    // count
-			GL_UNSIGNED_SHORT,                   // type of indices
-			(void*)0                             // element array buffer offset
-		);
-
-		m_vao_cilinder.unBind();
-
-		m_vao_plane.bind();
-
-		glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_horizontal_plane_contain_nonuniform_scaling ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
-		glUniformMatrix4fv(m_shadow_M_shadow_id, 1, GL_FALSE, &m_M_horizontal_plane[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M[0][0]);
-
-		// Draw the triangles !
-		glDrawElements(
-			GL_TRIANGLES,                     // mode
-			m_ibo_plane.getElementCount(),    // count
-			GL_UNSIGNED_SHORT,                // type of indices
-			(void*)0                          // element array buffer offset
-		);
-
-		glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_horizontal_plane_contain_nonuniform_scaling ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
-		glUniformMatrix4fv(m_shadow_M_shadow_id, 1, GL_FALSE, &m_M_vertical_plane[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M2[0][0]);
-
-		// Draw the triangles !
-		glDrawElements(
-			GL_TRIANGLES,                     // mode
-			m_ibo_plane.getElementCount(),    // count
-			GL_UNSIGNED_SHORT,                // type of indices
-			(void*)0                          // element array buffer offset
-		);
-
-		m_vao_plane.unBind();
-
-		fbo.unBind();
-		fbo.detach(m_tex_depth);
+		SV = getView(cam);
+		SP = getOrthogonaleProj(cam, -width / 2.0f, width / 2.0f, -height / 2.0f, height / 2.0f);
 	}
+
+	m_vao_cilinder.bind();
+
+	glUniformMatrix4fv(m_shadow_V_shadow_id, 1, GL_FALSE, &SV[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);
+	glUniformMatrix4fv(m_shadow_P_shadow_id, 1, GL_FALSE, &SP[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_PID, 1, GL_FALSE, &P[0][0]);
+
+	glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_horizontal_cilinder_contain_nonuniform_scaling_horizontal_cilinder ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M_contain_nonuniform_scaling ? 1 : 0);
+	glUniformMatrix4fv(m_shadow_M_shadow_id, 1, GL_FALSE, &m_M_horizontal_cilinder[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M[0][0]);
+
+	glDrawElements(
+		GL_TRIANGLES,                        // mode
+		m_ibo_cilinder.getElementCount(),    // count
+		GL_UNSIGNED_SHORT,                   // type of indices
+		(void*)0                             // element array buffer offset
+	);
+
+	glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_vertical_cilinder_contain_nonuniform_scaling_horizontal_cilinder ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
+	glUniformMatrix4fv(m_shadow_M_shadow_id, 1, GL_FALSE, &m_M_vertical_cilinder[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M2[0][0]);
+
+	glDrawElements(
+		GL_TRIANGLES,                        // mode
+		m_ibo_cilinder.getElementCount(),    // count
+		GL_UNSIGNED_SHORT,                   // type of indices
+		(void*)0                             // element array buffer offset
+	);
+
+	m_vao_cilinder.unBind();
+
+	m_vao_plane.bind();
+
+	glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_horizontal_plane_contain_nonuniform_scaling ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
+	glUniformMatrix4fv(m_shadow_M_shadow_id, 1, GL_FALSE, &m_M_horizontal_plane[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M[0][0]);
+
+	glDrawElements(
+		GL_TRIANGLES,                     // mode
+		m_ibo_plane.getElementCount(),    // count
+		GL_UNSIGNED_SHORT,                // type of indices
+		(void*)0                          // element array buffer offset
+	);
+
+	glUniform1i(m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id, m_does_m_M_horizontal_plane_contain_nonuniform_scaling ? 1 : 0); // DSA version: glProgramUniform1i(m_programID, m_does_model_transformation_contain_nonuniform_scalingID, m_does_m_M2_contain_nonuniform_scaling ? 1 : 0);
+	glUniformMatrix4fv(m_shadow_M_shadow_id, 1, GL_FALSE, &m_M_vertical_plane[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_MID, 1, GL_FALSE, &m_M2[0][0]);
+
+	glDrawElements(
+		GL_TRIANGLES,                     // mode
+		m_ibo_plane.getElementCount(),    // count
+		GL_UNSIGNED_SHORT,                // type of indices
+		(void*)0                          // element array buffer offset
+	);
+
+	m_vao_plane.unBind();
+
+	fbo.unBind();
 
 	#pragma endregion
 
@@ -465,7 +433,6 @@ void App::render()
 
 	glUseProgram(m_program_nor_matlight_shadow_mapped_id);
 
-	int win_width, win_height;
 	glfwGetWindowSize(window, &win_width, &win_height);
 	glm::mat4 V = getView(m_camera);
 	glUniformMatrix4fv(m_V_nor_matlight_shadow_mapped_id, 1, GL_FALSE, &V[0][0]); // DSA version: glProgramUniformMatrix4fv(m_programID, m_VID, 1, GL_FALSE, &V[0][0]);
@@ -481,8 +448,8 @@ void App::render()
 	glUniform1i(m_tex_matspec_nor_matlight_shadow_mapped_id, m_tex_matspec_wall);
 	m_tex_nor_wall.bind();
 	glUniform1i(m_tex_norm_nor_matlight_shadow_mapped_id, m_tex_nor_wall);
-	m_tex_depth.bind();
-	glUniform1i(m_tex_shadow_nor_matlight_shadow_mapped_id, m_tex_depth);
+	m_tex_depth.ownerBind(0);
+	glUniform1i(m_tex_shadow_nor_matlight_shadow_mapped_id, m_tex_depth.getOwnedChannel());
 
 	PositionalLight::assignUniformsForAll();
 	DirectionalLight::assignUniformsForAll();
@@ -550,7 +517,7 @@ void App::render()
 	m_tex_matdiff_wall.unBind();
 	m_tex_matspec_wall.unBind();
 	m_tex_nor_wall.unBind();
-	m_tex_depth.unBind();
+	m_tex_depth.ownerUnBind();
 
 	#pragma endregion
 }
@@ -569,4 +536,5 @@ void App::afterScreen()
 void App::clean()
 {
 	glDeleteProgram(m_program_nor_matlight_shadow_mapped_id);
+	glDeleteProgram(m_program_shadow_id);
 }

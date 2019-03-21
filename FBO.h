@@ -72,7 +72,7 @@ public:
 		return m_id;
 	}
 
-	void bind(GLenum target) const;
+	void bind(GLenum target = GL_FRAMEBUFFER) const;
 	void unBind() const
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -88,19 +88,7 @@ public:
 
 		glBindFramebuffer(GL_FRAMEBUFFER, m_id);
 
-
-		//static constexpr int internal_format_id = GL_DEPTH_COMPONENT16;
-		//static constexpr int format_id = GL_DEPTH_COMPONENT;
-		//static constexpr int got_format_id = GL_DEPTH_COMPONENT;
-		//static constexpr int type_id = GL_FLOAT;
-		//static constexpr int attachment_id = GL_DEPTH_ATTACHMENT;
-		//static constexpr int component_count = 1;
-		//glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-		//glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tex, 0);
-
 		glFramebufferTexture2D(GL_FRAMEBUFFER, TexType::attachment_id, GL_TEXTURE_2D, tex, 0);
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, bound_fbo);
 
@@ -112,7 +100,6 @@ public:
 	{
 		GLint bound_fbo; // We want to live every state to be the same...
 		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &bound_fbo);
-
 		glBindFramebuffer(GL_FRAMEBUFFER, m_id);
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, TexType::attachment_id, GL_TEXTURE_2D, 0, 0);
