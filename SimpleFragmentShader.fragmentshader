@@ -237,6 +237,14 @@ void main()
 {
 	vec3 color = vec3(0.0f, 0.0f, 0.0f);
 
+	//float visibility = texture(shadowMap, vec3(out_vert_shadow.xy, out_vert_shadow.z / out_vert_shadow.w));
+
+	float visibility = 1.0;
+	if(out_vert_shadow.z / out_vert_shadow.w > texture(shadowMap, out_vert_shadow.xy / out_vert_shadow.w).r + 0.01f)
+	{
+	   visibility = 0.0f;
+	}
+
 	for(int i = 0; i < num_of_positional_lights; ++i)
 	{
 		color += colFromPositionalLightData(
@@ -244,8 +252,8 @@ void main()
 					positional_light_dir[i],
 					positional_light_angle_in_radians[i],
 					positional_light_power[i],
-					positional_light_diffuse_col[i],
-					positional_light_specular_col[i],
+					visibility * positional_light_diffuse_col[i],
+					visibility * positional_light_specular_col[i],
 					positional_light_ambient_col[i],
 					out_vert_pos,
 					out_vert_TBN[2],
@@ -256,23 +264,13 @@ void main()
 					cam_pos);
 	}
 
-	//float visibility = texture(shadowMap, vec3(out_vert_shadow.xy, out_vert_shadow.z / out_vert_shadow.w));
-
-	float visibility = 1.0;
-	if((out_vert_shadow.z)/out_vert_shadow.w >= texture(shadowMap, out_vert_shadow.xy).r + 0.01f)
-	{
-	   visibility = 0.1f;
-	}
-
-	//float visibility = texture( shadowMap, vec3(out_vert_shadow.xy, (out_vert_shadow.z)/out_vert_shadow.w) );
-
 	for(int i = 0; i < num_of_directional_lights; ++i)
 	{
 		color += colFromDirectionalLightData(
 					directional_light_dir[i],
 					directional_light_power[i],
-					visibility * directional_light_diffuse_col[i],
-					visibility * directional_light_specular_col[i],
+					directional_light_diffuse_col[i],
+					directional_light_specular_col[i],
 					directional_light_ambient_col[i],
 					out_vert_pos,
 					out_vert_TBN[2],

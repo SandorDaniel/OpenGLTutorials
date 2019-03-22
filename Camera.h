@@ -36,7 +36,7 @@ public:
 	{
 	}
 	Camera() = default;
-	Camera(const DirectionalLight& LIGHT);
+	Camera(const Light& LIGHT);
 
 	GLFWwindow* getWin() const
 	{

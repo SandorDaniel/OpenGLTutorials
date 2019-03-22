@@ -17,7 +17,7 @@
 
 
 
-Camera::Camera(const DirectionalLight& LIGHT)
+Camera::Camera(const Light& LIGHT)
 {
 	const glm::vec2 HOR_VER = getVerticalAndHorizontalAngles(LIGHT.getDir());
 	setHorizontalAngle(HOR_VER.x);

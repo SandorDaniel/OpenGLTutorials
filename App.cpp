@@ -256,15 +256,15 @@ void App::upDate()
 
 	#pragma region LIGHTS UpDate
 
-	light_positional.setPower(0.0f * 10000000.0f);
-	light_positional.setPos(glm::vec3(5.0f, 5.0f, 5.0f));
+	light_positional.setPower(40000.0f);
+	light_positional.setPos(glm::vec3(0.0f, 5.0f, 5.0f));
 	light_positional.setAngleInRadians(glm::radians<float>(6));
-	light_positional.setDir(glm::vec3(-1.0f, -1.0f, -1.0f));
+	light_positional.setDir(glm::vec3(0.0f, -1.0f, -1.0f));
 	light_positional.setDiffuseCol (0.01f   * glm::vec3(1.0f, 1.0f, 1.0f));
 	light_positional.setSpecularCol(0.0001f * glm::vec3(1.0f, 1.0f, 1.0f));
 	light_positional.setAmbientCol (1.0f    * glm::vec3(1.0f, 1.0f, 1.0f));
 
-	light_directional.setPower(3.0f);
+	light_directional.setPower(0.0f * 3.0f);
 	light_directional.setDir(glm::vec3(-1.0f, -1.0f, -1.0f));
 	light_directional.setDiffuseCol (1.0f   * glm::vec3(1.0f, 1.0f, 0.8f));
 	light_directional.setSpecularCol(0.7f   * glm::vec3(1.0f, 1.0f, 0.8f));
@@ -368,6 +368,42 @@ void App::render()
 
 		SV = getView(cam);
 		SP = getOrthogonaleProj(cam, -width / 2.0f, width / 2.0f, -height / 2.0f, height / 2.0f);
+	}
+
+	// shadow of positional light
+	{
+		Camera cam(light_positional);
+		cam.setWin(window);
+		cam.setPos(light_positional.getPos());
+		cam.setFov(light_positional.getAngleInRadians()); // TODO: handle the case if window height is bigger than window width
+
+		float thickness;
+		{
+			std::vector<glm::vec3> v = getFrustum(m_camera);
+
+			glm::mat4 CV = getView(cam);
+			for (int i = 0; i < v.size(); ++i)
+			{
+				v[i] = glm::vec3(CV * glm::vec4(v[i], 1.0f));
+			}
+
+			float far = v[0].z;
+			for (int i = 1; i < v.size(); ++i)
+			{
+				if (v[i].z < far)
+				{
+					far = v[i].z;
+				}
+			}
+
+			thickness = far;
+		}
+
+		cam.setNear(1.0f);
+		cam.setFar(thickness);
+
+		SV = getView(cam);
+		SP = getPerspectiveProj(cam);
 	}
 
 	m_vao_cilinder.bind();
