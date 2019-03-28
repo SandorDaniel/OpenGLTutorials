@@ -225,6 +225,7 @@ int main( void )
 	#pragma region DEBUG: std::cin.get();
 
 	#ifdef sd_debugger
+	sdd::dout << "Hit Enter to close window." << std::endl;
 	std::cin.get();
 	#endif
 
