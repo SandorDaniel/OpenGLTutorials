@@ -78,7 +78,7 @@ class VBO final
 
 public:
 
-	class VBOIsNotLoaded : public std::exception
+	class VBOIsNotLoaded final : public std::exception
 	{
 		const char* what() const noexcept { return "You should have loaded the VBO object befor binding it to the VAO object."; }
 	};

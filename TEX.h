@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <vector>
 #include <type_traits>
+#include <fstream>
+#include <iostream>
 
 // TODO: After making loadBMP_custom and loadDDS(...) functions to be C++-like codes, change the three headers below to the appropriate C++ headers.
 #include <stdio.h>
@@ -16,15 +18,72 @@
 
 
 
-enum class TexType
+struct ColorTexData
 {
-	COLOR,
-	DEPTH
+	static constexpr int internal_format_id = GL_RGB;
+	static constexpr int format_id = GL_BGR;
+	static constexpr int got_format_id = GL_RGB;
+	static constexpr int type_id = GL_UNSIGNED_BYTE;
+	static constexpr int attachment_id = GL_COLOR_ATTACHMENT0;
+	static constexpr int component_count = 3;
+	
+	using type = GLubyte;
+
+	static void setTextureSampling()
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	}
 };
 
-int getFormat(TexType type);
-int getAttachment(TexType type);
-int getComponentCount(TexType type);
+struct DepthTexData
+{
+	static constexpr int internal_format_id = GL_DEPTH_COMPONENT;
+	static constexpr int format_id = GL_DEPTH_COMPONENT;
+	static constexpr int got_format_id = GL_DEPTH_COMPONENT;
+	static constexpr int type_id = GL_FLOAT;
+	static constexpr int attachment_id = GL_DEPTH_ATTACHMENT;
+	static constexpr int component_count = 1;
+
+	using type = GLfloat;
+
+	static void setTextureSampling()
+	{
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
+
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+
+
+
+
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+	}
+};
 
 
 struct BMPInRAM
@@ -35,7 +94,6 @@ struct BMPInRAM
 
 	void load(const char* const filepath); // TODO changing unsigned char to GLbyte or something like this everywhere where it is appropriate
 };
-
 
 struct DDSInRAM
 {
@@ -49,11 +107,11 @@ struct DDSInRAM
 };
 
 
-template<TexType type>
-class TEX
+template<class TexType>
+class TEX final
 {
 
-	class AspFreeTEX
+	class AspFreeTEX final
 	{
 
 		static std::priority_queue<GLint, std::vector<GLint>, std::less<typename std::vector<GLint>::value_type>> FreeTextureUnitNumbers;
@@ -64,13 +122,14 @@ class TEX
 
 		GLuint m_texture_id;
 		mutable GLint m_textureunitnumber = -1;
+		mutable GLint m_textureunitnumber_owned = -1;
 		GLsizei m_width = 0;
 		GLsizei m_height = 0;
 
 	public:
 
-		template<TexType type>
-		friend void swap(typename TEX<type>::AspFreeTEX& t1, typename TEX<type>::AspFreeTEX& t2);
+		template<class TexType>
+		friend void swap(typename TEX<TexType>::AspFreeTEX& t1, typename TEX<TexType>::AspFreeTEX& t2);
 
 		AspFreeTEX()
 		{
@@ -95,6 +154,7 @@ class TEX
 
 				FreeTextureUnitNumbers.push(m_textureunitnumber);
 				m_textureunitnumber = -1;
+				m_textureunitnumber_owned = -1;
 			}
 
 			glDeleteTextures(1, &m_texture_id);
@@ -105,10 +165,12 @@ class TEX
 
 		AspFreeTEX(AspFreeTEX&& tex) :
 			m_texture_id(tex.m_texture_id),
-			m_textureunitnumber(tex.m_textureunitnumber)
+			m_textureunitnumber(tex.m_textureunitnumber),
+			m_textureunitnumber_owned(tex.m_textureunitnumber_owned)
 		{
 			tex.m_texture_id = 0;
 			tex.m_textureunitnumber = -1;
+			tex.m_textureunitnumber_owned = -1;
 		}
 		AspFreeTEX& operator=(AspFreeTEX&& T)
 		{
@@ -130,7 +192,7 @@ class TEX
 
 		void loadBMP(const BMPInRAM& IMAGE)
 		{
-			static_assert(type == TexType::COLOR, "Loading BMP file data into depth texture is pointless and so is not allowed.");
+			static_assert(TexType::internal_format_id == TexType::internal_format_id, "Loading BMP file data into depth texture is pointless and so is not allowed.");
 
 			// TODO: make this code to be C++-like code
 
@@ -141,7 +203,7 @@ class TEX
 			glBindTexture(GL_TEXTURE_2D, m_texture_id);
 
 			// Give the image to OpenGL
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, IMAGE.m_width, IMAGE.m_height, 0, GL_BGR, GL_UNSIGNED_BYTE, &IMAGE.bytes[0]);
+			glTexImage2D(GL_TEXTURE_2D, 0, TexType::internal_format_id, IMAGE.m_width, IMAGE.m_height, 0, TexType::format_id, TexType::type_id, &IMAGE.bytes[0]);
 
 			// Poor filtering, or ...
 			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -161,7 +223,7 @@ class TEX
 		}
 		void loadDDS(const DDSInRAM& IMAGE) // Load a .DDS file using GLFW's own loader
 		{
-			static_assert(type == TexType::COLOR, "Loading DDS file data into depth texture is pointless and so is not allowed.");
+			static_assert(TexType::internal_format_id == TexType::internal_format_id, "Loading BMP file data into depth texture is pointless and so is not allowed.");
 
 			const int FOURCC_DXT1 = 0x31545844; // Equivalent to "DXT1" in ASCII
 			const int FOURCC_DXT3 = 0x33545844; // Equivalent to "DXT3" in ASCII
@@ -226,40 +288,26 @@ class TEX
 			m_width = TEXT_WIDTH;
 			m_height = TEXT_HEIGHT;
 
-			switch (type)
-			{
-			case TexType::COLOR:
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEXT_WIDTH, TEXT_HEIGHT, 0, GL_BGR, GL_UNSIGNED_BYTE, nullptr); // NULL - we are only allocating memory and not filling it
-				glBindTexture(GL_TEXTURE_2D, 0);
-				break;
-			case TexType::DEPTH:
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, TEXT_WIDTH, TEXT_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr); // NULL - we are only allocating memory and not filling it
-				glBindTexture(GL_TEXTURE_2D, 0);
-				break;
-			}
+			TexType::setTextureSampling();
+			glTexImage2D(GL_TEXTURE_2D, 0, TexType::internal_format_id, TEXT_WIDTH, TEXT_HEIGHT, 0, TexType::format_id, TexType::type_id, nullptr); // NULL - we are only allocating memory and not filling it
+			glBindTexture(GL_TEXTURE_2D, 0);
 
 			glBindTexture(GL_TEXTURE_2D, bound_tex);
 		}
 
-		explicit operator std::vector<unsigned char>() const
+		std::vector<typename TexType::type> getElements() const
 		{
 			GLint bound_tex; // We want to live every state to be the same...
 			glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound_tex);
 			glBindTexture(GL_TEXTURE_2D, m_texture_id);
 
-			unsigned char* const P_texture_data = new unsigned char[m_width * m_height * ::getComponentCount(type)];
-			glGetTexImage(GL_TEXTURE_2D, 0, getFormat(type), GL_UNSIGNED_BYTE, P_texture_data);
+			TexType::type* const P_texture_data = new TexType::type[m_width * m_height * TexType::component_count];
+			glGetTexImage(GL_TEXTURE_2D, 0, TexType::got_format_id, TexType::type_id, P_texture_data);
 
 			glBindTexture(GL_TEXTURE_2D, 0); // TODO: Is this row neccesarry?
 			glBindTexture(GL_TEXTURE_2D, bound_tex);
 
-			return std::vector<unsigned char>(P_texture_data, P_texture_data + m_width * m_height * ::getComponentCount(type));
+			return std::vector<TexType::type>(P_texture_data, P_texture_data + m_width * m_height * TexType::component_count);
 		}
 
 		GLsizei getWidth() const
@@ -272,7 +320,7 @@ class TEX
 		}
 		int getComponentCount() const
 		{
-			return ::getComponentCount(type);
+			return TexType::component_count;
 		}
 
 		void bind() const
@@ -305,10 +353,44 @@ class TEX
 			m_textureunitnumber = -1;
 		}
 
+		void ownerBind(GLint channel_number) const
+		{
+			if (!is_class_loaded)
+			{
+				loadClass();
+			}
+
+			if (m_textureunitnumber_owned == -1)
+			{
+				if (!FreeTextureUnitNumbers.empty())
+				{
+					m_textureunitnumber_owned = channel_number;//FreeTextureUnitNumbers.top();
+					FreeTextureUnitNumbers.pop();
+				}
+				else
+				{
+					throw; // TODO
+				}
+			}
+
+			// Bind our texture in Texture Unit TextureUnitNumber
+			glActiveTexture(GL_TEXTURE0 + m_textureunitnumber_owned);
+			glBindTexture(GL_TEXTURE_2D, m_texture_id);
+		}
+		void ownerUnBind() const
+		{
+			glActiveTexture(GL_TEXTURE0 + m_textureunitnumber_owned);
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+		GLint getOwnedChannel() const
+		{
+			return m_textureunitnumber_owned;
+		}
+
 	};
 
-	template<TexType type>
-	friend void swap(typename TEX<type>::AspFreeTEX& t1, typename TEX<type>::AspFreeTEX& t2);
+	template<class TexType>
+	friend void swap(typename TEX<TexType>::AspFreeTEX& t1, typename TEX<TexType>::AspFreeTEX& t2);
 
 private:
 
@@ -319,8 +401,8 @@ private:
 
 public:
 
-	template<TexType type>
-	friend void swap(TEX<type>& t1, TEX<type>& t2);
+	template<class TexType>
+	friend void swap(TEX<TexType>& t1, TEX<TexType>& t2);
 
 	TEX() = default;
 	~TEX() = default;
@@ -365,9 +447,9 @@ public:
 		return (m_loading.turnOn(static_cast<std::function<void(AspFreeTEX&, const GLsizei, const GLsizei)>>(&AspFreeTEX::alloc)))(m_tex, TEXT_WIDTH, TEXT_HEIGHT);
 	}
 
-	explicit operator std::vector<unsigned char>() const
+	std::vector<typename TexType::type> getElements() const
 	{
-		return (m_loading.checkOn(static_cast<std::function<std::vector<unsigned char>(const AspFreeTEX&)>>(&AspFreeTEX::operator std::vector<unsigned char>)))(m_tex);
+		return (m_loading.checkOn(static_cast<std::function<std::vector<typename TexType::type>(const AspFreeTEX&)>>(&AspFreeTEX::getElements)))(m_tex);
 	}
 
 	GLsizei getWidth() const
@@ -394,27 +476,78 @@ public:
 		return (m_binding.checkOn(func))(m_tex);
 	}
 
+	void ownerBind(GLint channel_number) const // TODO: aspects...
+	{
+		m_tex.ownerBind(channel_number);
+	}
+	void ownerUnBind() const // TODO: aspects...
+	{
+		m_tex.ownerUnBind();
+	}
+	GLint getOwnedChannel() const // TODO: aspects...
+	{
+		return m_tex.getOwnedChannel();
+	}
+
 };
 
 
+template<class TexType>
 void printImage(
 	const std::string& PPM_FILE_NAME_WITH_EXTENSION,
-	const std::vector<unsigned char>& TEXTURE_DATA,
+	const std::vector<typename TexType::type>& TEXTURE_DATA,
 	const GLsizei TEXT_WIDTH,
-	const GLsizei TEXT_HEIGHT,
-	const int COMPONENT_COUNT);
+	const GLsizei TEXT_HEIGHT)
+{
+	// http://netpbm.sourceforge.net/doc/ppm.html
 
-template<TexType type>
-void swap(typename TEX<type>::AspFreeTEX& t1, typename TEX<type>::AspFreeTEX& t2)
+	std::ofstream out;
+	out.open(PPM_FILE_NAME_WITH_EXTENSION);
+	if (!out) {
+		std::cerr << "Cannot open file.";
+		exit(-1);
+	}
+
+	out << "P3" << std::endl;
+
+	out << TEXT_WIDTH << " " << TEXT_HEIGHT << std::endl;
+
+	out << 255 << std::endl;
+
+	for (int i = TEXT_HEIGHT - 1; i >= 0; --i)
+	{
+		for (int j = 0; j < TexType::component_count * TEXT_WIDTH; ++j)
+		{
+			if (TEXTURE_DATA[i * TexType::component_count * TEXT_WIDTH + j] < 10)
+			{
+				out << ' ';
+			}
+
+			if (TEXTURE_DATA[i * TexType::component_count * TEXT_WIDTH + j] < 100)
+			{
+				out << ' ';
+			}
+
+			out << (TexType::type_id == GL_UNSIGNED_BYTE ? static_cast<int>(TEXTURE_DATA[i * TexType::component_count * TEXT_WIDTH + j]) : TEXTURE_DATA[i * TexType::component_count * TEXT_WIDTH + j]) << ' ';
+		}
+		out << std::endl;
+	}
+
+	out.close();
+}
+
+template<class TexType>
+void swap(typename TEX<TexType>::AspFreeTEX& t1, typename TEX<TexType>::AspFreeTEX& t2)
 {
 	using std::swap;
 
 	swap(t1.m_texture_id, t2.m_texture_id);
 	swap(t1.m_textureunitnumber, t2.m_textureunitnumber);
+	swap(t1.m_textureunitnumber_owned, t2.m_textureunitnumber_owned);
 }
 
-template<TexType type>
-void swap(TEX<type>& t1, TEX<type>& t2)
+template<class TexType>
+void swap(TEX<TexType>& t1, TEX<TexType>& t2)
 {
 	using std::swap;
 
@@ -429,16 +562,16 @@ void swap(TEX<type>& t1, TEX<type>& t2)
 //
 
 
-template<TexType type>
-std::priority_queue<GLint, std::vector<GLint>> TEX<type>::AspFreeTEX::FreeTextureUnitNumbers{};
+template<class TexType>
+std::priority_queue<GLint, std::vector<GLint>> TEX<TexType>::AspFreeTEX::FreeTextureUnitNumbers{};
 
 
-template<TexType type>
-bool TEX<type>::AspFreeTEX::is_class_loaded = false;
+template<class TexType>
+bool TEX<TexType>::AspFreeTEX::is_class_loaded = false;
 
 
-template<TexType type>
-void TEX<type>::AspFreeTEX::loadClass()
+template<class TexType>
+void TEX<TexType>::AspFreeTEX::loadClass()
 {
 	GLint MaxTextureUnitNumber;
 	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &MaxTextureUnitNumber); // A total number of textures that can be used, period (GL_MAX_TEXTURE_IMAGE_UNITS - the number of textures that can be accessed by the fragment shader)

@@ -4,12 +4,25 @@
 #include <limits>
 #include <exception>
 
+#include <GL/glew.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp> // after <glm/glm.hpp>
+
+#include <GLFW/glfw3.h>
 
 #include "InPuts.h"
 #include "Camera.h"
 
+
+
+
+Camera::Camera(const Light& LIGHT)
+{
+	const glm::vec2 HOR_VER = getVerticalAndHorizontalAngles(LIGHT.getDir());
+	setHorizontalAngle(HOR_VER.x);
+	setVerticalAngle(HOR_VER.y);
+}
 
 
 glm::mat4 getView(const Camera& CAM)
@@ -26,25 +39,91 @@ glm::mat4 getView(const Camera& CAM)
 	);
 }
 
-glm::mat4 getProj(const Camera& CAM, int win_width, int win_height, float near, float far)
+
+glm::mat4 getPerspectiveProj(const Camera& CAM)
 {
+	if (!CAM.getWin())
+	{
+		throw; // TODO
+	}
+
+	int win_width, win_height;
+	glfwGetWindowSize(CAM.getWin(), &win_width, &win_height);
+
 	return glm::perspective(
-		glm::radians(CAM.getFov()),
+		CAM.getFov(),
 		static_cast<float>(win_width) / static_cast<float>(win_height),
-		near, far);
+		CAM.getNear(), CAM.getFar());
+}
+
+
+std::vector<glm::vec3> getFrustum(const Camera& CAM)
+{
+	if (!CAM.getWin())
+	{
+		throw; // TODO
+	}
+
+	int win_width, win_height;
+	glfwGetWindowSize(CAM.getWin(), &win_width, &win_height);
+
+	float near = CAM.getNear();
+	float far  = CAM.getFar();
+
+	float half_far_width  = far  * glm::tan(CAM.getFov() / 2.0f);
+	float half_near_width = near * glm::tan(CAM.getFov() / 2.0f);
+
+	float half_far_height  = (half_far_width  * win_height) / win_width;
+	float half_near_height = (half_near_width * win_height) / win_width;
+
+	glm::mat4 inv_V = glm::inverse(getView(CAM));
+
+	return std::vector<glm::vec3>{
+		glm::vec3(inv_V * glm::vec4(-half_near_width, -half_near_height, -near, 1.0f)),
+		glm::vec3(inv_V * glm::vec4(+half_near_width, -half_near_height, -near, 1.0f)),
+		glm::vec3(inv_V * glm::vec4(+half_near_width, +half_near_height, -near, 1.0f)),
+		glm::vec3(inv_V * glm::vec4(-half_near_width, +half_near_height, -near, 1.0f)),
+		glm::vec3(inv_V * glm::vec4(-half_far_width,  -half_far_height,  -far,  1.0f)),
+		glm::vec3(inv_V * glm::vec4(+half_far_width,  -half_far_height,  -far,  1.0f)),
+		glm::vec3(inv_V * glm::vec4(+half_far_width,  +half_far_height,  -far,  1.0f)),
+		glm::vec3(inv_V * glm::vec4(-half_far_width,  +half_far_height,  -far,  1.0f))
+	};
+}
+
+
+// TODO: set parameters according to camera data
+glm::mat4 getOrthogonaleProj(const Camera& CAM, const float left, const float right, const float bottom, const float top) // TODO find out if float for left, right, bottom and top is appropriate
+{
+	if (!CAM.getWin())
+	{
+		throw; // TODO
+	}
+
+	int win_width, win_height;
+	glfwGetWindowSize(CAM.getWin(), &win_width, &win_height);
+
+	if (right - left > win_width || top - bottom > win_height)
+	{
+		throw; // TODO
+	}
+
+	return glm::ortho(
+		left, right,
+		bottom, top,
+		CAM.getNear(), CAM.getFar());
 }
 
 
 void InPutObserverCamera::KeyObserver::releaseCallBack()
 {
-	glm::vec3 direction = getDir(m_p_cam->m_camera);
-	glm::vec3 right = getRight(m_p_cam->m_camera);
+	glm::vec3 direction = getDir(*m_p_cam);
+	glm::vec3 right = getRight(*m_p_cam);
 	glm::vec3 up = glm::cross(right, direction);
 
 	switch (m_direction)
 	{
 	case Direction::FORWARD:
-		m_p_cam->m_camera.setPos(
+		m_p_cam->setPos(
 			m_p_cam->getPos()
 			+ static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ?
 				glfwGetTime() - m_time_last_pressed :
@@ -52,7 +131,7 @@ void InPutObserverCamera::KeyObserver::releaseCallBack()
 			* m_p_cam->m_speed * direction);
 		break;
 	case Direction::BACKWARD:
-		m_p_cam->m_camera.setPos(
+		m_p_cam->setPos(
 			m_p_cam->getPos()
 			- static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ?
 				glfwGetTime() - m_time_last_pressed :
@@ -60,7 +139,7 @@ void InPutObserverCamera::KeyObserver::releaseCallBack()
 			* m_p_cam->m_speed * direction);
 		break;
 	case Direction::RIGHT:
-		m_p_cam->m_camera.setPos(
+		m_p_cam->setPos(
 			m_p_cam->getPos()
 			+ static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ?
 				glfwGetTime() - m_time_last_pressed :
@@ -68,7 +147,7 @@ void InPutObserverCamera::KeyObserver::releaseCallBack()
 			* m_p_cam->m_speed * right);
 		break;
 	case Direction::LEFT:
-		m_p_cam->m_camera.setPos(
+		m_p_cam->setPos(
 			m_p_cam->getPos()
 			- static_cast<float>(glfwGetTime() - m_time_last_pressed <= std::numeric_limits<float>::max() ? 
 				glfwGetTime() - m_time_last_pressed : 
@@ -95,6 +174,9 @@ void InPutObserverCamera::init(GLFWwindow* window)
 	glfwSetCursorPosCallback(window, InPut::Cursor::motionCallback);
 	InPut::Cursor::regist(*this);
 	InPut::Cursor::motionCallback(window, width / 2, height / 2);
+
+	glfwSetMouseButtonCallback(window, InPut::MouseButtons::actionCallback);
+	InPut::MouseButtons::regist(*this);
 
 	glfwSetKeyCallback(window, InPut::KeyBoard::press_or_release_callback);
 	InPut::KeyBoard::getKey(GLFW_KEY_UP).regist(m_observer_up);
@@ -173,7 +255,7 @@ void InPutObserverCamera::upDate(GLFWwindow* window)
 	//{
 	//	return ViewMatrix;
 	//}
-	//const glm::mat4& getProjectionMatrix() const
+	//const glm::mat4& getPerspectiveProjectionMatrix() const
 	//{
 	//	return ProjectionMatrix;
 	//}
@@ -225,42 +307,42 @@ void InPutObserverCamera::upDate(GLFWwindow* window)
 
 void InPutObserverCamera::motionCallBack(GLFWwindow* p_win, double xpos, double ypos)
 {
-	int width, height;
-	glfwGetWindowSize(p_win, &width, &height);
-
-	// Compute new orientation
-	m_camera.setHorizontalAngle(m_camera.getHorizontalAngle() + m_mouse_speed * static_cast<float>(width / 2 - xpos));
-	m_camera.setVerticalAngle(m_camera.getVerticalAngle() + m_mouse_speed * static_cast<float>(height / 2 - ypos));
-}
-
-void InPutObserverCamera::scrollCallBack(double yoffset)
-{
-	float newFoV = m_camera.getFov() - 5 * static_cast<float>(yoffset <= std::numeric_limits<float>::max() ? yoffset : throw std::domain_error("Camera.cpp: scrollbars yoffset is to big to be represented as a float"));
-	if (20 < newFoV && newFoV < 80)
+	if (m_direction_is_under_controll)
 	{
-		m_camera.setFov(newFoV);
+		int width, height;
+		glfwGetWindowSize(p_win, &width, &height);
+
+		// Compute new orientation
+		setHorizontalAngle(getHorizontalAngle() + m_mouse_speed * static_cast<float>(width / 2 - xpos));
+		setVerticalAngle(getVerticalAngle() + m_mouse_speed * static_cast<float>(height / 2 - ypos));
+
+		glfwSetCursorPos(p_win, width / 2, height / 2); // Enable unlimited movement, if camera direction is under control.
 	}
 }
 
-
-glm::mat4 getView(const InPutObserverCamera& CAM)
+void InPutObserverCamera::pressCallBack(GLFWwindow* p_win)
 {
-	glm::vec3 position = CAM.getPos();
-	glm::vec3 direction = getDir(CAM);
-	glm::vec3 right = getRight(CAM);
-	glm::vec3 up = glm::cross(right, direction);
+	glfwSetInputMode(p_win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	return glm::lookAt(
-		position,           // Camera is here
-		position + direction, // and looks here : at the same position, plus "direction"
-		up                  // Head is up (set to 0,-1,0 to look upside-down)
-	);
+	int width, height;
+	glfwGetWindowSize(p_win, &width, &height);
+	glfwSetCursorPos(p_win, width / 2, height / 2); // Don't let the camera direction be changed with Dirac-delta
+
+	m_direction_is_under_controll = true;
 }
 
-glm::mat4 getProj(const InPutObserverCamera& CAM, int win_width, int win_height, float near, float far)
+void InPutObserverCamera::releaseCallBack(GLFWwindow* p_win)
 {
-	return glm::perspective(
-		glm::radians(CAM.getFov()),
-		static_cast<float>(win_width) / static_cast<float>(win_height),
-		near, far);
+	glfwSetInputMode(p_win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+	m_direction_is_under_controll = false;
+};
+
+void InPutObserverCamera::scrollCallBack(double yoffset)
+{
+	float newFoV = getFov() - (glm::pi<float>() / 36.0f) * static_cast<float>(yoffset <= std::numeric_limits<float>::max() ? yoffset : throw std::domain_error("Camera.cpp: scrollbars yoffset is to big to be represented as a float"));
+	if (glm::pi<float>() / 9.0f < newFoV && newFoV < (4 * glm::pi<float>()) / 9.0f)
+	{
+		setFov(newFoV);
+	}
 }

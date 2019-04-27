@@ -34,9 +34,10 @@
 // - find out which is better, store vertex datas in vec3s or in vec4s
 // - change c-like string to std::string if it is possible
 // - NULL -> nullptr; 0 as null pointer -> nullptr
-// - implement detach member function where attach member functions are implemented 
+// - implement detach member function where attach member functions are implemented
+// - making unBind member functions to rebind the OGL object that was bound before invocation of the bind member function
 
-//#define sd_debugger
+#define sd_debugger
 #include "Debug.h"
 
 #include <iostream>
@@ -58,10 +59,12 @@
 
 int main( void )
 {
+	#pragma region GLFW SetUp
+
 	GLFWwindow* window;
 
 	// Initialise GLFW
-	if( !glfwInit() )
+	if (!glfwInit())
 	{
 		std::cerr << "Failed to initialize GLFW\n" << std::endl;
 		std::cin.get();
@@ -69,7 +72,7 @@ int main( void )
 	}
 
 	glfwWindowHint(GLFW_SAMPLES, 4);
-	glfwWindowHint(GLFW_RESIZABLE,GL_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
@@ -78,7 +81,8 @@ int main( void )
 	// Open a window and create its OpenGL context
 	const int WIDTH = 1024, HEIGHT = 768;
 	window = glfwCreateWindow(WIDTH, HEIGHT, "My Program", NULL, NULL);
-	if( window == NULL ){
+	if (window == NULL)
+	{
 		std::cerr << "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" << std::endl;
 		std::cin.get();
 		glfwTerminate();
@@ -86,17 +90,34 @@ int main( void )
 	}
 	glfwMakeContextCurrent(window);
 
+	#pragma endregion
+
+	#pragma region DEBUG: OGL GLSL version and extensions
+
 	#ifdef sd_debugger
 	// TODO: handle the case if OGL version number is lower than 3.3
 	// Get OGL version
 	{
-		char* title = new char[strlen("MyProgram - OGL version ") + strlen(reinterpret_cast<const char*>(glGetString(GL_VERSION))) + 1];
+		char* title = new char[strlen("MyProgram - OGL version:\t") + strlen(reinterpret_cast<const char*>(glGetString(GL_VERSION))) + 1];
 		title[0] = '\0';
 
-		strcat(title, "MyProgram - OGL version ");
+		strcat(title, "OGL version:\t");
 		strcat(title, reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 
 		glfwSetWindowTitle(window, title);
+
+		sdd::dout << title << std::endl;
+	}
+
+	// Get GLSL version
+	{
+		char* title = new char[strlen("GLSL version:\t") + strlen(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION))) + 1];
+		title[0] = '\0';
+
+		strcat(title, "GLSL version:\t");
+		strcat(title, reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+
+		sdd::dout << title << std::endl;
 	}
 
 	// List supported OGL extensions
@@ -110,21 +131,29 @@ int main( void )
 		for (GLint i = 0; i < n; i++)
 		{
 			const char* extension = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i));
-			std::cout << "Ext " << i << ":\t\t" << extension << std::endl;
+			sdd::dout << "Ext " << i << ":\t\t" << extension << std::endl;
 		}
 	}
 	#endif
 
+	#pragma endregion
+
+	#pragma region GLEW
+
 	// Initialize GLEW
 	glewExperimental = true; // Needed for core profile
-	if (glewInit() != GLEW_OK) {
+	if (glewInit() != GLEW_OK) 
+	{
 		std::cerr << "Failed to initialize GLEW\n" << std::endl;
 		std::cin.get();
 		glfwTerminate();
 		return -1;
 	}
 
+	#pragma endregion
+
 	#pragma region VSYNC
+
 		#ifdef _WIN32
 		{
 			//https://stackoverflow.com/questions/589064/how-to-enable-vertical-sync-in-opengl
@@ -151,20 +180,8 @@ int main( void )
 			wglSwapIntervalEXT(1);
 		}
 		#endif
+
 	#pragma endregion
-
-	// Ensure we can capture the escape key being pressed below
-	//glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-	// Hide the mouse and enable unlimited mouvement
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-	// Set the mouse at the center of the screen
-	//glfwPollEvents(); // TODO: Is it really necessary?
-	glfwSetCursorPos(window, WIDTH / 2, HEIGHT / 2);
-
-	App app(window);
-
-	app.init();
 	 
 	glEnable(GL_DEPTH_TEST); // Enable depth test
 	glDepthFunc(GL_LESS); // Accept fragment if it closer to the camera than the former one
@@ -174,33 +191,45 @@ int main( void )
 	
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f); // Dark blue background
 
-	do{
+	App app(window);
+
+	app.init();
+
+	do
+	{
+		#pragma region DEBUG: spf
+
 		#ifdef sd_debugger
 		sdd::debugSecondsPerFrame(1.0);
 		#endif
 
+		#pragma endregion
+		
 		app.upDate();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		app.render();
 
-		// Swap buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
-	} // Check if the ESC key was pressed or the window was closed
+	}
 	while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
 		   glfwWindowShouldClose(window) == 0 );
 
 	app.afterScreen();
 	app.clean();
 
-	// Close OpenGL window and terminate GLFW
-	glfwTerminate();
+	glfwTerminate(); // Close OpenGL window and terminate GLFW
+
+	#pragma region DEBUG: std::cin.get();
 
 	#ifdef sd_debugger
+	sdd::dout << "Hit Enter to close window." << std::endl;
 	std::cin.get();
 	#endif
+
+	#pragma endregion
 
 	return 0;
 }

@@ -9,7 +9,7 @@
 namespace InPut
 {
 
-	class Cursor
+	class Cursor final
 	{
 
 	public:
@@ -51,7 +51,61 @@ namespace InPut
 	};
 
 
-	class ScrollBar
+	class MouseButtons final
+	{
+
+	public:
+
+		class Observer
+		{
+
+		public:
+
+			virtual ~Observer() {  }
+			virtual void pressCallBack(GLFWwindow* p_win) = 0;
+			virtual void releaseCallBack(GLFWwindow* p_win) = 0;
+
+		};
+
+	private:
+
+		static std::set<Observer*> m_set_p_observer;
+
+	public:
+
+		static void regist(Observer& observer)
+		{
+			m_set_p_observer.insert(&observer);
+		}
+		static void unRegist(Observer& observer)
+		{
+			auto it = m_set_p_observer.find(&observer);
+			m_set_p_observer.erase(it);
+		}
+
+		static void actionCallback(GLFWwindow* p_win, int button, int action, int mods)
+		{
+			if (button == GLFW_MOUSE_BUTTON_LEFT)
+			{
+				for (auto it : m_set_p_observer)
+				{
+					switch (action)
+					{
+					case GLFW_PRESS:
+						it->pressCallBack(p_win);
+						break;
+					case GLFW_RELEASE:
+						it->releaseCallBack(p_win);
+						break;
+					}
+				}
+			}
+		}
+
+	};
+
+
+	class ScrollBar final
 	{
 
 	public:

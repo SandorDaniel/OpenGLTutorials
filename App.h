@@ -19,47 +19,68 @@
 
 
 
-class App
+class App final
 {
 	GLFWwindow* window = nullptr; // TODO: rename it properly
 
-	VAO m_vao;
-	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_pos;
+	VAO m_vao_cilinder;
+	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_pos_cilinder;
 	//VBO<glm::tvec3, float, glm::highp, 3> m_vbo_nor;
-	VBO<glm::tvec2, float, glm::highp, 2> m_vbo_tex;
-	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_tg;
-	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_btg;
-	IBO<GLushort> m_ibo;
+	VBO<glm::tvec2, float, glm::highp, 2> m_vbo_tex_cilinder;
+	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_tg_cilinder;
+	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_btg_cilinder;
+	IBO<GLushort> m_ibo_cilinder;
+
+	VAO m_vao_plane;
+	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_pos_plane;
+	VBO<glm::tvec2, float, glm::highp, 2> m_vbo_tex_plane;
+	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_tg_plane;
+	VBO<glm::tvec3, float, glm::highp, 3> m_vbo_btg_plane;
+	IBO<GLushort> m_ibo_plane;
 	
-	TEX<TexType::COLOR> m_tex_diff;
-	TEX<TexType::COLOR> m_tex_spec;
-	TEX<TexType::COLOR> m_tex_norm;
+	TEX<ColorTexData> m_tex_matdiff_wall;
+	TEX<ColorTexData> m_tex_matspec_wall;
+	TEX<ColorTexData> m_tex_nor_wall;
 
-	GLint m_programID;
-	GLint m_MID;
-	GLint m_VID;
-	GLint m_PID;
-	GLint m_cam_posID;
-	GLint m_tex_diffID;
-	GLint m_tex_specID;
-	GLint m_tex_normID;
-	GLint m_does_model_transformation_contain_nonuniform_scalingID;
+	GLint m_program_nor_matlight_shadow_mapped_id;
+	
+	GLint m_M_nor_matlight_shadow_mapped_id;
+	GLint m_V_nor_matlight_shadow_mapped_id;
+	GLint m_P_nor_matlight_shadow_mapped_id;
+	GLint m_cam_pos_nor_matlight_shadow_mapped_id;
+	GLint m_tex_matdiff_nor_matlight_shadow_mapped_id;
+	GLint m_tex_matspec_nor_matlight_shadow_mapped_id;
+	GLint m_tex_norm_nor_matlight_shadow_mapped_id;
+	GLint m_does_model_transformation_contain_nonuniform_scaling_nor_matlight_shadow_mapped_id;
+	GLint m_shadow_V_nor_matlight_shadow_mapped_id;
+	GLint m_tex_shadow_nor_matlight_shadow_mapped_id;
+	GLint m_shadow_P_nor_matlight_shadow_mapped_id;
 
-	Light light;
-	Light* p_light;
+	PositionalLight  light_positional;
+	DirectionalLight light_directional;
 
-	glm::mat4 m_M = glm::mat4(); // glm::mat4() is the identity matrix
-	bool m_does_m_M_contain_nonuniform_scaling = false;
-	glm::mat4 m_M2 = glm::mat4();
-	bool m_does_m_M2_contain_nonuniform_scaling = false;
+	glm::mat4 m_M_horizontal_cilinder = glm::mat4(); // glm::mat4() is the identity matrix
+	bool m_does_m_M_horizontal_cilinder_contain_nonuniform_scaling_horizontal_cilinder = false;
+	glm::mat4 m_M_vertical_cilinder = glm::mat4();
+	bool m_does_m_M_vertical_cilinder_contain_nonuniform_scaling_horizontal_cilinder = false;
+
+	glm::mat4 m_M_vertical_plane = glm::mat4(); // glm::mat4() is the identity matrix
+	bool m_does_m_M_vertical_plane_contain_nonuniform_scaling = false;
+	glm::mat4 m_M_horizontal_plane = glm::mat4();
+	bool m_does_m_M_horizontal_plane_contain_nonuniform_scaling = false;
 
 	InPutObserverCamera m_camera;
-	const float m_NEAR = 1.0f;
-	const float m_FAR = 100.0f;
 
-	TEX<TexType::COLOR> m_tex_col;
-	TEX<TexType::DEPTH> m_tex_depth;
+	TEX<DepthTexData> m_tex_depth;
 	FBO fbo;
+	GLint m_program_shadow_id;
+
+	GLint m_shadow_M_shadow_id;
+	GLint m_shadow_V_shadow_id;
+	GLint m_shadow_P_shadow_id;
+
+	glm::mat4 SV;
+	glm::mat4 SP;
 
 public:
 
@@ -69,7 +90,7 @@ public:
 
 	void init();
 	void upDate();
-	void render() const;
+	void render();
 	void clean();
 	void afterScreen();
 };

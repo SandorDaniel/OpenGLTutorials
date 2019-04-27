@@ -3,56 +3,10 @@
 
 #include <queue>
 #include <utility>
-#include <fstream>
-#include <iostream>
 
 #include <GL/glew.h>
 
 #include "TEX.h"
-
-
-
-int getFormat(TexType type)
-{
-	switch (type)
-	{
-	case TexType::COLOR:
-		return GL_RGB;
-		break;
-	case TexType::DEPTH:
-		return GL_DEPTH_COMPONENT;
-		break;
-	}
-}
-
-
-int getAttachment(TexType type)
-{
-	switch (type)
-	{
-	case TexType::COLOR:
-		return GL_COLOR_ATTACHMENT0;
-		break;
-	case TexType::DEPTH:
-		return GL_DEPTH_ATTACHMENT;
-		break;
-	}
-}
-
-
-int getComponentCount(TexType type)
-{
-	switch (type)
-	{
-	case TexType::COLOR:
-		return 3;
-		break;
-	case TexType::DEPTH:
-		return 1;
-		break;
-	}
-}
-
 
 
 
@@ -207,49 +161,4 @@ void DDSInRAM::load(const char* const filepath)
 	bytes.insert(bytes.begin(), buffer, buffer + bufsize);
 
 	free(buffer);
-}
-
-
-void printImage(
-	const std::string& PPM_FILE_NAME_WITH_EXTENSION,
-	const std::vector<unsigned char>& TEXTURE_DATA,
-	const GLsizei TEXT_WIDTH,
-	const GLsizei TEXT_HEIGHT,
-	const int COMPONENT_COUNT)
-{
-	// http://netpbm.sourceforge.net/doc/ppm.html
-
-	std::ofstream out;
-	out.open(PPM_FILE_NAME_WITH_EXTENSION);
-	if (!out) {
-		std::cerr << "Cannot open file.";
-		exit(-1);
-	}
-
-	out << "P3" << std::endl;
-
-	out << TEXT_WIDTH << " " << TEXT_HEIGHT << std::endl;
-
-	out << 255 << std::endl;
-
-	for (int i = TEXT_HEIGHT - 1; i >= 0; --i)
-	{
-		for (int j = 0; j < COMPONENT_COUNT * TEXT_WIDTH; ++j)
-		{
-			if (TEXTURE_DATA[i * COMPONENT_COUNT * TEXT_WIDTH + j] < 10)
-			{
-				out << ' ';
-			}
-
-			if (TEXTURE_DATA[i * COMPONENT_COUNT * TEXT_WIDTH + j] < 100)
-			{
-				out << ' ';
-			}
-
-			out << (int)(TEXTURE_DATA[i * COMPONENT_COUNT * TEXT_WIDTH + j]) << ' ';
-		}
-		out << std::endl;
-	}
-
-	out.close();
 }

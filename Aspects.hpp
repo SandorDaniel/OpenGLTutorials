@@ -83,10 +83,10 @@ public:
 	{
 		return [memFunc, this](MyClass& mc, Args... args) -> void
 		{
-			if (!m_is_on)
-			{
-				throw;
-			}
+			//if (!m_is_on)
+			//{
+			//	throw;
+			//}
 
 			memFunc(mc, std::forward<Args>(args)...);  // std::forward(t) is something like static_cast<T&&>(t) ie std::move(t). We use his for perfect forwarding. See reference-collapsion rule...
 

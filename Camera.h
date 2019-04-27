@@ -1,19 +1,69 @@
+// TODO: make the up vector of the camera adjustable
+// TODO: dont let the camera turn around
+
 #pragma once
+
+#include <vector>
+
+#include <GL/glew.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp> // after <glm/glm.hpp>
 
+class GLFWwindow;
+
 #include "InPuts.h"
 #include "Math.h"
+#include "Light.h"
 
 
 
 class Camera : public PosDirObj // Inheritance is not for polimorfism in this case.
 {
 
-	float m_fov = 45.0f; // filed of view // TODO: tisztazni, hogy milyen szogrol van szo pontosan
+protected:
+
+	GLFWwindow* m_p_win = nullptr;
+
+	float m_near = 1.0f;
+	float m_far  = 100.0f;
+
+	float m_fov = glm::radians(45.0f); // filed of view (the whole horizontal angle, not the half of it)
 
 public:
+
+	virtual ~Camera()
+	{
+	}
+	Camera() = default;
+	Camera(const Light& LIGHT);
+
+	GLFWwindow* getWin() const
+	{
+		return m_p_win;
+	}
+	void setWin(GLFWwindow* const p_win) // TODO: why do we get a syntax error, if the parameter name is not nearr but near?
+	{
+		m_p_win = p_win;
+	}
+
+	float getNear() const
+	{
+		return m_near;
+	}
+	void setNear(const float nearr) // TODO: why do we get a syntax error, if the parameter name is not nearr but near?
+	{
+		m_near = nearr;
+	}
+
+	float getFar() const
+	{
+		return m_far;
+	}
+	void setFar(const float farr) // TODO: why do we get a syntax error, if the parameter name is not farr but far?
+	{
+		m_far = farr;
+	}
 
 	float getFov() const
 	{
@@ -28,10 +78,12 @@ public:
 
 
 glm::mat4 getView(const Camera&);
-glm::mat4 getProj(const Camera&, int win_width, int win_height, float near, float far);
+glm::mat4 getPerspectiveProj(const Camera&);
+std::vector<glm::vec3> getFrustum(const Camera& CAM);
+glm::mat4 getOrthogonaleProj(const Camera& CAM, const float left, const float right, const float bottom, const float top);
 
 
-class InPutObserverCamera : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer
+class InPutObserverCamera final : public InPut::ScrollBar::Observer, public InPut::Cursor::Observer, public InPut::MouseButtons::Observer, public Camera
 {
 
 	enum class Direction
@@ -40,7 +92,7 @@ class InPutObserverCamera : public InPut::ScrollBar::Observer, public InPut::Cur
 	};
 
 	friend class KeyObserver;
-	class KeyObserver : public InPut::KeyBoard::Key::Observer
+	class KeyObserver final : public InPut::KeyBoard::Key::Observer
 	{
 
 		InPutObserverCamera* m_p_cam;
@@ -67,10 +119,10 @@ class InPutObserverCamera : public InPut::ScrollBar::Observer, public InPut::Cur
 
 private:
 
-	Camera m_camera;
-
 	const float m_speed = 3.0f; // 3 units / second
 	const float m_mouse_speed = 0.005f;
+
+	bool m_direction_is_under_controll = false;
 	
 	KeyObserver m_observer_up, m_observer_down, m_observer_right, m_observer_left;
 
@@ -78,31 +130,13 @@ public:
 
 	InPutObserverCamera();
 
-	glm::vec3 getPos() const
-	{
-		return m_camera.getPos();
-	}
-	float getHorizontalAngle() const
-	{
-		return m_camera.getHorizontalAngle();
-	}
-	float getVerticalAngle() const
-	{
-		return m_camera.getVerticalAngle();
-	}
-	float getFov() const
-	{
-		return m_camera.getFov();
-	}
-
 	void init(GLFWwindow* window);
 	void upDate(GLFWwindow* window);
 
 	virtual void motionCallBack(GLFWwindow* p_win, double xpos, double ypos);
+	virtual void pressCallBack(GLFWwindow* p_win);
+	virtual void releaseCallBack(GLFWwindow* p_win);
 	virtual void scrollCallBack(double yoffset);
 
 };
 
-
-glm::mat4 getView(const InPutObserverCamera&);
-glm::mat4 getProj(const InPutObserverCamera&, int win_width, int win_height, float near, float far);

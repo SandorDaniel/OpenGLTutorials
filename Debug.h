@@ -44,10 +44,11 @@
 namespace sdd // stands for Sandor Daniel's Debugger
 {
 
-	static std::ostream& dout = std::cout;
+	using Ostream = std::ostream;
+	static Ostream& dout = std::cout;
 
 
-	class Timer
+	class Timer final
 	{
 
 		double previous_time = 0;
@@ -107,6 +108,17 @@ namespace sdd // stands for Sandor Daniel's Debugger
 	}
 
 
+}
+
+static sdd::Ostream& operator<<(sdd::Ostream& os, const glm::vec3& v)
+{
+	os << v.x << ' ' << v.y << ' ' << v.z;
+	return os;
+}
+static sdd::Ostream& operator<<(sdd::Ostream& os, const glm::vec4& v)
+{
+	os << v.x << ' ' << v.y << ' ' << v.z << ' ' << v.w;
+	return os;
 }
 
 #endif
