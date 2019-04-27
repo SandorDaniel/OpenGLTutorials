@@ -558,7 +558,7 @@ void App::afterScreen()
 {
 	//printImage<DepthTexData>(
 	//	"printedDepthTex.ppm",
-	//	static_cast<std::vector<DepthTexData::type>>(m_tex_depth),
+	//	m_tex_depth.getElements(),
 	//	m_tex_depth.getWidth(),
 	//	m_tex_depth.getHeight());
 }

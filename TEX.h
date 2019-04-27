@@ -295,7 +295,7 @@ class TEX final
 			glBindTexture(GL_TEXTURE_2D, bound_tex);
 		}
 
-		explicit operator std::vector<typename TexType::type>() const
+		std::vector<typename TexType::type> getElements() const
 		{
 			GLint bound_tex; // We want to live every state to be the same...
 			glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound_tex);
@@ -447,9 +447,9 @@ public:
 		return (m_loading.turnOn(static_cast<std::function<void(AspFreeTEX&, const GLsizei, const GLsizei)>>(&AspFreeTEX::alloc)))(m_tex, TEXT_WIDTH, TEXT_HEIGHT);
 	}
 
-	explicit operator std::vector<typename TexType::type>() const
+	std::vector<typename TexType::type> getElements() const
 	{
-		return (m_loading.checkOn(static_cast<std::function<std::vector<typename TexType::type>(const AspFreeTEX&)>>(&AspFreeTEX::operator std::vector<typename TexType::type>)))(m_tex);
+		return (m_loading.checkOn(static_cast<std::function<std::vector<typename TexType::type>(const AspFreeTEX&)>>(&AspFreeTEX::getElements)))(m_tex);
 	}
 
 	GLsizei getWidth() const
